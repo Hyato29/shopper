@@ -163,13 +163,6 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                   await _cameraOrImagePickerAction(isCamera: false);
                   return;
 
-                  final isPermitted = await _requestPermissionAndRedirect(
-                    isCamera: false,
-                    context: context,
-                  );
-                  if (isPermitted) {
-                    await _cameraOrImagePickerAction(isCamera: false);
-                  }
                 },
               ),
             ],
@@ -399,7 +392,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         final imageBytes = uploadedFile.readAsBytesSync();
         final resultScreenParam = ResultScreenParams(
           keyword: keyword?.data ?? '',
-          fileUrl: uploadedFileUrl ?? '',
+          fileUrl: uploadedFileUrl,
           image: base64Encode(imageBytes),
         );
         final result = await context.pushNamed(
@@ -413,40 +406,4 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     );
   }
 
-  void _listenToSavedResultSearch() {
-    ref.listen(
-      _controller.select((value) => value.savedResultSearch),
-      (previous, next) async {
-        if (next == null) return;
-
-        final keyword = ref.watch(
-          _controller.select((state) => state.lensKeyword),
-        );
-        final uploadedFile = ref.watch(
-          _controller.select((state) => state.uploadedFile),
-        );
-
-        final uploadedFileUrl = ref.watch(
-          _controller.select((state) => state.uploadedFileUrl),
-        );
-
-        if (uploadedFile == null || uploadedFileUrl == null) {
-          return;
-        }
-
-        final imageBytes = uploadedFile.readAsBytesSync();
-        final resultScreenParam = ResultScreenParams(
-          keyword: keyword?.data ?? '',
-          fileUrl: uploadedFileUrl ?? '',
-          image: base64Encode(imageBytes),
-          savedSearch: next.data,
-        );
-        final result = await context.pushNamed(AppRouter.resultRoute,
-            extra: resultScreenParam);
-        if (result != null && result == true) {
-          ref.read(_controller.notifier).onClearSavedResultSearch();
-        }
-      },
-    );
-  }
 }

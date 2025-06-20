@@ -1,5 +1,3 @@
-import 'dart:math';
-
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 import 'package:fskeleton/app/data/serpapi/model/shopping_response.dart';
 import 'package:fskeleton/core.dart';

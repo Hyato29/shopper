@@ -1,6 +1,3 @@
-import 'package:flutter/foundation.dart';
-import 'package:flutter/material.dart';
-
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 
 HeadlessInAppWebView? headlessWebView;
@@ -22,24 +19,19 @@ class MyHeadlessWebView extends HeadlessInAppWebView {
 
   final Function(String) onLoadStopped;
 
-  @override
   void Function(InAppWebViewController controller)? get onWebViewCreated =>
       (controller) {};
 
-  @override
   void Function(
           InAppWebViewController controller, ConsoleMessage consoleMessage)?
       get onConsoleMessage => (controller, consoleMessage) {};
 
-  @override
   void Function(InAppWebViewController controller, Uri? url)? get onLoadStart =>
       (controller, url) {};
 
-  @override
   void Function(InAppWebViewController controller, int progress)?
       get onProgressChanged => (controller, progress) {};
 
-  @override
   void Function(InAppWebViewController controller, Uri? url)? get onLoadStop =>
       (controller, url) async {
         if (!(url?.path ?? '').contains('/search')) return;
@@ -53,11 +45,9 @@ class MyHeadlessWebView extends HeadlessInAppWebView {
         onLoadStopped(html as String);
       };
 
-  @override
   void Function(InAppWebViewController controller, Uri? url, int code,
       String message)? get onLoadError => (controller, url, code, message) {};
 
-  @override
   void Function(InAppWebViewController controller, Uri? url, int statusCode,
           String description)?
       get onLoadHttpError => (controller, url, statusCode, description) {};

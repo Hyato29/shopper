@@ -6,11 +6,9 @@ import 'package:fskeleton/app/common/common_screen.dart';
 import 'package:fskeleton/app/data/my_search_preferences/saved_search.dart';
 import 'package:fskeleton/app/data/serpapi/model/shopping_response.dart';
 import 'package:fskeleton/app/localizations/ui_text.dart';
-import 'package:fskeleton/app/navigation/router.dart';
 import 'package:fskeleton/app/ui/animated_visibility.dart';
 import 'package:fskeleton/app/ui/buttons/my_text_button.dart';
 import 'package:fskeleton/app/ui/common_loading.dart';
-import 'package:fskeleton/app/ui/datetime_extension.dart';
 import 'package:fskeleton/app/ui/empty_state.dart';
 import 'package:fskeleton/app/ui/my_alert.dart';
 import 'package:fskeleton/app/ui/my_snack_bar.dart';
@@ -472,28 +470,6 @@ class _ResultScreenState extends ConsumerState<ResultScreen> {
           //   _headerRetakeSection()
           // else
           //   _headerSavedNameLabel(savedSearch),
-        ],
-      ),
-    );
-  }
-
-  Widget _headerSavedNameLabel(SavedSearch savedSearch) {
-    final isTablet = TabletDetector.isTablet(MediaQuery.of(context));
-
-    return Expanded(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            savedSearch.keyword,
-            overflow: TextOverflow.ellipsis,
-            maxLines: 3,
-            style: isTablet ? MyText.xlSemiBold : MyText.baseSemiBold,
-          ),
-          Text(
-            savedSearch.createdAt!.yMMMMd(context).orDash(),
-            style: MyText.base.copyWith(color: MyColors.neutral80),
-          ),
         ],
       ),
     );
