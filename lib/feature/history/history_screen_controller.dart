@@ -1,9 +1,6 @@
-// lib/feature/history/history_screen_controller.dart
-
 import 'dart:async';
 
 import 'package:freezed_annotation/freezed_annotation.dart';
-import 'package:fskeleton/app/common/common_controller.dart';
 import 'package:fskeleton/app/data/wms/model/wms_bundle/wms_bundle.dart';
 import 'package:fskeleton/app/data/wms/model/wms_product/wms_product.dart';
 import 'package:fskeleton/app/data/wms/wms_repository.dart';
@@ -14,18 +11,15 @@ part 'history_screen_controller.freezed.dart';
 
 class HistoryScreenController extends StateNotifier<HistoryScreenUiState> {
   HistoryScreenController(
-    this._commonController,
     this._wmsApiRepository,
   ) : super(const HistoryScreenUiState());
 
-  final CommonController _commonController;
   final WmsApiRepository _wmsApiRepository;
 
   static final provider = StateNotifierProvider.autoDispose<
       HistoryScreenController, HistoryScreenUiState>(
     (ref) {
       return HistoryScreenController(
-        ref.watch(CommonController.provider.notifier),
         ref.watch(WmsApiRepository.provider),
       );
     },

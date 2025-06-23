@@ -7,6 +7,8 @@ import 'package:fskeleton/feature/history/history_screen.dart';
 import 'package:fskeleton/feature/home/home_screen.dart';
 import 'package:fskeleton/feature/home/result_screen_params.dart';
 import 'package:fskeleton/feature/login/login_screen.dart';
+import 'package:fskeleton/feature/product_detail/product_detail_params.dart';
+import 'package:fskeleton/feature/product_detail/product_detail_screen.dart';
 import 'package:fskeleton/feature/result/result_screen.dart';
 import 'package:fskeleton/feature/search/search_screen.dart';
 import 'package:fskeleton/feature/success/success_screen.dart';
@@ -22,6 +24,7 @@ class AppRouter {
 
   static const loginRoute = 'login';
   static const homeRoute = 'home';
+  static const productDetailRoute = 'product-detail';
   static const resultRoute = 'result';
   static const successRoute = 'success_list';
   static const webviewScreenRoute = 'webview_screen_route';
@@ -74,6 +77,14 @@ class AppRouter {
                   context.pushNamed(AppRouter.searchRoute);
                 },
               );
+            },
+          ),
+          GoRoute(
+            name: productDetailRoute,
+            path: '/$productDetailRoute',
+            builder: (context, state) {
+              final params = state.extra as ProductDetailParams;
+              return ProductDetailScreen(params: params);
             },
           ),
           GoRoute(

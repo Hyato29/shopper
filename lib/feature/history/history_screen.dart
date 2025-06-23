@@ -97,7 +97,6 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen>
 
   List<Widget> _buildAppBarActions() {
     if (_tabController.index == 1) {
-      // Hanya tampil jika di tab "Bundle"
       return [
         Padding(
           padding: const EdgeInsets.only(right: 8.0),
@@ -122,7 +121,6 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen>
         ),
         primaryButton: "Buat Bundle",
         onPrimaryButtonPressed: () {
-          // TODO: Logika untuk menyimpan nama bundle baru
         },
         secondaryButton: "Batalkan",
         onSecondaryButtonPressed: () {},
@@ -193,7 +191,6 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen>
       color: MyColors.bodyBackground,
       child: Column(
         children: [
-          // Header Detail Bundle
           Padding(
             padding: const EdgeInsets.all(16),
             child: Row(
@@ -242,7 +239,6 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen>
               ],
             ),
           ),
-          // Daftar Produk di Dalam Bundle
           const Divider(height: 1),
           if (bundle.productBundles.isNotEmpty)
             ...bundle.productBundles
@@ -382,7 +378,6 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen>
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Gambar
           if (product.image != null && product.image!.isNotEmpty)
             ClipRRect(
               borderRadius: BorderRadius.circular(8),

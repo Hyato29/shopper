@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'dart:io';
-import 'dart:math';
 
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:fskeleton/app/common/common_controller.dart';
@@ -9,39 +8,32 @@ import 'package:fskeleton/app/data/my_headless_web_view.dart';
 import 'package:fskeleton/app/data/my_search_preferences/saved_search.dart';
 import 'package:fskeleton/app/data/serpapi/model/lens_response.dart';
 import 'package:fskeleton/app/data/serpapi/model/shopping_response.dart';
-import 'package:fskeleton/app/data/serpapi/serp_api_repository.dart';
+import 'package:fskeleton/app/data/wms/model/wms_identify/identify_product_response.dart';
 import 'package:fskeleton/app/data/wms/model/wms_product/wms_product.dart';
 import 'package:fskeleton/app/data/wms/wms_repository.dart';
-import 'package:fskeleton/app/utils/aws_s3_upload/aws_s3_upload.dart';
 import 'package:fskeleton/app/utils/event.dart';
 import 'package:fskeleton/core.dart';
 import 'package:fskeleton/feature/home/suggestion_model.dart';
-import 'package:html/parser.dart';
-import 'package:mime/mime.dart';
 import 'package:package_info_plus/package_info_plus.dart';
-import 'package:path/path.dart';
 
 part 'home_screen_controller.freezed.dart';
 
 class HomeScreenController extends StateNotifier<HomeScreenUiState> {
   HomeScreenController(
     this._authRepository,
-    this._serpApiRepository,
     this._commonController,
     this._wmsApiRepository,
   ) : super(const HomeScreenUiState());
 
   final AuthRepository _authRepository;
   final CommonController _commonController;
-  final SerpApiRepository _serpApiRepository;
   final WmsApiRepository _wmsApiRepository;
 
-  static final provider =
-      StateNotifierProvider.autoDispose<HomeScreenController, HomeScreenUiState>(
+  static final provider = StateNotifierProvider.autoDispose<
+      HomeScreenController, HomeScreenUiState>(
     (ref) {
       return HomeScreenController(
         ref.watch(AuthRepository.provider),
-        ref.watch(SerpApiRepository.provider),
         ref.watch(CommonController.provider.notifier),
         ref.watch(WmsApiRepository.provider),
       );
@@ -50,7 +42,6 @@ class HomeScreenController extends StateNotifier<HomeScreenUiState> {
 
   Timer? _debounceTimer;
   MyHeadlessWebView? _headlessWebView;
-  String? _currentLensKeyword;
   int _currentPage = 1;
   int? _lastPage;
 
@@ -78,78 +69,34 @@ class HomeScreenController extends StateNotifier<HomeScreenUiState> {
     _authRepository.clearSession();
   }
 
-  Future<void> uploadFile({required File file}) async {
+  Future<ProductScanData?> processImage({required File file}) async {
     _commonController.showLoading(isLoading: true);
-    final filename = basename(file.path);
-    final uploadedUrl = await AsyncValue.guard(
-      () => AwsS3.uploadFile(
-        accessKey: const String.fromEnvironment('AWS_ACCESS_KEY_ROOT'),
-        secretKey: const String.fromEnvironment('AWS_SECRET_KEY_ROOT'),
-        file: file,
-        bucket: const String.fromEnvironment('AWS_BUCKET_NAME'),
-        region: const String.fromEnvironment('AWS_REGION'),
-        filename: filename,
-        metadata: {
-          'Content-Type': lookupMimeType(file.path) ?? '',
-        },
-        contentType: lookupMimeType(file.path) ?? '',
-      ),
+
+    final result = await AsyncValue.guard(
+      () => _wmsApiRepository.identifyProduct(imageFile: file),
     );
 
     _commonController.showLoading(isLoading: false);
-    if (!mounted) return;
-    return uploadedUrl.when(
-      data: (data) async {
-        if (data == null) {
-          state = state.copyWith(uploadFileException: Event(null));
-          return;
-        }
-        state = state.copyWith(
-          uploadedFile: file,
-          uploadedFileUrl: uploadedUrl.value,
-        );
 
-        await searchLensKeyword(uploadedUrl.value!);
-      },
-      error: (_, __) {
-        state = state.copyWith(uploadFileException: Event(null));
-      },
-      loading: () {},
-    );
-  }
+    if (!mounted) return null;
 
-  Future<void> searchLensKeyword(String fileUrl) async {
-    // Reset lens keyword
-    state = state.copyWith(lensKeyword: null);
+    if (result.hasError) {
+      // Menangani error jika panggilan ke backend gagal
+      _commonController.handleCommonError(result.error!, null);
+      return null;
+    }
 
-    _commonController.showLoading(isLoading: true);
-    _headlessWebView = MyHeadlessWebView(
-      url: 'https://lens.google.com/uploadbyurl?url=$fileUrl',
-      onLoadStopped: (html) async {
-        if (_currentLensKeyword != null) return;
-
-        var keywordFound = _detectFirstProductStringWithParser(html);
-        if (keywordFound != null) {
-          await _lensHandler(keywordFound);
-        } else {
-          keywordFound ??= _detectRelatedSearchStringWithParser(html);
-
-          if (keywordFound != null) {
-            await _lensHandler(keywordFound);
-          }
-        }
-      },
-    );
-    await _headlessWebView?.run();
-  }
-
-  Future<void> _lensHandler(String keyword) async {
-    _currentLensKeyword = keyword;
-
-    await Future.delayed(Duration(milliseconds: Random().nextInt(1999) + 1));
-
-    _commonController.showLoading(isLoading: false);
-    state = state.copyWith(lensKeyword: Event(keyword));
+    final response = result.asData?.value;
+    if (response != null && response.success && response.data != null) {
+      // Jika sukses, kembalikan data produk
+      return response.data;
+    } else {
+      // Jika backend merespon tidak sukses
+      _commonController.handleCommonError(
+          Exception(response?.message ?? 'Gagal mengidentifikasi produk.'),
+          null);
+      return null;
+    }
   }
 
   Future<void> loadProducts() async {
@@ -223,44 +170,11 @@ class HomeScreenController extends StateNotifier<HomeScreenUiState> {
     loadProducts();
   }
 
-  String? _detectFirstProductStringWithParser(String html) {
-    try {
-      final document = parse(html);
-      final elements = document.getElementsByClassName('UAiK1e');
-      if (elements.isNotEmpty) {
-        final firstElement = elements.first.text;
-
-        return firstElement;
-      }
-
-      return null;
-    } catch (e) {
-      return null;
-    }
-  }
-
-  String? _detectRelatedSearchStringWithParser(String html) {
-    try {
-      final document = parse(html);
-      final elements = document.getElementsByClassName('LzliJc');
-      if (elements.isNotEmpty) {
-        final firstElement = elements.first.text;
-
-        return firstElement;
-      }
-
-      return null;
-    } catch (e) {
-      return null;
-    }
-  }
-
   void onClearSavedResultSearch() {
     state = state.copyWith(
       savedResultSearch: null,
       lensKeyword: null,
     );
-    _currentLensKeyword = null;
   }
 }
 

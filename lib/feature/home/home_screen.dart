@@ -20,6 +20,7 @@ import 'package:fskeleton/app/ui/theme/my_text.dart';
 import 'package:fskeleton/core.dart';
 import 'package:fskeleton/feature/home/home_screen_controller.dart';
 import 'package:fskeleton/feature/home/result_screen_params.dart';
+import 'package:fskeleton/feature/product_detail/product_detail_params.dart';
 import 'package:fskeleton/feature/webview/webview_screen_params.dart';
 import 'package:go_router/go_router.dart';
 import 'package:permission_handler/permission_handler.dart';
@@ -455,8 +456,31 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         .read(ImagePickerService.provider)
         .pickImage(context: context, isFromCamera: isCamera);
 
-    if (image == null) return;
-    await ref.read(_controller.notifier).uploadFile(file: File(image.path));
+    if (image == null || !mounted) return;
+
+    // Menggunakan nama fungsi yang benar yaitu 'processImage'
+    final productData = await ref
+        .read(_controller.notifier)
+        .processImage(file: File(image.path));
+
+    // Jika berhasil, kita navigasi ke halaman detail produk
+    if (productData != null && mounted) {
+      final params = ProductDetailParams(
+        productName: productData.productName,
+        productPrice: productData.productPrice,
+      );
+
+      // Tunggu hasil dari halaman detail (jika user menekan simpan, kita dapat 'true')
+      final shouldRefresh = await context.pushNamed<bool>(
+        AppRouter.productDetailRoute,
+        extra: params,
+      );
+
+      // Jika halaman detail mengirim `true`, refresh riwayat di halaman utama
+      if (shouldRefresh == true) {
+        ref.read(_controller.notifier).loadProducts();
+      }
+    }
   }
 
   Widget _bigButton({
