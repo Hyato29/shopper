@@ -694,6 +694,8 @@ mixin _$WmsProduct {
   String get productPrice => throw _privateConstructorUsedError;
   String get createdAt => throw _privateConstructorUsedError;
   String get updatedAt => throw _privateConstructorUsedError;
+  String? get image => throw _privateConstructorUsedError;
+  WmsUser? get user => throw _privateConstructorUsedError;
 
   /// Serializes this WmsProduct to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
@@ -717,7 +719,11 @@ abstract class $WmsProductCopyWith<$Res> {
       String productName,
       String productPrice,
       String createdAt,
-      String updatedAt});
+      String updatedAt,
+      String? image,
+      WmsUser? user});
+
+  $WmsUserCopyWith<$Res>? get user;
 }
 
 /// @nodoc
@@ -741,6 +747,8 @@ class _$WmsProductCopyWithImpl<$Res, $Val extends WmsProduct>
     Object? productPrice = null,
     Object? createdAt = null,
     Object? updatedAt = null,
+    Object? image = freezed,
+    Object? user = freezed,
   }) {
     return _then(_value.copyWith(
       id: null == id
@@ -767,7 +775,29 @@ class _$WmsProductCopyWithImpl<$Res, $Val extends WmsProduct>
           ? _value.updatedAt
           : updatedAt // ignore: cast_nullable_to_non_nullable
               as String,
+      image: freezed == image
+          ? _value.image
+          : image // ignore: cast_nullable_to_non_nullable
+              as String?,
+      user: freezed == user
+          ? _value.user
+          : user // ignore: cast_nullable_to_non_nullable
+              as WmsUser?,
     ) as $Val);
+  }
+
+  /// Create a copy of WmsProduct
+  /// with the given fields replaced by the non-null parameter values.
+  @override
+  @pragma('vm:prefer-inline')
+  $WmsUserCopyWith<$Res>? get user {
+    if (_value.user == null) {
+      return null;
+    }
+
+    return $WmsUserCopyWith<$Res>(_value.user!, (value) {
+      return _then(_value.copyWith(user: value) as $Val);
+    });
   }
 }
 
@@ -785,7 +815,12 @@ abstract class _$$WmsProductImplCopyWith<$Res>
       String productName,
       String productPrice,
       String createdAt,
-      String updatedAt});
+      String updatedAt,
+      String? image,
+      WmsUser? user});
+
+  @override
+  $WmsUserCopyWith<$Res>? get user;
 }
 
 /// @nodoc
@@ -807,6 +842,8 @@ class __$$WmsProductImplCopyWithImpl<$Res>
     Object? productPrice = null,
     Object? createdAt = null,
     Object? updatedAt = null,
+    Object? image = freezed,
+    Object? user = freezed,
   }) {
     return _then(_$WmsProductImpl(
       id: null == id
@@ -833,6 +870,14 @@ class __$$WmsProductImplCopyWithImpl<$Res>
           ? _value.updatedAt
           : updatedAt // ignore: cast_nullable_to_non_nullable
               as String,
+      image: freezed == image
+          ? _value.image
+          : image // ignore: cast_nullable_to_non_nullable
+              as String?,
+      user: freezed == user
+          ? _value.user
+          : user // ignore: cast_nullable_to_non_nullable
+              as WmsUser?,
     ));
   }
 }
@@ -847,7 +892,9 @@ class _$WmsProductImpl implements _WmsProduct {
       this.productName = '',
       this.productPrice = '',
       this.createdAt = '',
-      this.updatedAt = ''});
+      this.updatedAt = '',
+      this.image,
+      this.user});
 
   factory _$WmsProductImpl.fromJson(Map<String, dynamic> json) =>
       _$$WmsProductImplFromJson(json);
@@ -870,10 +917,14 @@ class _$WmsProductImpl implements _WmsProduct {
   @override
   @JsonKey()
   final String updatedAt;
+  @override
+  final String? image;
+  @override
+  final WmsUser? user;
 
   @override
   String toString() {
-    return 'WmsProduct(id: $id, userId: $userId, productName: $productName, productPrice: $productPrice, createdAt: $createdAt, updatedAt: $updatedAt)';
+    return 'WmsProduct(id: $id, userId: $userId, productName: $productName, productPrice: $productPrice, createdAt: $createdAt, updatedAt: $updatedAt, image: $image, user: $user)';
   }
 
   @override
@@ -890,13 +941,15 @@ class _$WmsProductImpl implements _WmsProduct {
             (identical(other.createdAt, createdAt) ||
                 other.createdAt == createdAt) &&
             (identical(other.updatedAt, updatedAt) ||
-                other.updatedAt == updatedAt));
+                other.updatedAt == updatedAt) &&
+            (identical(other.image, image) || other.image == image) &&
+            (identical(other.user, user) || other.user == user));
   }
 
   @JsonKey(includeFromJson: false, includeToJson: false)
   @override
-  int get hashCode => Object.hash(
-      runtimeType, id, userId, productName, productPrice, createdAt, updatedAt);
+  int get hashCode => Object.hash(runtimeType, id, userId, productName,
+      productPrice, createdAt, updatedAt, image, user);
 
   /// Create a copy of WmsProduct
   /// with the given fields replaced by the non-null parameter values.
@@ -921,7 +974,9 @@ abstract class _WmsProduct implements WmsProduct {
       final String productName,
       final String productPrice,
       final String createdAt,
-      final String updatedAt}) = _$WmsProductImpl;
+      final String updatedAt,
+      final String? image,
+      final WmsUser? user}) = _$WmsProductImpl;
 
   factory _WmsProduct.fromJson(Map<String, dynamic> json) =
       _$WmsProductImpl.fromJson;
@@ -938,6 +993,10 @@ abstract class _WmsProduct implements WmsProduct {
   String get createdAt;
   @override
   String get updatedAt;
+  @override
+  String? get image;
+  @override
+  WmsUser? get user;
 
   /// Create a copy of WmsProduct
   /// with the given fields replaced by the non-null parameter values.

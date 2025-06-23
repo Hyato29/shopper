@@ -1,14 +1,16 @@
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:device_info_plus/device_info_plus.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:fskeleton/app/common/common_screen.dart';
+import 'package:fskeleton/app/data/wms/model/wms_product/wms_product.dart';
 import 'package:fskeleton/app/localizations/ui_text.dart';
 import 'package:fskeleton/app/navigation/router.dart';
 import 'package:fskeleton/app/ui/bottom_sheet.dart';
 import 'package:fskeleton/app/ui/buttons/my_text_button.dart';
+import 'package:fskeleton/app/ui/empty_state.dart';
 import 'package:fskeleton/app/ui/image_picker_service.dart';
 import 'package:fskeleton/app/ui/my_alert.dart';
 import 'package:fskeleton/app/ui/my_snack_bar.dart';
@@ -62,26 +64,252 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
 
     return CommonScreen(
       child: Scaffold(
-        backgroundColor: MyColors.white,
-        body: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Text(
-              context.localizations.priceSearchingSystem,
-              style: MyText.baseSemiBold,
-            ),
-            const SizedBox(height: 8),
-            Text(
-              context.localizations.getProductPhotoWithCameraOrGallery,
-              style: MyText.xs.copyWith(color: MyColors.neutral80),
-            ),
-            const SizedBox(height: 16),
-            _dashboardContent(),
-            const SizedBox(height: 16),
-            _appVersionWidget(),
+        appBar: AppBar(
+          backgroundColor: Colors.white,
+          title: Text(
+            context.localizations.priceSearchingSystem,
+            style: MyText.baseSemiBold,
+          ),
+          actions: [
+            _appBarSettings(context),
           ],
         ),
+        backgroundColor: MyColors.white,
+        body: SafeArea(
+          child: SingleChildScrollView(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(vertical: 20),
+              child: Column(
+                children: [
+                  const SizedBox(height: 8),
+                  Text(
+                    context.localizations.getProductPhotoWithCameraOrGallery,
+                    style: MyText.xs.copyWith(color: MyColors.neutral80),
+                  ),
+                  const SizedBox(height: 16),
+                  _dashboardContent(),
+                  _scanHistoryBox(),
+                  const SizedBox(height: 20),
+                  _appVersionWidget(),
+                ],
+              ),
+            ),
+          ),
+        ),
       ),
+    );
+  }
+
+  Padding _appBarSettings(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.only(right: 20),
+      child: PopupMenuButton<String>(
+        position: PopupMenuPosition.under,
+        borderRadius: BorderRadius.circular(8),
+        onSelected: (value) {
+          if (value == 'Logout') {
+            ref.read(_controller.notifier).onLogout();
+            context.pushNamed(AppRouter.searchRoute);
+          } else if (value == 'Printer') {}
+        },
+        itemBuilder: (BuildContext context) {
+          return [
+            const PopupMenuItem(
+              value: 'Logout',
+              child: Text(
+                'Logout',
+                style: TextStyle(fontSize: 14),
+              ),
+            ),
+            const PopupMenuItem(
+              value: 'Printer',
+              child: Text(
+                'Printer',
+                style: TextStyle(fontSize: 14),
+              ),
+            ),
+          ];
+        },
+        icon: const Icon(
+          Icons.settings,
+          color: Colors.blue,
+        ),
+      ),
+    );
+  }
+
+  Widget _scanHistoryBox() {
+    return Container(
+      margin: const EdgeInsets.symmetric(horizontal: 20.0),
+      decoration: BoxDecoration(
+        color: Colors.blue.shade50,
+        borderRadius: BorderRadius.circular(12),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.3),
+            spreadRadius: 1,
+            blurRadius: 10,
+            offset: const Offset(0, 2),
+          ),
+        ],
+      ),
+      child: Column(
+        children: [
+          _historyHeader(),
+          const SizedBox(height: 10),
+          _historyList(),
+        ],
+      ),
+    );
+  }
+
+  Widget _historyHeader() {
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(20, 20, 20, 10),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Text("Scan History", style: MyText.smSemiBold),
+          MyTextButton(
+            onPressed: () {
+              context.pushNamed(AppRouter.historyRoute);
+            },
+            label: Text(
+              "Lihat Semua",
+              style: MyText.smSemiBold.copyWith(color: MyColors.primary500),
+            ),
+          )
+        ],
+      ),
+    );
+  }
+
+  Widget _historyList() {
+    final products = ref.watch(_controller.select((state) => state.products));
+
+    return RefreshIndicator(
+      onRefresh: () async {
+        ref.read(_controller.notifier).onScreenLoaded();
+      },
+      child: products.when(
+        data: (data) {
+          if (data.isEmpty) {
+            return const MyEmptyState.empty(
+              title: "Belum ada riwayat",
+              description: "Hasil pindaian Anda akan muncul di sini.",
+              centered: false,
+            );
+          }
+          final itemsToShow = data.take(3).toList();
+          return Container(
+            height: 350,
+            decoration: const BoxDecoration(
+              borderRadius: BorderRadius.only(
+                bottomLeft: Radius.circular(12),
+                bottomRight: Radius.circular(12),
+              ),
+              color: Colors.white,
+            ),
+            padding: const EdgeInsets.all(20),
+            child: SingleChildScrollView(
+              physics:
+                  const AlwaysScrollableScrollPhysics(), // Tambahkan ini agar RefreshIndicator berfungsi saat konten tidak cukup panjang
+              child: Column(
+                children: itemsToShow
+                    .map((product) => _historyItem(product))
+                    .toList(),
+              ),
+            ),
+          );
+        },
+        error: (_, __) => Text("Gagal memuat riwayat", style: MyText.sm),
+        loading: () => const Padding(
+          padding: EdgeInsets.only(bottom: 50),
+          child: Center(child: CircularProgressIndicator()),
+        ),
+      ),
+    );
+  }
+
+  Widget _historyItem(WmsProduct product) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 16.0),
+      child: Column(
+        children: [
+          Padding(
+            padding: const EdgeInsets.symmetric(vertical: 10),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // Gambar Produk
+                if (product.image != null && product.image!.isNotEmpty)
+                  ClipRRect(
+                    borderRadius: BorderRadius.circular(8),
+                    child: CachedNetworkImage(
+                      imageUrl: product.image!,
+                      width: 48,
+                      height: 48,
+                      fit: BoxFit.cover,
+                      errorWidget: (context, url, error) => _imagePlaceholder(),
+                      placeholder: (context, url) => _imagePlaceholder(),
+                    ),
+                  )
+                else
+                  _imagePlaceholder(),
+                const SizedBox(width: 12),
+                _statusChip(product),
+                const SizedBox(width: 12),
+                // Detail Produk
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        product.productName,
+                        style: MyText.sm,
+                        maxLines: 3,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(width: 12),
+                // Status Chip
+              ],
+            ),
+          ),
+          const Divider(
+            color: Colors.black,
+          )
+        ],
+      ),
+    );
+  }
+
+  Widget _statusChip(WmsProduct product) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+      decoration: BoxDecoration(
+        color: MyColors.success50,
+        borderRadius: BorderRadius.circular(20),
+      ),
+      child: Text(
+        "Lolos",
+        style: MyText.xsSemiBold.copyWith(color: MyColors.success700),
+      ),
+    );
+  }
+
+  Widget _imagePlaceholder() {
+    return Container(
+      width: 48,
+      height: 48,
+      decoration: BoxDecoration(
+        color: MyColors.neutral30,
+        borderRadius: BorderRadius.circular(8),
+      ),
+      child: const Icon(Icons.image_not_supported_outlined,
+          color: MyColors.neutral70, size: 24),
     );
   }
 
@@ -162,7 +390,6 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                   // TODO: This is blasphemy!!1!11
                   await _cameraOrImagePickerAction(isCamera: false);
                   return;
-
                 },
               ),
             ],
@@ -217,15 +444,6 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                 },
               ),
             ],
-          ),
-          const SizedBox(height: 20),
-          MyTextButton(
-            label: Text('Logout', style: MyText.xs),
-            leading: const Icon(CupertinoIcons.arrow_left_circle),
-            onPressed: () {
-              ref.read(_controller.notifier).onLogout();
-              context.pushNamed(AppRouter.searchRoute);
-            },
           ),
         ],
       ),
@@ -371,7 +589,6 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     ref.listen(
       _controller.select((value) => value.lensKeyword),
       (previous, next) async {
-
         if (next == null) return;
 
         final keyword = ref.watch(
@@ -405,5 +622,4 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
       },
     );
   }
-
 }

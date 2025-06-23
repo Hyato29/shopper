@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/cupertino.dart';
 import 'package:fskeleton/app/data/auth/auth_repository.dart';
 import 'package:fskeleton/core.dart';
+import 'package:fskeleton/feature/history/history_screen.dart';
 import 'package:fskeleton/feature/home/home_screen.dart';
 import 'package:fskeleton/feature/home/result_screen_params.dart';
 import 'package:fskeleton/feature/login/login_screen.dart';
@@ -25,6 +26,7 @@ class AppRouter {
   static const successRoute = 'success_list';
   static const webviewScreenRoute = 'webview_screen_route';
   static const searchRoute = 'search_screen_route';
+  static const historyRoute = 'history';
 
   final AuthRepository _authRepository;
 
@@ -139,6 +141,13 @@ class AppRouter {
                   context.pushNamed(AppRouter.successRoute);
                 },
               );
+            },
+          ),
+          GoRoute(
+            name: historyRoute,
+            path: '/$historyRoute',
+            builder: (context, state) {
+              return const HistoryScreen();
             },
           ),
         ],

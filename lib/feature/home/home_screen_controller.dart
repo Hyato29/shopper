@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:convert';
 import 'dart:io';
 import 'dart:math';
 
@@ -11,10 +10,11 @@ import 'package:fskeleton/app/data/my_search_preferences/saved_search.dart';
 import 'package:fskeleton/app/data/serpapi/model/lens_response.dart';
 import 'package:fskeleton/app/data/serpapi/model/shopping_response.dart';
 import 'package:fskeleton/app/data/serpapi/serp_api_repository.dart';
+import 'package:fskeleton/app/data/wms/model/wms_product/wms_product.dart';
+import 'package:fskeleton/app/data/wms/wms_repository.dart';
 import 'package:fskeleton/app/utils/aws_s3_upload/aws_s3_upload.dart';
 import 'package:fskeleton/app/utils/event.dart';
 import 'package:fskeleton/core.dart';
-import 'package:fskeleton/feature/home/product_model.dart';
 import 'package:fskeleton/feature/home/suggestion_model.dart';
 import 'package:html/parser.dart';
 import 'package:mime/mime.dart';
@@ -28,19 +28,22 @@ class HomeScreenController extends StateNotifier<HomeScreenUiState> {
     this._authRepository,
     this._serpApiRepository,
     this._commonController,
+    this._wmsApiRepository,
   ) : super(const HomeScreenUiState());
 
   final AuthRepository _authRepository;
   final CommonController _commonController;
   final SerpApiRepository _serpApiRepository;
+  final WmsApiRepository _wmsApiRepository;
 
-  static final provider = StateNotifierProvider.autoDispose<
-      HomeScreenController, HomeScreenUiState>(
+  static final provider =
+      StateNotifierProvider.autoDispose<HomeScreenController, HomeScreenUiState>(
     (ref) {
       return HomeScreenController(
         ref.watch(AuthRepository.provider),
         ref.watch(SerpApiRepository.provider),
         ref.watch(CommonController.provider.notifier),
+        ref.watch(WmsApiRepository.provider),
       );
     },
   );
@@ -48,6 +51,8 @@ class HomeScreenController extends StateNotifier<HomeScreenUiState> {
   Timer? _debounceTimer;
   MyHeadlessWebView? _headlessWebView;
   String? _currentLensKeyword;
+  int _currentPage = 1;
+  int? _lastPage;
 
   @override
   void dispose() {
@@ -58,6 +63,7 @@ class HomeScreenController extends StateNotifier<HomeScreenUiState> {
 
   Future<void> onScreenLoaded() async {
     await _getAppVersion();
+    await loadProducts();
   }
 
   Future<void> _getAppVersion() async {
@@ -84,7 +90,7 @@ class HomeScreenController extends StateNotifier<HomeScreenUiState> {
         region: const String.fromEnvironment('AWS_REGION'),
         filename: filename,
         metadata: {
-          "Content-Type": lookupMimeType(file.path) ?? '',
+          'Content-Type': lookupMimeType(file.path) ?? '',
         },
         contentType: lookupMimeType(file.path) ?? '',
       ),
@@ -144,138 +150,77 @@ class HomeScreenController extends StateNotifier<HomeScreenUiState> {
 
     _commonController.showLoading(isLoading: false);
     state = state.copyWith(lensKeyword: Event(keyword));
-
-    // TODO: Active this for using headless scrapper
-    // await searchGoogleShopping(keyword);
   }
 
-  Future<void> searchGoogleShopping(String keyword) async {
-    _commonController.showLoading(isLoading: true);
-
-    final shoppingUrl =
-        Uri.encodeFull('https://www.google.com/search?tbm=shop&q=$keyword');
-    _headlessWebView = MyHeadlessWebView(
-      url: shoppingUrl,
-      onLoadStopped: (html) async {
-        if (!mounted) return;
-        if (state.savedResultSearch != null) return;
-
-        final document = parse(html);
-        final docProducts = document.getElementsByClassName('i0X6df');
-        final products = docProducts.map(
-          (e) {
-            final imageUrl = e
-                    .getElementsByClassName('ArOc1c')
-                    .first
-                    .getElementsByTagName('img')
-                    .first
-                    .attributes['src'] ??
-                '';
-            final title = e.getElementsByClassName('tAxDx').first.text;
-            final price = e.getElementsByClassName('OFFNJ').first.text;
-            final source = e.getElementsByClassName('IuHnof').first.text;
-            final productLink =
-                e.getElementsByClassName('shntl').first.attributes['href'] ??
-                    '';
-
-            return ShoppingResult(
-              title: title,
-              link: productLink,
-              thumbnail: imageUrl,
-              source: source,
-              price: price,
-              productLink: productLink,
-            );
-          },
-        ).toList();
-
-        if (products.isEmpty) return;
-        products.removeAt(0);
-
-        if (state.uploadedFile == null) return;
-
-        final imageBytes = state.uploadedFile!.readAsBytesSync();
-        final savedSearch = SavedSearch(
-          image: base64Encode(imageBytes),
-          keyword: keyword,
-          data: products,
-          createdAt: DateTime.now(),
-        );
-
-        state = state.copyWith(savedResultSearch: Event(savedSearch));
-        _commonController.showLoading(isLoading: false);
-      },
-    );
-
-    await _headlessWebView?.run();
-  }
-
-  Future<void> getLastSearchData() async {
-    _commonController.showLoading(isLoading: true);
+  Future<void> loadProducts() async {
+    _currentPage = 1;
+    _lastPage = null;
+    state = state.copyWith(products: const AsyncValue.loading());
     final result = await AsyncValue.guard(
-      () => _serpApiRepository.getSavedSearchData(),
+      () => _wmsApiRepository.searchProduct(
+        searchQuery: state.searchKey,
+        page: _currentPage,
+      ),
     );
-    if (!mounted) return;
     _commonController.showLoading(isLoading: false);
-    if (result is AsyncData) {
-      final resultData = result.valueOrNull;
-      if (resultData == null) {
-        state = state.copyWith(lastSearchDataException: Event(null));
-        return;
-      }
-    }
+    if (!mounted) return;
+    return result.when(
+      data: (data) {
+        _lastPage = data.lastPage;
+        state = state.copyWith(products: AsyncData(data.data));
+      },
+      error: (_, __) {
+        _commonController.handleCommonError(result.error!, () {});
+        state = state.copyWith(
+          products: AsyncError(
+            result.error!,
+            StackTrace.current,
+          ),
+        );
+      },
+      loading: () {},
+    );
+  }
+
+  Future<void> loadNextProducts() async {
+    if (_currentPage == _lastPage) return;
+
+    _currentPage += 1;
+    state = state.copyWith(nextPageLoading: Event(true));
+    final result = await AsyncValue.guard(
+      () => _wmsApiRepository.searchProduct(
+        searchQuery: state.searchKey,
+        page: _currentPage,
+      ),
+    );
+    state = state.copyWith(nextPageLoading: Event(false));
+    if (!mounted) return;
+    return result.when(
+      data: (data) {
+        state = state.copyWith(
+          products: AsyncValue.data([
+            ...?state.products.value,
+            ...data.data,
+          ]),
+        );
+      },
+      error: (_, __) {
+        _currentPage -= 1;
+      },
+      loading: () {},
+    );
   }
 
   void onChangeSearchKey(String searchKey) {
     _debounceTimer?.cancel();
     _debounceTimer = Timer(const Duration(milliseconds: 500), () {
-      if (searchKey.length >= 3) {
-        state = state.copyWith(searchKey: searchKey);
-        loadSuggestions();
-      } else {
-        state = state.copyWith(suggestions: const AsyncData([]));
-      }
+      state = state.copyWith(searchKey: searchKey);
+      loadProducts();
     });
   }
 
   void onRetrySeach() {
-    onChangeSearchKey(state.searchKey);
-  }
-
-  Future<void> loadSuggestions() async {
-    final suggestions = List<SuggestionModel>.generate(
-      10,
-      (e) => const SuggestionModel(code: 'AHC 1234', title: 'Kristin Watson'),
-    );
-    state = state.copyWith(suggestions: const AsyncValue.loading());
-    await Future.delayed(const Duration(seconds: 1));
-    state = state.copyWith(suggestions: AsyncData(suggestions));
-  }
-
-  void onSelectSuggestion(SuggestionModel model) {
-    state = state.copyWith(
-      suggestions: const AsyncData([]),
-      searchKey: '',
-    );
-
     loadProducts();
-  }
-
-  Future<void> loadProducts() async {
-    final products = List<ProductModel>.generate(
-      20,
-      (index) => const ProductModel(
-        code: 'AHC1234',
-        title: 'Apple Watch Ultra 3',
-        price: 'IDR 125.000',
-        imageUrl:
-            'https://cdn.mos.cms.futurecdn.net/zEMEAwenTtMTBHUUf7Hyr5.jpg',
-      ),
-    );
-
-    state = state.copyWith(products: const AsyncValue.loading());
-    await Future.delayed(const Duration(seconds: 1));
-    state = state.copyWith(products: AsyncData(products));
   }
 
   String? _detectFirstProductStringWithParser(String html) {
@@ -327,7 +272,7 @@ class HomeScreenUiState with _$HomeScreenUiState {
     @Default(AsyncValue.loading())
     AsyncValue<List<ShoppingResult>> shoppingResults,
     @Default(AsyncData([])) AsyncValue<List<SuggestionModel>> suggestions,
-    @Default(AsyncData([])) AsyncValue<List<ProductModel>> products,
+    @Default(AsyncData([])) AsyncValue<List<WmsProduct>> products,
     @Default(false) bool isError,
     @Default('') String searchKey,
     @Default(null) Event<bool>? nextPageLoading,

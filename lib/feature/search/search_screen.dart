@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:fskeleton/app/common/common_screen.dart';
-import 'package:fskeleton/app/data/wms/model/wms_product.dart';
+import 'package:fskeleton/app/data/wms/model/wms_product/wms_product.dart';
 import 'package:fskeleton/app/localizations/ui_text.dart';
 import 'package:fskeleton/app/ui/buttons/button_size.dart';
 import 'package:fskeleton/app/ui/buttons/my_primary_button.dart';

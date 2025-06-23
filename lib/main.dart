@@ -1,14 +1,14 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:fskeleton/app/app.dart';
 import 'package:fskeleton/app/config/env_loader.dart';
 import 'package:fskeleton/core.dart';
 
 Future<void> main() async {
-  mainWithConfig();
-}
-
-Future<void> mainWithConfig() async {
   WidgetsFlutterBinding.ensureInitialized();
+  if (kReleaseMode) {
+    debugPrint = (String? message, {int? wrapWidth}) {};
+  }
 
   await EnvLoader.load(file: '.env.dev');
 

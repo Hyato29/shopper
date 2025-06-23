@@ -8,7 +8,7 @@ import 'package:fskeleton/app/data/auth/auth_repository.dart';
 import 'package:fskeleton/app/data/serpapi/model/lens_response.dart';
 import 'package:fskeleton/app/data/serpapi/model/shopping_response.dart';
 import 'package:fskeleton/app/data/serpapi/serp_api_repository.dart';
-import 'package:fskeleton/app/data/wms/model/wms_product.dart';
+import 'package:fskeleton/app/data/wms/model/wms_product/wms_product.dart';
 import 'package:fskeleton/app/data/wms/wms_repository.dart';
 import 'package:fskeleton/app/utils/aws_s3_upload/aws_s3_upload.dart';
 import 'package:fskeleton/app/utils/event.dart';

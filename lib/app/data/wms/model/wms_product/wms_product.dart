@@ -1,4 +1,5 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
+import 'package:fskeleton/app/data/wms/model/wms_user/wms_user.dart';
 
 part 'wms_product.freezed.dart';
 
@@ -54,6 +55,8 @@ class WmsProduct with _$WmsProduct {
     @Default('') String productPrice,
     @Default('') String createdAt,
     @Default('') String updatedAt,
+    String? image,
+    WmsUser? user,
   }) = _WmsProduct;
 
   factory WmsProduct.fromJson(Map<String, dynamic> json) =>

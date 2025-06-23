@@ -23,7 +23,7 @@ mixin _$HomeScreenUiState {
       throw _privateConstructorUsedError;
   AsyncValue<List<SuggestionModel>> get suggestions =>
       throw _privateConstructorUsedError;
-  AsyncValue<List<ProductModel>> get products =>
+  AsyncValue<List<WmsProduct>> get products =>
       throw _privateConstructorUsedError;
   bool get isError => throw _privateConstructorUsedError;
   String get searchKey => throw _privateConstructorUsedError;
@@ -56,7 +56,7 @@ abstract class $HomeScreenUiStateCopyWith<$Res> {
       AsyncValue<LensResponse> lensReponse,
       AsyncValue<List<ShoppingResult>> shoppingResults,
       AsyncValue<List<SuggestionModel>> suggestions,
-      AsyncValue<List<ProductModel>> products,
+      AsyncValue<List<WmsProduct>> products,
       bool isError,
       String searchKey,
       Event<bool>? nextPageLoading,
@@ -120,7 +120,7 @@ class _$HomeScreenUiStateCopyWithImpl<$Res, $Val extends HomeScreenUiState>
       products: null == products
           ? _value.products
           : products // ignore: cast_nullable_to_non_nullable
-              as AsyncValue<List<ProductModel>>,
+              as AsyncValue<List<WmsProduct>>,
       isError: null == isError
           ? _value.isError
           : isError // ignore: cast_nullable_to_non_nullable
@@ -178,7 +178,7 @@ abstract class _$$HomeScreenUiStateImplCopyWith<$Res>
       AsyncValue<LensResponse> lensReponse,
       AsyncValue<List<ShoppingResult>> shoppingResults,
       AsyncValue<List<SuggestionModel>> suggestions,
-      AsyncValue<List<ProductModel>> products,
+      AsyncValue<List<WmsProduct>> products,
       bool isError,
       String searchKey,
       Event<bool>? nextPageLoading,
@@ -240,7 +240,7 @@ class __$$HomeScreenUiStateImplCopyWithImpl<$Res>
       products: null == products
           ? _value.products
           : products // ignore: cast_nullable_to_non_nullable
-              as AsyncValue<List<ProductModel>>,
+              as AsyncValue<List<WmsProduct>>,
       isError: null == isError
           ? _value.isError
           : isError // ignore: cast_nullable_to_non_nullable
@@ -319,7 +319,7 @@ class _$HomeScreenUiStateImpl implements _HomeScreenUiState {
   final AsyncValue<List<SuggestionModel>> suggestions;
   @override
   @JsonKey()
-  final AsyncValue<List<ProductModel>> products;
+  final AsyncValue<List<WmsProduct>> products;
   @override
   @JsonKey()
   final bool isError;
@@ -426,7 +426,7 @@ abstract class _HomeScreenUiState implements HomeScreenUiState {
       final AsyncValue<LensResponse> lensReponse,
       final AsyncValue<List<ShoppingResult>> shoppingResults,
       final AsyncValue<List<SuggestionModel>> suggestions,
-      final AsyncValue<List<ProductModel>> products,
+      final AsyncValue<List<WmsProduct>> products,
       final bool isError,
       final String searchKey,
       final Event<bool>? nextPageLoading,
@@ -447,7 +447,7 @@ abstract class _HomeScreenUiState implements HomeScreenUiState {
   @override
   AsyncValue<List<SuggestionModel>> get suggestions;
   @override
-  AsyncValue<List<ProductModel>> get products;
+  AsyncValue<List<WmsProduct>> get products;
   @override
   bool get isError;
   @override

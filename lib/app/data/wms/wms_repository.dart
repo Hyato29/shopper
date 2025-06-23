@@ -1,6 +1,7 @@
 import 'dart:async';
 
-import 'package:fskeleton/app/data/wms/model/wms_product.dart';
+import 'package:fskeleton/app/data/wms/model/wms_bundle/wms_bundle.dart';
+import 'package:fskeleton/app/data/wms/model/wms_product/wms_product.dart';
 import 'package:fskeleton/core.dart';
 
 class WmsApiRepository {
@@ -47,6 +48,22 @@ class WmsApiRepository {
       );
 
       return WmsGetProductBasicResponse.fromJson(response).data.resource;
+    } on HttpStatusCodeException catch (_) {
+      rethrow;
+    }
+  }
+
+  Future<WmsGetBundleResource> getBundles({
+    int page = 1,
+  }) async {
+    try {
+      final response = await _httpClient.get<Map<String, dynamic>>(
+        path: '/api/bundle', // Endpoint untuk bundle
+        queryParameters: {
+          'page': page,
+        },
+      );
+      return WmsGetBundleBasicResponse.fromJson(response).data.resource;
     } on HttpStatusCodeException catch (_) {
       rethrow;
     }
