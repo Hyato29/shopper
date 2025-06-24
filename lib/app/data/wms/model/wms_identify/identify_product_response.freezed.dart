@@ -233,9 +233,9 @@ ProductScanData _$ProductScanDataFromJson(Map<String, dynamic> json) {
 
 /// @nodoc
 mixin _$ProductScanData {
-  int get id => throw _privateConstructorUsedError;
   String get productName => throw _privateConstructorUsedError;
   double get productPrice => throw _privateConstructorUsedError;
+  String? get imageUrl => throw _privateConstructorUsedError;
 
   /// Serializes this ProductScanData to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
@@ -253,7 +253,7 @@ abstract class $ProductScanDataCopyWith<$Res> {
           ProductScanData value, $Res Function(ProductScanData) then) =
       _$ProductScanDataCopyWithImpl<$Res, ProductScanData>;
   @useResult
-  $Res call({int id, String productName, double productPrice});
+  $Res call({String productName, double productPrice, String? imageUrl});
 }
 
 /// @nodoc
@@ -271,15 +271,11 @@ class _$ProductScanDataCopyWithImpl<$Res, $Val extends ProductScanData>
   @pragma('vm:prefer-inline')
   @override
   $Res call({
-    Object? id = null,
     Object? productName = null,
     Object? productPrice = null,
+    Object? imageUrl = freezed,
   }) {
     return _then(_value.copyWith(
-      id: null == id
-          ? _value.id
-          : id // ignore: cast_nullable_to_non_nullable
-              as int,
       productName: null == productName
           ? _value.productName
           : productName // ignore: cast_nullable_to_non_nullable
@@ -288,6 +284,10 @@ class _$ProductScanDataCopyWithImpl<$Res, $Val extends ProductScanData>
           ? _value.productPrice
           : productPrice // ignore: cast_nullable_to_non_nullable
               as double,
+      imageUrl: freezed == imageUrl
+          ? _value.imageUrl
+          : imageUrl // ignore: cast_nullable_to_non_nullable
+              as String?,
     ) as $Val);
   }
 }
@@ -300,7 +300,7 @@ abstract class _$$ProductScanDataImplCopyWith<$Res>
       __$$ProductScanDataImplCopyWithImpl<$Res>;
   @override
   @useResult
-  $Res call({int id, String productName, double productPrice});
+  $Res call({String productName, double productPrice, String? imageUrl});
 }
 
 /// @nodoc
@@ -316,15 +316,11 @@ class __$$ProductScanDataImplCopyWithImpl<$Res>
   @pragma('vm:prefer-inline')
   @override
   $Res call({
-    Object? id = null,
     Object? productName = null,
     Object? productPrice = null,
+    Object? imageUrl = freezed,
   }) {
     return _then(_$ProductScanDataImpl(
-      id: null == id
-          ? _value.id
-          : id // ignore: cast_nullable_to_non_nullable
-              as int,
       productName: null == productName
           ? _value.productName
           : productName // ignore: cast_nullable_to_non_nullable
@@ -333,6 +329,10 @@ class __$$ProductScanDataImplCopyWithImpl<$Res>
           ? _value.productPrice
           : productPrice // ignore: cast_nullable_to_non_nullable
               as double,
+      imageUrl: freezed == imageUrl
+          ? _value.imageUrl
+          : imageUrl // ignore: cast_nullable_to_non_nullable
+              as String?,
     ));
   }
 }
@@ -342,24 +342,23 @@ class __$$ProductScanDataImplCopyWithImpl<$Res>
 @JsonSerializable(fieldRename: FieldRename.snake)
 class _$ProductScanDataImpl implements _ProductScanData {
   const _$ProductScanDataImpl(
-      {this.id = 0, this.productName = '', this.productPrice = 0.0});
+      {this.productName = '', this.productPrice = 0.0, this.imageUrl});
 
   factory _$ProductScanDataImpl.fromJson(Map<String, dynamic> json) =>
       _$$ProductScanDataImplFromJson(json);
 
   @override
   @JsonKey()
-  final int id;
-  @override
-  @JsonKey()
   final String productName;
   @override
   @JsonKey()
   final double productPrice;
+  @override
+  final String? imageUrl;
 
   @override
   String toString() {
-    return 'ProductScanData(id: $id, productName: $productName, productPrice: $productPrice)';
+    return 'ProductScanData(productName: $productName, productPrice: $productPrice, imageUrl: $imageUrl)';
   }
 
   @override
@@ -367,16 +366,18 @@ class _$ProductScanDataImpl implements _ProductScanData {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
             other is _$ProductScanDataImpl &&
-            (identical(other.id, id) || other.id == id) &&
             (identical(other.productName, productName) ||
                 other.productName == productName) &&
             (identical(other.productPrice, productPrice) ||
-                other.productPrice == productPrice));
+                other.productPrice == productPrice) &&
+            (identical(other.imageUrl, imageUrl) ||
+                other.imageUrl == imageUrl));
   }
 
   @JsonKey(includeFromJson: false, includeToJson: false)
   @override
-  int get hashCode => Object.hash(runtimeType, id, productName, productPrice);
+  int get hashCode =>
+      Object.hash(runtimeType, productName, productPrice, imageUrl);
 
   /// Create a copy of ProductScanData
   /// with the given fields replaced by the non-null parameter values.
@@ -397,19 +398,19 @@ class _$ProductScanDataImpl implements _ProductScanData {
 
 abstract class _ProductScanData implements ProductScanData {
   const factory _ProductScanData(
-      {final int id,
-      final String productName,
-      final double productPrice}) = _$ProductScanDataImpl;
+      {final String productName,
+      final double productPrice,
+      final String? imageUrl}) = _$ProductScanDataImpl;
 
   factory _ProductScanData.fromJson(Map<String, dynamic> json) =
       _$ProductScanDataImpl.fromJson;
 
   @override
-  int get id;
-  @override
   String get productName;
   @override
   double get productPrice;
+  @override
+  String? get imageUrl;
 
   /// Create a copy of ProductScanData
   /// with the given fields replaced by the non-null parameter values.

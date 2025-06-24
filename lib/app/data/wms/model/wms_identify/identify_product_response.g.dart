@@ -27,15 +27,15 @@ Map<String, dynamic> _$$IdentifyProductResponseImplToJson(
 _$ProductScanDataImpl _$$ProductScanDataImplFromJson(
         Map<String, dynamic> json) =>
     _$ProductScanDataImpl(
-      id: (json['id'] as num?)?.toInt() ?? 0,
       productName: json['product_name'] as String? ?? '',
       productPrice: (json['product_price'] as num?)?.toDouble() ?? 0.0,
+      imageUrl: json['image_url'] as String?,
     );
 
 Map<String, dynamic> _$$ProductScanDataImplToJson(
         _$ProductScanDataImpl instance) =>
     <String, dynamic>{
-      'id': instance.id,
       'product_name': instance.productName,
       'product_price': instance.productPrice,
+      'image_url': instance.imageUrl,
     };

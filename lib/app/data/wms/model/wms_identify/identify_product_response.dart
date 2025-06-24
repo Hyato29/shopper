@@ -1,5 +1,3 @@
-// lib/app/data/wms/model/identify_product_response.dart
-
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'identify_product_response.freezed.dart';
@@ -22,9 +20,9 @@ class IdentifyProductResponse with _$IdentifyProductResponse {
 class ProductScanData with _$ProductScanData {
   @JsonSerializable(fieldRename: FieldRename.snake)
   const factory ProductScanData({
-    @Default(0) int id,
     @Default('') String productName,
     @Default(0.0) double productPrice,
+    String? imageUrl,
   }) = _ProductScanData;
 
   factory ProductScanData.fromJson(Map<String, dynamic> json) =>

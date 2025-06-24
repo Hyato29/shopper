@@ -1,9 +1,7 @@
-// lib/feature/home/home_screen.dart
 
-import 'dart:ffi';
+// ignore_for_file: unused_field
+
 import 'dart:io';
-
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:device_info_plus/device_info_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:fskeleton/app/common/common_screen.dart';
