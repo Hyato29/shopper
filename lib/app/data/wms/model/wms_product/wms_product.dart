@@ -57,6 +57,7 @@ class WmsProduct with _$WmsProduct {
     @Default('') String updatedAt,
     String? image,
     WmsUser? user,
+    String? status,
   }) = _WmsProduct;
 
   factory WmsProduct.fromJson(Map<String, dynamic> json) =>

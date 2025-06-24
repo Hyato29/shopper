@@ -73,6 +73,7 @@ _$WmsProductImpl _$$WmsProductImplFromJson(Map<String, dynamic> json) =>
       user: json['user'] == null
           ? null
           : WmsUser.fromJson(json['user'] as Map<String, dynamic>),
+      status: json['status'] as String?,
     );
 
 Map<String, dynamic> _$$WmsProductImplToJson(_$WmsProductImpl instance) =>
@@ -85,4 +86,5 @@ Map<String, dynamic> _$$WmsProductImplToJson(_$WmsProductImpl instance) =>
       'updated_at': instance.updatedAt,
       'image': instance.image,
       'user': instance.user,
+      'status': instance.status,
     };

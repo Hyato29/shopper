@@ -3,29 +3,26 @@ import 'package:flutter_svg/svg.dart';
 import 'package:fskeleton/app/common/common_screen.dart';
 import 'package:fskeleton/app/data/wms/model/wms_product/wms_product.dart';
 import 'package:fskeleton/app/localizations/ui_text.dart';
+import 'package:fskeleton/app/navigation/router.dart';
 import 'package:fskeleton/app/ui/buttons/button_size.dart';
 import 'package:fskeleton/app/ui/buttons/my_primary_button.dart';
 import 'package:fskeleton/app/ui/common_loading.dart';
 import 'package:fskeleton/app/ui/empty_state.dart';
-import 'package:fskeleton/app/ui/my_alert.dart';
-import 'package:fskeleton/app/ui/my_snack_bar.dart';
 import 'package:fskeleton/app/ui/my_text_field.dart';
 import 'package:fskeleton/app/ui/theme/my_colors.dart';
 import 'package:fskeleton/app/ui/theme/my_text.dart';
 import 'package:fskeleton/app/utils/string_formatter.dart';
 import 'package:fskeleton/core.dart';
+import 'package:fskeleton/feature/product_detail/product_detail_params.dart';
 import 'package:fskeleton/feature/search/search_screen_controller.dart';
-import 'package:fskeleton/feature/webview/webview_screen_params.dart';
 import 'package:go_router/go_router.dart';
 
 class SearchScreen extends ConsumerStatefulWidget {
   const SearchScreen({
     super.key,
-    required this.onSuccessUpload,
     required this.navigateToSuccessScreen,
   });
 
-  final Function(WebViewScreenParams) onSuccessUpload;
   final VoidCallback navigateToSuccessScreen;
 
   @override
@@ -57,9 +54,6 @@ class _HomeScreenState extends ConsumerState<SearchScreen> {
 
   @override
   Widget build(BuildContext context) {
-    _listenUploadFileException();
-    _listenAddProduct();
-
     return CommonScreen(
       child: Scaffold(
         backgroundColor: MyColors.white,
@@ -138,19 +132,14 @@ class _HomeScreenState extends ConsumerState<SearchScreen> {
     const verticalPadding = 20.0;
 
     return InkWell(
-      onTap: () {
-        showMyAlert(
-          context: context,
-          data: MyAlertData(
-            title: context.localizations.submitProduct,
-            content: context.localizations.productSubmissionConfirmationMessage,
-            primaryButton: context.localizations.yes,
-            secondaryButton: context.localizations.cancel,
-            onPrimaryButtonPressed: () {
-              ref.read(_controller.notifier).onProductTapped(data);
-            },
-          ),
+      onTap: () async {
+        final price = double.tryParse(data.productPrice) ?? 0.0;
+        final params = ProductDetailParams(
+          productName: data.productName,
+          productPrice: price,
         );
+        await context.pushNamed(AppRouter.productDetailRoute, extra: params);
+        ref.read(_controller.notifier).onRetrySeach();
       },
       child: Column(
         children: [
@@ -214,28 +203,6 @@ class _HomeScreenState extends ConsumerState<SearchScreen> {
         trailingIconMode: TrailingIconMode.clear,
         onChanged: ref.read(_controller.notifier).onChangeSearchKey,
       ),
-    );
-  }
-
-  void _listenUploadFileException() {
-    ref.listen(_controller.select((value) => value.uploadFileException),
-        (previous, next) {
-      showMySnackBar(
-        context,
-        MySnackBarData(
-          type: MySnackBarType.error,
-          message: context.localizations.failedSystemGetData,
-        ),
-      );
-    });
-  }
-
-  void _listenAddProduct() {
-    ref.listen(
-      _controller.select((value) => value.addProductSuccess),
-      (previous, next) {
-        widget.navigateToSuccessScreen();
-      },
     );
   }
 

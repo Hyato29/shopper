@@ -15,103 +15,55 @@ final _privateConstructorUsedError = UnsupportedError(
     'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more information: https://github.com/rrousselGit/freezed#adding-getters-and-methods-to-our-models');
 
 /// @nodoc
-mixin _$HomeScreenUiState {
-  bool? get isLoggedIn => throw _privateConstructorUsedError;
-  AsyncValue<LensResponse> get lensReponse =>
-      throw _privateConstructorUsedError;
-  AsyncValue<List<ShoppingResult>> get shoppingResults =>
-      throw _privateConstructorUsedError;
-  AsyncValue<List<SuggestionModel>> get suggestions =>
-      throw _privateConstructorUsedError;
+mixin _$SearchScreenUiState {
   AsyncValue<List<WmsProduct>> get products =>
       throw _privateConstructorUsedError;
-  bool get isError => throw _privateConstructorUsedError;
   String get searchKey => throw _privateConstructorUsedError;
   Event<bool>? get nextPageLoading => throw _privateConstructorUsedError;
-  Event<dynamic>? get uploadFileException => throw _privateConstructorUsedError;
-  Event<dynamic>? get lastSearchDataException =>
-      throw _privateConstructorUsedError;
-  Event<dynamic>? get addProductSuccess => throw _privateConstructorUsedError;
 
-  /// Create a copy of HomeScreenUiState
+  /// Create a copy of SearchScreenUiState
   /// with the given fields replaced by the non-null parameter values.
   @JsonKey(includeFromJson: false, includeToJson: false)
-  $HomeScreenUiStateCopyWith<HomeScreenUiState> get copyWith =>
+  $SearchScreenUiStateCopyWith<SearchScreenUiState> get copyWith =>
       throw _privateConstructorUsedError;
 }
 
 /// @nodoc
-abstract class $HomeScreenUiStateCopyWith<$Res> {
-  factory $HomeScreenUiStateCopyWith(
-          HomeScreenUiState value, $Res Function(HomeScreenUiState) then) =
-      _$HomeScreenUiStateCopyWithImpl<$Res, HomeScreenUiState>;
+abstract class $SearchScreenUiStateCopyWith<$Res> {
+  factory $SearchScreenUiStateCopyWith(
+          SearchScreenUiState value, $Res Function(SearchScreenUiState) then) =
+      _$SearchScreenUiStateCopyWithImpl<$Res, SearchScreenUiState>;
   @useResult
   $Res call(
-      {bool? isLoggedIn,
-      AsyncValue<LensResponse> lensReponse,
-      AsyncValue<List<ShoppingResult>> shoppingResults,
-      AsyncValue<List<SuggestionModel>> suggestions,
-      AsyncValue<List<WmsProduct>> products,
-      bool isError,
+      {AsyncValue<List<WmsProduct>> products,
       String searchKey,
-      Event<bool>? nextPageLoading,
-      Event<dynamic>? uploadFileException,
-      Event<dynamic>? lastSearchDataException,
-      Event<dynamic>? addProductSuccess});
+      Event<bool>? nextPageLoading});
 }
 
 /// @nodoc
-class _$HomeScreenUiStateCopyWithImpl<$Res, $Val extends HomeScreenUiState>
-    implements $HomeScreenUiStateCopyWith<$Res> {
-  _$HomeScreenUiStateCopyWithImpl(this._value, this._then);
+class _$SearchScreenUiStateCopyWithImpl<$Res, $Val extends SearchScreenUiState>
+    implements $SearchScreenUiStateCopyWith<$Res> {
+  _$SearchScreenUiStateCopyWithImpl(this._value, this._then);
 
   // ignore: unused_field
   final $Val _value;
   // ignore: unused_field
   final $Res Function($Val) _then;
 
-  /// Create a copy of HomeScreenUiState
+  /// Create a copy of SearchScreenUiState
   /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
-    Object? isLoggedIn = freezed,
-    Object? lensReponse = null,
-    Object? shoppingResults = null,
-    Object? suggestions = null,
     Object? products = null,
-    Object? isError = null,
     Object? searchKey = null,
     Object? nextPageLoading = freezed,
-    Object? uploadFileException = freezed,
-    Object? lastSearchDataException = freezed,
-    Object? addProductSuccess = freezed,
   }) {
     return _then(_value.copyWith(
-      isLoggedIn: freezed == isLoggedIn
-          ? _value.isLoggedIn
-          : isLoggedIn // ignore: cast_nullable_to_non_nullable
-              as bool?,
-      lensReponse: null == lensReponse
-          ? _value.lensReponse
-          : lensReponse // ignore: cast_nullable_to_non_nullable
-              as AsyncValue<LensResponse>,
-      shoppingResults: null == shoppingResults
-          ? _value.shoppingResults
-          : shoppingResults // ignore: cast_nullable_to_non_nullable
-              as AsyncValue<List<ShoppingResult>>,
-      suggestions: null == suggestions
-          ? _value.suggestions
-          : suggestions // ignore: cast_nullable_to_non_nullable
-              as AsyncValue<List<SuggestionModel>>,
       products: null == products
           ? _value.products
           : products // ignore: cast_nullable_to_non_nullable
               as AsyncValue<List<WmsProduct>>,
-      isError: null == isError
-          ? _value.isError
-          : isError // ignore: cast_nullable_to_non_nullable
-              as bool,
       searchKey: null == searchKey
           ? _value.searchKey
           : searchKey // ignore: cast_nullable_to_non_nullable
@@ -120,94 +72,46 @@ class _$HomeScreenUiStateCopyWithImpl<$Res, $Val extends HomeScreenUiState>
           ? _value.nextPageLoading
           : nextPageLoading // ignore: cast_nullable_to_non_nullable
               as Event<bool>?,
-      uploadFileException: freezed == uploadFileException
-          ? _value.uploadFileException
-          : uploadFileException // ignore: cast_nullable_to_non_nullable
-              as Event<dynamic>?,
-      lastSearchDataException: freezed == lastSearchDataException
-          ? _value.lastSearchDataException
-          : lastSearchDataException // ignore: cast_nullable_to_non_nullable
-              as Event<dynamic>?,
-      addProductSuccess: freezed == addProductSuccess
-          ? _value.addProductSuccess
-          : addProductSuccess // ignore: cast_nullable_to_non_nullable
-              as Event<dynamic>?,
     ) as $Val);
   }
 }
 
 /// @nodoc
-abstract class _$$HomeScreenUiStateImplCopyWith<$Res>
-    implements $HomeScreenUiStateCopyWith<$Res> {
-  factory _$$HomeScreenUiStateImplCopyWith(_$HomeScreenUiStateImpl value,
-          $Res Function(_$HomeScreenUiStateImpl) then) =
-      __$$HomeScreenUiStateImplCopyWithImpl<$Res>;
+abstract class _$$SearchScreenUiStateImplCopyWith<$Res>
+    implements $SearchScreenUiStateCopyWith<$Res> {
+  factory _$$SearchScreenUiStateImplCopyWith(_$SearchScreenUiStateImpl value,
+          $Res Function(_$SearchScreenUiStateImpl) then) =
+      __$$SearchScreenUiStateImplCopyWithImpl<$Res>;
   @override
   @useResult
   $Res call(
-      {bool? isLoggedIn,
-      AsyncValue<LensResponse> lensReponse,
-      AsyncValue<List<ShoppingResult>> shoppingResults,
-      AsyncValue<List<SuggestionModel>> suggestions,
-      AsyncValue<List<WmsProduct>> products,
-      bool isError,
+      {AsyncValue<List<WmsProduct>> products,
       String searchKey,
-      Event<bool>? nextPageLoading,
-      Event<dynamic>? uploadFileException,
-      Event<dynamic>? lastSearchDataException,
-      Event<dynamic>? addProductSuccess});
+      Event<bool>? nextPageLoading});
 }
 
 /// @nodoc
-class __$$HomeScreenUiStateImplCopyWithImpl<$Res>
-    extends _$HomeScreenUiStateCopyWithImpl<$Res, _$HomeScreenUiStateImpl>
-    implements _$$HomeScreenUiStateImplCopyWith<$Res> {
-  __$$HomeScreenUiStateImplCopyWithImpl(_$HomeScreenUiStateImpl _value,
-      $Res Function(_$HomeScreenUiStateImpl) _then)
+class __$$SearchScreenUiStateImplCopyWithImpl<$Res>
+    extends _$SearchScreenUiStateCopyWithImpl<$Res, _$SearchScreenUiStateImpl>
+    implements _$$SearchScreenUiStateImplCopyWith<$Res> {
+  __$$SearchScreenUiStateImplCopyWithImpl(_$SearchScreenUiStateImpl _value,
+      $Res Function(_$SearchScreenUiStateImpl) _then)
       : super(_value, _then);
 
-  /// Create a copy of HomeScreenUiState
+  /// Create a copy of SearchScreenUiState
   /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
-    Object? isLoggedIn = freezed,
-    Object? lensReponse = null,
-    Object? shoppingResults = null,
-    Object? suggestions = null,
     Object? products = null,
-    Object? isError = null,
     Object? searchKey = null,
     Object? nextPageLoading = freezed,
-    Object? uploadFileException = freezed,
-    Object? lastSearchDataException = freezed,
-    Object? addProductSuccess = freezed,
   }) {
-    return _then(_$HomeScreenUiStateImpl(
-      isLoggedIn: freezed == isLoggedIn
-          ? _value.isLoggedIn
-          : isLoggedIn // ignore: cast_nullable_to_non_nullable
-              as bool?,
-      lensReponse: null == lensReponse
-          ? _value.lensReponse
-          : lensReponse // ignore: cast_nullable_to_non_nullable
-              as AsyncValue<LensResponse>,
-      shoppingResults: null == shoppingResults
-          ? _value.shoppingResults
-          : shoppingResults // ignore: cast_nullable_to_non_nullable
-              as AsyncValue<List<ShoppingResult>>,
-      suggestions: null == suggestions
-          ? _value.suggestions
-          : suggestions // ignore: cast_nullable_to_non_nullable
-              as AsyncValue<List<SuggestionModel>>,
+    return _then(_$SearchScreenUiStateImpl(
       products: null == products
           ? _value.products
           : products // ignore: cast_nullable_to_non_nullable
               as AsyncValue<List<WmsProduct>>,
-      isError: null == isError
-          ? _value.isError
-          : isError // ignore: cast_nullable_to_non_nullable
-              as bool,
       searchKey: null == searchKey
           ? _value.searchKey
           : searchKey // ignore: cast_nullable_to_non_nullable
@@ -216,172 +120,77 @@ class __$$HomeScreenUiStateImplCopyWithImpl<$Res>
           ? _value.nextPageLoading
           : nextPageLoading // ignore: cast_nullable_to_non_nullable
               as Event<bool>?,
-      uploadFileException: freezed == uploadFileException
-          ? _value.uploadFileException
-          : uploadFileException // ignore: cast_nullable_to_non_nullable
-              as Event<dynamic>?,
-      lastSearchDataException: freezed == lastSearchDataException
-          ? _value.lastSearchDataException
-          : lastSearchDataException // ignore: cast_nullable_to_non_nullable
-              as Event<dynamic>?,
-      addProductSuccess: freezed == addProductSuccess
-          ? _value.addProductSuccess
-          : addProductSuccess // ignore: cast_nullable_to_non_nullable
-              as Event<dynamic>?,
     ));
   }
 }
 
 /// @nodoc
 
-class _$HomeScreenUiStateImpl implements _HomeScreenUiState {
-  const _$HomeScreenUiStateImpl(
-      {this.isLoggedIn = null,
-      this.lensReponse = const AsyncValue.loading(),
-      this.shoppingResults = const AsyncValue.loading(),
-      this.suggestions = const AsyncData([]),
-      this.products = const AsyncData([]),
-      this.isError = false,
+class _$SearchScreenUiStateImpl implements _SearchScreenUiState {
+  const _$SearchScreenUiStateImpl(
+      {this.products = const AsyncData([]),
       this.searchKey = '',
-      this.nextPageLoading = null,
-      this.uploadFileException = null,
-      this.lastSearchDataException = null,
-      this.addProductSuccess = null});
+      this.nextPageLoading = null});
 
   @override
   @JsonKey()
-  final bool? isLoggedIn;
-  @override
-  @JsonKey()
-  final AsyncValue<LensResponse> lensReponse;
-  @override
-  @JsonKey()
-  final AsyncValue<List<ShoppingResult>> shoppingResults;
-  @override
-  @JsonKey()
-  final AsyncValue<List<SuggestionModel>> suggestions;
-  @override
-  @JsonKey()
   final AsyncValue<List<WmsProduct>> products;
-  @override
-  @JsonKey()
-  final bool isError;
   @override
   @JsonKey()
   final String searchKey;
   @override
   @JsonKey()
   final Event<bool>? nextPageLoading;
-  @override
-  @JsonKey()
-  final Event<dynamic>? uploadFileException;
-  @override
-  @JsonKey()
-  final Event<dynamic>? lastSearchDataException;
-  @override
-  @JsonKey()
-  final Event<dynamic>? addProductSuccess;
 
   @override
   String toString() {
-    return 'HomeScreenUiState(isLoggedIn: $isLoggedIn, lensReponse: $lensReponse, shoppingResults: $shoppingResults, suggestions: $suggestions, products: $products, isError: $isError, searchKey: $searchKey, nextPageLoading: $nextPageLoading, uploadFileException: $uploadFileException, lastSearchDataException: $lastSearchDataException, addProductSuccess: $addProductSuccess)';
+    return 'SearchScreenUiState(products: $products, searchKey: $searchKey, nextPageLoading: $nextPageLoading)';
   }
 
   @override
   bool operator ==(Object other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
-            other is _$HomeScreenUiStateImpl &&
-            (identical(other.isLoggedIn, isLoggedIn) ||
-                other.isLoggedIn == isLoggedIn) &&
-            (identical(other.lensReponse, lensReponse) ||
-                other.lensReponse == lensReponse) &&
-            (identical(other.shoppingResults, shoppingResults) ||
-                other.shoppingResults == shoppingResults) &&
-            (identical(other.suggestions, suggestions) ||
-                other.suggestions == suggestions) &&
+            other is _$SearchScreenUiStateImpl &&
             (identical(other.products, products) ||
                 other.products == products) &&
-            (identical(other.isError, isError) || other.isError == isError) &&
             (identical(other.searchKey, searchKey) ||
                 other.searchKey == searchKey) &&
             (identical(other.nextPageLoading, nextPageLoading) ||
-                other.nextPageLoading == nextPageLoading) &&
-            (identical(other.uploadFileException, uploadFileException) ||
-                other.uploadFileException == uploadFileException) &&
-            (identical(
-                    other.lastSearchDataException, lastSearchDataException) ||
-                other.lastSearchDataException == lastSearchDataException) &&
-            (identical(other.addProductSuccess, addProductSuccess) ||
-                other.addProductSuccess == addProductSuccess));
+                other.nextPageLoading == nextPageLoading));
   }
 
   @override
-  int get hashCode => Object.hash(
-      runtimeType,
-      isLoggedIn,
-      lensReponse,
-      shoppingResults,
-      suggestions,
-      products,
-      isError,
-      searchKey,
-      nextPageLoading,
-      uploadFileException,
-      lastSearchDataException,
-      addProductSuccess);
+  int get hashCode =>
+      Object.hash(runtimeType, products, searchKey, nextPageLoading);
 
-  /// Create a copy of HomeScreenUiState
+  /// Create a copy of SearchScreenUiState
   /// with the given fields replaced by the non-null parameter values.
   @JsonKey(includeFromJson: false, includeToJson: false)
   @override
   @pragma('vm:prefer-inline')
-  _$$HomeScreenUiStateImplCopyWith<_$HomeScreenUiStateImpl> get copyWith =>
-      __$$HomeScreenUiStateImplCopyWithImpl<_$HomeScreenUiStateImpl>(
+  _$$SearchScreenUiStateImplCopyWith<_$SearchScreenUiStateImpl> get copyWith =>
+      __$$SearchScreenUiStateImplCopyWithImpl<_$SearchScreenUiStateImpl>(
           this, _$identity);
 }
 
-abstract class _HomeScreenUiState implements HomeScreenUiState {
-  const factory _HomeScreenUiState(
-      {final bool? isLoggedIn,
-      final AsyncValue<LensResponse> lensReponse,
-      final AsyncValue<List<ShoppingResult>> shoppingResults,
-      final AsyncValue<List<SuggestionModel>> suggestions,
-      final AsyncValue<List<WmsProduct>> products,
-      final bool isError,
+abstract class _SearchScreenUiState implements SearchScreenUiState {
+  const factory _SearchScreenUiState(
+      {final AsyncValue<List<WmsProduct>> products,
       final String searchKey,
-      final Event<bool>? nextPageLoading,
-      final Event<dynamic>? uploadFileException,
-      final Event<dynamic>? lastSearchDataException,
-      final Event<dynamic>? addProductSuccess}) = _$HomeScreenUiStateImpl;
+      final Event<bool>? nextPageLoading}) = _$SearchScreenUiStateImpl;
 
   @override
-  bool? get isLoggedIn;
-  @override
-  AsyncValue<LensResponse> get lensReponse;
-  @override
-  AsyncValue<List<ShoppingResult>> get shoppingResults;
-  @override
-  AsyncValue<List<SuggestionModel>> get suggestions;
-  @override
   AsyncValue<List<WmsProduct>> get products;
-  @override
-  bool get isError;
   @override
   String get searchKey;
   @override
   Event<bool>? get nextPageLoading;
-  @override
-  Event<dynamic>? get uploadFileException;
-  @override
-  Event<dynamic>? get lastSearchDataException;
-  @override
-  Event<dynamic>? get addProductSuccess;
 
-  /// Create a copy of HomeScreenUiState
+  /// Create a copy of SearchScreenUiState
   /// with the given fields replaced by the non-null parameter values.
   @override
   @JsonKey(includeFromJson: false, includeToJson: false)
-  _$$HomeScreenUiStateImplCopyWith<_$HomeScreenUiStateImpl> get copyWith =>
+  _$$SearchScreenUiStateImplCopyWith<_$SearchScreenUiStateImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }
