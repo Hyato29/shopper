@@ -1,7 +1,8 @@
-
-// ignore_for_file: unused_field
+// lib/feature/home/home_screen.dart
 
 import 'dart:io';
+
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:device_info_plus/device_info_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:fskeleton/app/common/common_screen.dart';
@@ -22,10 +23,8 @@ import 'package:fskeleton/feature/product_detail/product_detail_params.dart';
 import 'package:go_router/go_router.dart';
 import 'package:permission_handler/permission_handler.dart';
 
-// ignore: must_be_immutable
 class HomeScreen extends ConsumerStatefulWidget {
-  HomeScreen({required this.navigateToSearch, super.key});
-  VoidCallback navigateToSearch;
+  const HomeScreen({super.key});
 
   @override
   ConsumerState<HomeScreen> createState() => _HomeScreenState();
@@ -33,18 +32,18 @@ class HomeScreen extends ConsumerStatefulWidget {
 
 class _HomeScreenState extends ConsumerState<HomeScreen> {
   final _controller = HomeScreenController.provider;
-  final Permission _cameraPermission = Permission.camera;
 
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
       ref.read(_controller.notifier).onScreenLoaded();
     });
   }
 
   @override
   Widget build(BuildContext context) {
+    // ... (build method Anda sudah benar, tidak perlu diubah)
     return CommonScreen(
       child: Scaffold(
         appBar: AppBar(
@@ -85,18 +84,19 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     );
   }
 
+  // --- WIDGET-WIDGET UI ---
+  // Semua widget UI Anda (seperti _appBarSettings, _scanHistoryBox, dll) sudah benar.
+  // Kita hanya akan fokus pada fungsi logika di bawah.
   Padding _appBarSettings(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.only(right: 20),
       child: PopupMenuButton<String>(
-        position: PopupMenuPosition.under,
-        borderRadius: BorderRadius.circular(8),
         onSelected: (value) {
           if (value == 'Logout') {
             ref.read(_controller.notifier).onLogout();
           }
         },
-        itemBuilder: (BuildContext context) => [
+        itemBuilder: (_) => [
           const PopupMenuItem(value: 'Logout', child: Text('Logout')),
           const PopupMenuItem(value: 'Printer', child: Text('Printer')),
         ],
@@ -113,9 +113,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         borderRadius: BorderRadius.circular(12),
         border: Border.all(color: MyColors.neutral40),
       ),
-      child: Column(
-        children: [_historyHeader(), _historyList()],
-      ),
+      child: Column(children: [_historyHeader(), _historyList()]),
     );
   }
 
@@ -139,8 +137,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   }
 
   Widget _historyList() {
-    final productsAsync =
-        ref.watch(_controller.select((state) => state.products));
+    final productsAsync = ref.watch(_controller.select((s) => s.products));
     return productsAsync.when(
       data: (products) {
         if (products.isEmpty) {
@@ -163,7 +160,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
           ),
         );
       },
-      error: (err, stack) => Padding(
+      error: (e, s) => Padding(
         padding: const EdgeInsets.all(20),
         child: MyEmptyState.error(
           context: context,
@@ -185,16 +182,26 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              // Gambar bisa ditambahkan di sini jika URL gambar disimpan di backend
-              // _imagePlaceholder(),
+              if (product.imageUrl != null && product.imageUrl!.isNotEmpty)
+                ClipRRect(
+                  borderRadius: BorderRadius.circular(8),
+                  child: CachedNetworkImage(
+                    imageUrl: product.imageUrl!,
+                    width: 48,
+                    height: 48,
+                    fit: BoxFit.cover,
+                    errorWidget: (_, __, ___) => _imagePlaceholder(),
+                    placeholder: (_, __) => _imagePlaceholder(),
+                  ),
+                )
+              else
+                _imagePlaceholder(),
               const SizedBox(width: 12),
               Expanded(
-                child: Text(
-                  product.productName,
-                  style: MyText.sm,
-                  maxLines: 2,
-                  overflow: TextOverflow.ellipsis,
-                ),
+                child: Text(product.productName,
+                    style: MyText.sm,
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis),
               ),
               const SizedBox(width: 12),
               if (product.status != null) _statusChip(product.status!),
@@ -231,8 +238,21 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     );
   }
 
+  Widget _imagePlaceholder() {
+    return Container(
+      width: 48,
+      height: 48,
+      decoration: BoxDecoration(
+        color: MyColors.neutral30,
+        borderRadius: BorderRadius.circular(8),
+      ),
+      child: const Icon(Icons.image_not_supported_outlined,
+          color: MyColors.neutral70, size: 24),
+    );
+  }
+
   Widget _appVersionWidget() {
-    final version = ref.watch(_controller.select((state) => state.appVersion));
+    final version = ref.watch(_controller.select((s) => s.appVersion));
     return version.isNotEmpty
         ? Text(version, style: MyText.xs.copyWith(color: MyColors.neutral70))
         : const SizedBox.shrink();
@@ -259,41 +279,11 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             title: context.localizations.searchProduct,
             image: Image.asset('assets/images/search_icon.png', width: 80),
             size: buttonSize,
-            onPressed: () async {
-              widget.navigateToSearch();
-            },
+            onPressed: () => context.pushNamed(AppRouter.searchRoute),
           ),
         ],
       ),
     );
-  }
-
-  Future<void> _cameraOrImagePickerAction({required bool isCamera}) async {
-    final image = await ref
-        .read(ImagePickerService.provider)
-        .pickImage(context: context, isFromCamera: isCamera);
-
-    if (image == null || !mounted) return;
-
-    final productData = await ref
-        .read(_controller.notifier)
-        .identifyProduct(file: File(image.path));
-
-    if (productData != null && mounted) {
-      final params = ProductDetailParams(
-        productName: productData.productName,
-        productPrice: productData.productPrice,
-      );
-
-      final shouldRefresh = await context.pushNamed<bool>(
-        AppRouter.productDetailRoute,
-        extra: params,
-      );
-
-      if (shouldRefresh == true) {
-        ref.read(_controller.notifier).loadProducts();
-      }
-    }
   }
 
   Widget _bigButton({
@@ -302,7 +292,6 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     double size = 160.0,
     required VoidCallback onPressed,
   }) {
-    // ... (kode widget ini tidak berubah)
     return GestureDetector(
       onTap: onPressed,
       child: Container(
@@ -334,44 +323,13 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     );
   }
 
-  Future<bool> _requestPermissionAndRedirect({required bool isCamera}) async {
-    // ... (kode ini tidak berubah)
-    PermissionStatus permissionStatus;
-    if (isCamera) {
-      permissionStatus = await Permission.camera.request();
-    } else {
-      if (Platform.isAndroid) {
-        final androidInfo = await DeviceInfoPlugin().androidInfo;
-        if (androidInfo.version.sdkInt >= 33) {
-          permissionStatus = await Permission.photos.request();
-        } else {
-          permissionStatus = await Permission.storage.request();
-        }
-      } else {
-        permissionStatus = await Permission.photos.request();
-      }
-    }
-
-    if (permissionStatus.isGranted) {
-      return true;
-    }
-
-    if (mounted) {
-      _showPermissionDialog(isCamera: isCamera);
-    }
-    return false;
-  }
-
   void _showImagePickerBottomSheet() {
     showMyBottomSheet(context: context, child: _bottomSheetContent());
   }
 
   Widget _bottomSheetContent() {
-    // ... (kode ini tidak berubah)
-    final isTablet = TabletDetector.isTablet(MediaQuery.of(context));
-    final buttonSize = isTablet ? 160.0 : 120.0;
-    const imageSize = 80.0;
-
+    final buttonSize =
+        TabletDetector.isTablet(MediaQuery.of(context)) ? 160.0 : 120.0;
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 20.0),
       child: Column(
@@ -386,14 +344,11 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             children: [
               _bigButton(
                 title: context.localizations.camera,
-                image: Image.asset('assets/images/camera_icon.png',
-                    width: imageSize),
+                image: Image.asset('assets/images/camera_icon.png', width: 80),
                 size: buttonSize,
                 onPressed: () async {
                   Navigator.pop(context);
-                  final isPermitted =
-                      await _requestPermissionAndRedirect(isCamera: true);
-                  if (isPermitted) {
+                  if (await _requestPermissionAndRedirect(isCamera: true)) {
                     await _cameraOrImagePickerAction(isCamera: true);
                   }
                 },
@@ -403,14 +358,11 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
               const SizedBox(width: 40),
               _bigButton(
                 title: context.localizations.gallery,
-                image: Image.asset('assets/images/gallery_icon.png',
-                    width: imageSize),
+                image: Image.asset('assets/images/gallery_icon.png', width: 80),
                 size: buttonSize,
                 onPressed: () async {
                   Navigator.pop(context);
-                  final isPermitted =
-                      await _requestPermissionAndRedirect(isCamera: false);
-                  if (isPermitted) {
+                  if (await _requestPermissionAndRedirect(isCamera: false)) {
                     await _cameraOrImagePickerAction(isCamera: false);
                   }
                 },
@@ -421,6 +373,95 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         ],
       ),
     );
+  }
+
+  // --- FUNGSI LOGIKA YANG DIPERBAIKI ---
+
+  Future<void> _cameraOrImagePickerAction({required bool isCamera}) async {
+    final image = await ref
+        .read(ImagePickerService.provider)
+        .pickImage(context: context, isFromCamera: isCamera);
+
+    if (image == null || !mounted) return;
+
+    // Memanggil controller untuk identifikasi produk
+    final productData = await ref
+        .read(_controller.notifier)
+        .identifyProduct(file: File(image.path));
+
+    // Memeriksa hasil dari controller
+    if (productData != null && mounted) {
+      // ---- JIKA SUKSES ----
+      // Buat parameter untuk halaman detail
+      final params = ProductDetailParams(
+        productName: productData.productName,
+        productPrice: productData.productPrice,
+        imageUrl: productData.imageUrl,
+      );
+
+      // Tunggu hasil dari halaman detail (jika user menekan simpan, kita dapat 'true')
+      final shouldRefresh = await context.pushNamed<bool>(
+        AppRouter.productDetailRoute,
+        extra: params,
+      );
+
+      // Jika halaman detail mengirim `true`, refresh riwayat di halaman utama
+      if (shouldRefresh == true) {
+        ref.read(_controller.notifier).loadProducts();
+      }
+    } else if (mounted) {
+      // ---- JIKA GAGAL (productData adalah null) ----
+      // Tampilkan alert error kepada pengguna
+      showMyAlert(
+        context: context,
+        data: MyAlertData(
+          title: "Gagal Mengidentifikasi Produk",
+          content:
+              "Sistem tidak dapat mengenali produk dari gambar yang diberikan. Silakan coba lagi dengan gambar yang lebih jelas.",
+          primaryButton: "Mengerti",
+        ),
+      );
+    }
+  }
+
+  Future<bool> _requestPermissionAndRedirect({required bool isCamera}) async {
+    Permission permission;
+
+    // Menentukan permission yang akan diminta
+    if (isCamera) {
+      permission = Permission.camera;
+    } else {
+      if (Platform.isAndroid) {
+        // Untuk Android 13 (SDK 33) ke atas, gunakan Permission.photos
+        // Jika tidak, gunakan Permission.storage
+        final androidInfo = await DeviceInfoPlugin().androidInfo;
+        if (androidInfo.version.sdkInt >= 33) {
+          permission = Permission.photos;
+        } else {
+          permission = Permission.storage;
+        }
+      } else {
+        // Untuk iOS, selalu gunakan Permission.photos
+        permission = Permission.photos;
+      }
+    }
+
+    // Meminta izin
+    final status = await permission.request();
+
+    // Cek status izin
+    if (status.isGranted) {
+      return true; // Izin diberikan
+    }
+
+    // Jika ditolak permanen atau terbatas, tampilkan dialog
+    if (status.isPermanentlyDenied || status.isRestricted) {
+      if (mounted) {
+        _showPermissionDialog(isCamera: isCamera);
+      }
+    }
+
+    return false; // Izin ditolak
   }
 
   void _showPermissionDialog({required bool isCamera}) {

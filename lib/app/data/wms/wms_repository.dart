@@ -1,7 +1,4 @@
 import 'dart:async';
-import 'dart:io';
-
-import 'package:dio/dio.dart';
 import 'package:fskeleton/app/data/wms/model/wms_bundle/wms_bundle.dart';
 import 'package:fskeleton/app/data/wms/model/wms_category/wms_category.dart';
 import 'package:fskeleton/app/data/wms/model/wms_identify/identify_product_response.dart';
@@ -19,75 +16,33 @@ class WmsApiRepository {
 
   final HttpClient _httpClient;
 
-  Future<WmsGetProductResource> searchProduct({
+  Future<ProductScanApiResponse> searchProduct({
     required String searchQuery,
     int page = 1,
   }) async {
     try {
       final response = await _httpClient.get<Map<String, dynamic>>(
-        path: '/api/product_scans',
+        path: '/api/v1/product-scans',
         queryParameters: {
           'q': searchQuery,
           'page': page,
         },
       );
-
-      return WmsGetProductBasicResponse.fromJson(response).data.resource;
-    } on HttpStatusCodeException catch (_) {
-      rethrow;
-    }
-  }
-
-  Future<WmsGetProductResource> addProduct({
-    required String productName,
-    required String productPrice,
-  }) async {
-    try {
-      final response = await _httpClient.post<Map<String, dynamic>>(
-        path: '/api/product_scans',
-        body: {
-          'product_name': productName,
-          'product_price': productPrice,
-        },
-      );
-
-      return WmsGetProductBasicResponse.fromJson(response).data.resource;
-    } on HttpStatusCodeException catch (_) {
-      rethrow;
-    }
-  }
-
-  Future<WmsGetBundleResource> getBundles({
-    int page = 1,
-  }) async {
-    try {
-      final response = await _httpClient.get<Map<String, dynamic>>(
-        path: '/api/bundle',
-        queryParameters: {
-          'page': page,
-        },
-      );
-      return WmsGetBundleBasicResponse.fromJson(response).data.resource;
+      // Langsung parse menggunakan model baru yang sudah sesuai
+      return ProductScanApiResponse.fromJson(response);
     } on HttpStatusCodeException catch (_) {
       rethrow;
     }
   }
 
   Future<IdentifyProductResponse> identifyProduct({
-    required File imageFile,
+    required String imageUrl,
   }) async {
     try {
-      final String fileName = imageFile.path.split('/').last;
-      final FormData formData = FormData.fromMap({
-        "image":
-            await MultipartFile.fromFile(imageFile.path, filename: fileName),
-      });
-
       final response = await _httpClient.post<Map<String, dynamic>>(
-        path: '/api/v1/scan-product',
-        body: formData,
+        path: '/api/v1/identify-product',
+        body: {'imageUrl': imageUrl},
       );
-
       return IdentifyProductResponse.fromJson(response);
     } on HttpStatusCodeException catch (_) {
       rethrow;
@@ -113,6 +68,7 @@ class WmsApiRepository {
     required double productPrice,
     required int quantity,
     required String status,
+    String? imageUrl,
     double? fixedPrice,
     List<int>? categoryIds,
   }) async {
@@ -120,15 +76,33 @@ class WmsApiRepository {
       await _httpClient.post(
         path: '/api/v1/product-scans',
         body: {
-          'product_name': productName,
-          'product_price': productPrice,
+          'productName': productName,
+          'productPrice': productPrice,
           'quantity': quantity,
           'status': status,
-          'fixed_price': fixedPrice,
-          'category_ids': categoryIds,
+          'imageUrl': imageUrl,
+          'fixedPrice': fixedPrice,
+          'categoryIds': categoryIds,
         },
       );
     } catch (e) {
+      rethrow;
+    }
+  }
+
+  // Fungsi getBundles dan lainnya bisa tetap ada jika masih digunakan
+  Future<WmsGetBundleResource> getBundles({
+    int page = 1,
+  }) async {
+    try {
+      final response = await _httpClient.get<Map<String, dynamic>>(
+        path: '/api/bundle',
+        queryParameters: {
+          'page': page,
+        },
+      );
+      return WmsGetBundleBasicResponse.fromJson(response).data.resource;
+    } on HttpStatusCodeException catch (_) {
       rethrow;
     }
   }

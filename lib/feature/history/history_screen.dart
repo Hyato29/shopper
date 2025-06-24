@@ -364,10 +364,7 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen>
           },
         );
       },
-      error: (_, __) => MyEmptyState.error(
-        context: context,
-        onRetried: ref.read(_controller.notifier).onRetrySeach,
-      ),
+      error: (_, __) => Text("data"),
       loading: () => const Center(child: CircularProgressIndicator()),
     );
   }
@@ -378,20 +375,20 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen>
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          if (product.image != null && product.image!.isNotEmpty)
-            ClipRRect(
-              borderRadius: BorderRadius.circular(8),
-              child: CachedNetworkImage(
-                imageUrl: product.image!,
-                width: 48,
-                height: 48,
-                fit: BoxFit.cover,
-                errorWidget: (context, url, error) => _imagePlaceholder(),
-                placeholder: (context, url) => _imagePlaceholder(),
-              ),
-            )
-          else
-            _imagePlaceholder(),
+          // if (product.image != null && product.image!.isNotEmpty)
+          //   ClipRRect(
+          //     borderRadius: BorderRadius.circular(8),
+          //     child: CachedNetworkImage(
+          //       imageUrl: product.image!,
+          //       width: 48,
+          //       height: 48,
+          //       fit: BoxFit.cover,
+          //       errorWidget: (context, url, error) => _imagePlaceholder(),
+          //       placeholder: (context, url) => _imagePlaceholder(),
+          //     ),
+          //   )
+          // else
+          //   _imagePlaceholder(),
           const SizedBox(width: 20),
           Expanded(
             child: Column(
@@ -421,7 +418,7 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen>
   }
 
   Widget _detailSection(WmsProduct product) {
-    final barcodeName = product.user?.formatBarcodeName ?? "NO-BARCODE";
+    // final barcodeName = product.user?.formatBarcodeName ?? "NO-BARCODE";
     return Container(
       width: double.infinity,
       color: MyColors.bodyBackground,
@@ -437,7 +434,7 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen>
                 color: MyColors.black,
               ),
               const SizedBox(height: 4),
-              Text(barcodeName, style: MyText.xs),
+              // Text(barcodeName, style: MyText.xs),
               const SizedBox(height: 8),
               SizedBox(
                 height: 36,

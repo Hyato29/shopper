@@ -29,16 +29,16 @@ class AppRouter {
 
   late final router = GoRouter(
     initialLocation: '/$homeRoute',
-    refreshListenable: _StreamListenable(_authRepository.isLoggedInStream),
-    redirect: (context, state) async {
-      final isLoggedIn = await _authRepository.isLoggedIn();
-      final isLoginRequired = !(state.fullPath?.contains(loginRoute) ?? false);
-      if (!isLoggedIn && isLoginRequired) {
-        return '/$loginRoute';
-      }
+    // refreshListenable: _StreamListenable(_authRepository.isLoggedInStream),
+    // redirect: (context, state) async {
+    //   final isLoggedIn = await _authRepository.isLoggedIn();
+    //   final isLoginRequired = !(state.fullPath?.contains(loginRoute) ?? false);
+    //   if (!isLoggedIn && isLoginRequired) {
+    //     return '/$loginRoute';
+    //   }
 
-      return null;
-    },
+    //   return null;
+    // },
     routes: [
       ShellRoute(
         builder: (context, state, child) {
@@ -59,9 +59,7 @@ class AppRouter {
           GoRoute(
             name: homeRoute,
             path: '/$homeRoute',
-            builder: (context, state) => HomeScreen(
-              navigateToSearch: () => context.pushNamed(AppRouter.searchRoute),
-            ),
+            builder: (context, state) => const HomeScreen(),
           ),
           GoRoute(
             name: productDetailRoute,

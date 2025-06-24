@@ -1,6 +1,9 @@
+// lib/feature/history/history_screen_controller.dart
+
 import 'dart:async';
 
 import 'package:freezed_annotation/freezed_annotation.dart';
+import 'package:fskeleton/app/common/common_controller.dart';
 import 'package:fskeleton/app/data/wms/model/wms_bundle/wms_bundle.dart';
 import 'package:fskeleton/app/data/wms/model/wms_product/wms_product.dart';
 import 'package:fskeleton/app/data/wms/wms_repository.dart';
@@ -9,24 +12,39 @@ import 'package:fskeleton/core.dart';
 
 part 'history_screen_controller.freezed.dart';
 
+@freezed
+class HistoryScreenUiState with _$HistoryScreenUiState {
+  const factory HistoryScreenUiState({
+    @Default(AsyncData([])) AsyncValue<List<WmsProduct>> products,
+    @Default(AsyncData([])) AsyncValue<List<WmsBundle>> bundles,
+    @Default('') String searchKey,
+    @Default(null) Event<bool>? nextPageLoading,
+    WmsProduct? selectedProduct,
+    WmsBundle? selectedBundle,
+  }) = _HistoryScreenUiState;
+}
+
+
 class HistoryScreenController extends StateNotifier<HistoryScreenUiState> {
   HistoryScreenController(
     this._wmsApiRepository,
+    this._commonController, // Menambahkan CommonController
   ) : super(const HistoryScreenUiState());
 
   final WmsApiRepository _wmsApiRepository;
+  final CommonController _commonController; // Menambahkan CommonController
 
-  static final provider = StateNotifierProvider.autoDispose<
-      HistoryScreenController, HistoryScreenUiState>(
+  static final provider =
+      StateNotifierProvider.autoDispose<HistoryScreenController, HistoryScreenUiState>(
     (ref) {
       return HistoryScreenController(
         ref.watch(WmsApiRepository.provider),
+        ref.watch(CommonController.provider.notifier), // Menambahkan CommonController
       );
     },
   );
 
   Timer? _debounceTimer;
-
   int _currentPage = 1;
   int? _lastPage;
 
@@ -43,13 +61,11 @@ class HistoryScreenController extends StateNotifier<HistoryScreenUiState> {
 
   Future<void> loadBundles() async {
     state = state.copyWith(bundles: const AsyncValue.loading());
-    final result = await AsyncValue.guard(
-      () => _wmsApiRepository.getBundles(),
-    );
+    final result = await AsyncValue.guard(() => _wmsApiRepository.getBundles());
     if (!mounted) return;
     result.when(
-      data: (data) {
-        state = state.copyWith(bundles: AsyncData(data.data));
+      data: (bundleResource) {
+        state = state.copyWith(bundles: AsyncData(bundleResource.data));
       },
       error: (e, s) {
         state = state.copyWith(bundles: AsyncError(e, s));
@@ -66,7 +82,7 @@ class HistoryScreenController extends StateNotifier<HistoryScreenUiState> {
     });
   }
 
-  void onRetrySeach() {
+  void onRetrySearch() {
     loadProducts();
   }
 
@@ -75,54 +91,57 @@ class HistoryScreenController extends StateNotifier<HistoryScreenUiState> {
     _lastPage = null;
     state = state.copyWith(
         products: const AsyncValue.loading(), selectedProduct: null);
+        
     final result = await AsyncValue.guard(
       () => _wmsApiRepository.searchProduct(
         searchQuery: state.searchKey,
         page: _currentPage,
       ),
     );
-    if (!mounted) return;
-    return result.when(
-      data: (data) {
-        _lastPage = data.lastPage;
-        state = state.copyWith(products: AsyncData(data.data));
-      },
-      error: (_, __) {
-        state = state.copyWith(
-          products: AsyncError(result.error!, StackTrace.current),
-        );
-      },
-      loading: () {},
-    );
+
+    if (mounted) {
+      final AsyncValue<List<WmsProduct>> newProductState = result.when(
+        data: (apiResponse) {
+          _currentPage = apiResponse.pagination.currentPage;
+          _lastPage = apiResponse.pagination.totalPages;
+          return AsyncValue.data(apiResponse.data);
+        },
+        error: (e, s) {
+           _commonController.handleCommonError(e, () => loadProducts());
+           return AsyncValue.error(e, s);
+        },
+        loading: () => const AsyncValue.loading(),
+      );
+      state = state.copyWith(products: newProductState);
+    }
   }
 
   Future<void> loadNextProducts() async {
-    if (state.searchKey.isEmpty || _currentPage == _lastPage) return;
+    if (state.nextPageLoading?.data == true || _currentPage >= (_lastPage ?? _currentPage)) return;
 
-    _currentPage += 1;
     state = state.copyWith(nextPageLoading: Event(true));
+    _currentPage++;
+    
     final result = await AsyncValue.guard(
       () => _wmsApiRepository.searchProduct(
         searchQuery: state.searchKey,
         page: _currentPage,
       ),
     );
-    state = state.copyWith(nextPageLoading: Event(false));
-    if (!mounted) return;
-    return result.when(
-      data: (data) {
+
+    if (mounted) {
+       result.whenData((apiResponse) {
+        _currentPage = apiResponse.pagination.currentPage;
+        _lastPage = apiResponse.pagination.totalPages;
         state = state.copyWith(
-          products: AsyncValue.data([
+          products: AsyncData([
             ...?state.products.value,
-            ...data.data,
+            ...apiResponse.data,
           ]),
         );
-      },
-      error: (_, __) {
-        _currentPage -= 1;
-      },
-      loading: () {},
-    );
+      });
+      state = state.copyWith(nextPageLoading: Event(false));
+    }
   }
 
   void selectProduct(WmsProduct product) {
@@ -140,16 +159,4 @@ class HistoryScreenController extends StateNotifier<HistoryScreenUiState> {
       state = state.copyWith(selectedBundle: bundle);
     }
   }
-}
-
-@freezed
-class HistoryScreenUiState with _$HistoryScreenUiState {
-  const factory HistoryScreenUiState({
-    @Default(AsyncData([])) AsyncValue<List<WmsProduct>> products,
-    @Default(AsyncData([])) AsyncValue<List<WmsBundle>> bundles,
-    @Default('') String searchKey,
-    @Default(null) Event<bool>? nextPageLoading,
-    WmsProduct? selectedProduct,
-    WmsBundle? selectedBundle,
-  }) = _HistoryScreenUiState;
 }

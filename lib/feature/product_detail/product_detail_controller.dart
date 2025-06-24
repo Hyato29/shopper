@@ -5,7 +5,7 @@ import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:fskeleton/app/common/common_controller.dart';
 import 'package:fskeleton/app/data/wms/model/wms_category/wms_category.dart';
 import 'package:fskeleton/app/data/wms/wms_repository.dart';
-import 'package:fskeleton/feature/product_detail/product_detail_params.dart';
+import 'product_detail_params.dart';
 
 part 'product_detail_controller.freezed.dart';
 
@@ -16,7 +16,7 @@ class ProductDetailState with _$ProductDetailState {
     @Default(null) String? selectedStatus,
     @Default(1) int quantity,
     @Default({}) Set<int> selectedCategoryIds,
-    @Default(false) bool isLoading,
+    @Default(false) bool isSaving,
   }) = _ProductDetailState;
 }
 
@@ -30,7 +30,7 @@ class ProductDetailController extends StateNotifier<ProductDetailState> {
   Future<void> onScreenLoaded() async {
     state = state.copyWith(categories: const AsyncValue.loading());
     final result = await AsyncValue.guard(() => _wmsRepository.getCategories());
-    if(mounted) {
+    if (mounted) {
       state = state.copyWith(categories: result);
     }
   }
@@ -55,24 +55,27 @@ class ProductDetailController extends StateNotifier<ProductDetailState> {
 
   Future<bool> saveData(ProductDetailParams params) async {
     if (state.selectedStatus == null || state.quantity <= 0) {
-      _commonController.handleCommonError(Exception("Status dan kuantitas wajib diisi."), null);
+      _commonController.handleCommonError(
+          Exception("Status dan kuantitas wajib diisi."), null);
       return false;
     }
 
-    _commonController.showLoading(isLoading: true);
+    state = state.copyWith(isSaving: true);
 
     final result = await AsyncValue.guard(() => _wmsRepository.saveProductScan(
           productName: params.productName,
           productPrice: params.productPrice,
+          imageUrl: params.imageUrl,
           quantity: state.quantity,
           status: state.selectedStatus!,
           categoryIds: state.selectedCategoryIds.toList(),
         ));
-
-    _commonController.showLoading(isLoading: false);
+    
+    state = state.copyWith(isSaving: false);
 
     if (result.hasError) {
-      _commonController.handleCommonError(result.error ?? Exception("Gagal menyimpan data"), null);
+      _commonController.handleCommonError(
+          result.error ?? Exception("Gagal menyimpan data"), null);
       return false;
     }
 
@@ -80,9 +83,10 @@ class ProductDetailController extends StateNotifier<ProductDetailState> {
   }
 }
 
-final productDetailControllerProvider = StateNotifierProvider.autoDispose<ProductDetailController, ProductDetailState>((ref) {
+final productDetailControllerProvider = StateNotifierProvider.autoDispose<
+    ProductDetailController, ProductDetailState>((ref) {
   return ProductDetailController(
     ref.watch(WmsApiRepository.provider),
-    ref.watch(CommonController.provider.notifier)
+    ref.watch(CommonController.provider.notifier),
   );
 });

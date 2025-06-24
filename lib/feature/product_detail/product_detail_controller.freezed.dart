@@ -21,7 +21,7 @@ mixin _$ProductDetailState {
   String? get selectedStatus => throw _privateConstructorUsedError;
   int get quantity => throw _privateConstructorUsedError;
   Set<int> get selectedCategoryIds => throw _privateConstructorUsedError;
-  bool get isLoading => throw _privateConstructorUsedError;
+  bool get isSaving => throw _privateConstructorUsedError;
 
   /// Create a copy of ProductDetailState
   /// with the given fields replaced by the non-null parameter values.
@@ -41,7 +41,7 @@ abstract class $ProductDetailStateCopyWith<$Res> {
       String? selectedStatus,
       int quantity,
       Set<int> selectedCategoryIds,
-      bool isLoading});
+      bool isSaving});
 }
 
 /// @nodoc
@@ -63,7 +63,7 @@ class _$ProductDetailStateCopyWithImpl<$Res, $Val extends ProductDetailState>
     Object? selectedStatus = freezed,
     Object? quantity = null,
     Object? selectedCategoryIds = null,
-    Object? isLoading = null,
+    Object? isSaving = null,
   }) {
     return _then(_value.copyWith(
       categories: null == categories
@@ -82,9 +82,9 @@ class _$ProductDetailStateCopyWithImpl<$Res, $Val extends ProductDetailState>
           ? _value.selectedCategoryIds
           : selectedCategoryIds // ignore: cast_nullable_to_non_nullable
               as Set<int>,
-      isLoading: null == isLoading
-          ? _value.isLoading
-          : isLoading // ignore: cast_nullable_to_non_nullable
+      isSaving: null == isSaving
+          ? _value.isSaving
+          : isSaving // ignore: cast_nullable_to_non_nullable
               as bool,
     ) as $Val);
   }
@@ -103,7 +103,7 @@ abstract class _$$ProductDetailStateImplCopyWith<$Res>
       String? selectedStatus,
       int quantity,
       Set<int> selectedCategoryIds,
-      bool isLoading});
+      bool isSaving});
 }
 
 /// @nodoc
@@ -123,7 +123,7 @@ class __$$ProductDetailStateImplCopyWithImpl<$Res>
     Object? selectedStatus = freezed,
     Object? quantity = null,
     Object? selectedCategoryIds = null,
-    Object? isLoading = null,
+    Object? isSaving = null,
   }) {
     return _then(_$ProductDetailStateImpl(
       categories: null == categories
@@ -142,9 +142,9 @@ class __$$ProductDetailStateImplCopyWithImpl<$Res>
           ? _value._selectedCategoryIds
           : selectedCategoryIds // ignore: cast_nullable_to_non_nullable
               as Set<int>,
-      isLoading: null == isLoading
-          ? _value.isLoading
-          : isLoading // ignore: cast_nullable_to_non_nullable
+      isSaving: null == isSaving
+          ? _value.isSaving
+          : isSaving // ignore: cast_nullable_to_non_nullable
               as bool,
     ));
   }
@@ -158,7 +158,7 @@ class _$ProductDetailStateImpl implements _ProductDetailState {
       this.selectedStatus = null,
       this.quantity = 1,
       final Set<int> selectedCategoryIds = const {},
-      this.isLoading = false})
+      this.isSaving = false})
       : _selectedCategoryIds = selectedCategoryIds;
 
   @override
@@ -182,11 +182,11 @@ class _$ProductDetailStateImpl implements _ProductDetailState {
 
   @override
   @JsonKey()
-  final bool isLoading;
+  final bool isSaving;
 
   @override
   String toString() {
-    return 'ProductDetailState(categories: $categories, selectedStatus: $selectedStatus, quantity: $quantity, selectedCategoryIds: $selectedCategoryIds, isLoading: $isLoading)';
+    return 'ProductDetailState(categories: $categories, selectedStatus: $selectedStatus, quantity: $quantity, selectedCategoryIds: $selectedCategoryIds, isSaving: $isSaving)';
   }
 
   @override
@@ -202,8 +202,8 @@ class _$ProductDetailStateImpl implements _ProductDetailState {
                 other.quantity == quantity) &&
             const DeepCollectionEquality()
                 .equals(other._selectedCategoryIds, _selectedCategoryIds) &&
-            (identical(other.isLoading, isLoading) ||
-                other.isLoading == isLoading));
+            (identical(other.isSaving, isSaving) ||
+                other.isSaving == isSaving));
   }
 
   @override
@@ -213,7 +213,7 @@ class _$ProductDetailStateImpl implements _ProductDetailState {
       selectedStatus,
       quantity,
       const DeepCollectionEquality().hash(_selectedCategoryIds),
-      isLoading);
+      isSaving);
 
   /// Create a copy of ProductDetailState
   /// with the given fields replaced by the non-null parameter values.
@@ -231,7 +231,7 @@ abstract class _ProductDetailState implements ProductDetailState {
       final String? selectedStatus,
       final int quantity,
       final Set<int> selectedCategoryIds,
-      final bool isLoading}) = _$ProductDetailStateImpl;
+      final bool isSaving}) = _$ProductDetailStateImpl;
 
   @override
   AsyncValue<List<Category>> get categories;
@@ -242,7 +242,7 @@ abstract class _ProductDetailState implements ProductDetailState {
   @override
   Set<int> get selectedCategoryIds;
   @override
-  bool get isLoading;
+  bool get isSaving;
 
   /// Create a copy of ProductDetailState
   /// with the given fields replaced by the non-null parameter values.

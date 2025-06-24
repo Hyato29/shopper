@@ -19,6 +19,7 @@ mixin _$HomeScreenUiState {
   AsyncValue<List<WmsProduct>> get products =>
       throw _privateConstructorUsedError;
   String get appVersion => throw _privateConstructorUsedError;
+  bool get nextPageLoading => throw _privateConstructorUsedError;
 
   /// Create a copy of HomeScreenUiState
   /// with the given fields replaced by the non-null parameter values.
@@ -33,7 +34,10 @@ abstract class $HomeScreenUiStateCopyWith<$Res> {
           HomeScreenUiState value, $Res Function(HomeScreenUiState) then) =
       _$HomeScreenUiStateCopyWithImpl<$Res, HomeScreenUiState>;
   @useResult
-  $Res call({AsyncValue<List<WmsProduct>> products, String appVersion});
+  $Res call(
+      {AsyncValue<List<WmsProduct>> products,
+      String appVersion,
+      bool nextPageLoading});
 }
 
 /// @nodoc
@@ -53,6 +57,7 @@ class _$HomeScreenUiStateCopyWithImpl<$Res, $Val extends HomeScreenUiState>
   $Res call({
     Object? products = null,
     Object? appVersion = null,
+    Object? nextPageLoading = null,
   }) {
     return _then(_value.copyWith(
       products: null == products
@@ -63,6 +68,10 @@ class _$HomeScreenUiStateCopyWithImpl<$Res, $Val extends HomeScreenUiState>
           ? _value.appVersion
           : appVersion // ignore: cast_nullable_to_non_nullable
               as String,
+      nextPageLoading: null == nextPageLoading
+          ? _value.nextPageLoading
+          : nextPageLoading // ignore: cast_nullable_to_non_nullable
+              as bool,
     ) as $Val);
   }
 }
@@ -75,7 +84,10 @@ abstract class _$$HomeScreenUiStateImplCopyWith<$Res>
       __$$HomeScreenUiStateImplCopyWithImpl<$Res>;
   @override
   @useResult
-  $Res call({AsyncValue<List<WmsProduct>> products, String appVersion});
+  $Res call(
+      {AsyncValue<List<WmsProduct>> products,
+      String appVersion,
+      bool nextPageLoading});
 }
 
 /// @nodoc
@@ -93,6 +105,7 @@ class __$$HomeScreenUiStateImplCopyWithImpl<$Res>
   $Res call({
     Object? products = null,
     Object? appVersion = null,
+    Object? nextPageLoading = null,
   }) {
     return _then(_$HomeScreenUiStateImpl(
       products: null == products
@@ -103,6 +116,10 @@ class __$$HomeScreenUiStateImplCopyWithImpl<$Res>
           ? _value.appVersion
           : appVersion // ignore: cast_nullable_to_non_nullable
               as String,
+      nextPageLoading: null == nextPageLoading
+          ? _value.nextPageLoading
+          : nextPageLoading // ignore: cast_nullable_to_non_nullable
+              as bool,
     ));
   }
 }
@@ -111,7 +128,9 @@ class __$$HomeScreenUiStateImplCopyWithImpl<$Res>
 
 class _$HomeScreenUiStateImpl implements _HomeScreenUiState {
   const _$HomeScreenUiStateImpl(
-      {this.products = const AsyncData([]), this.appVersion = ''});
+      {this.products = const AsyncData([]),
+      this.appVersion = '',
+      this.nextPageLoading = false});
 
   @override
   @JsonKey()
@@ -119,10 +138,13 @@ class _$HomeScreenUiStateImpl implements _HomeScreenUiState {
   @override
   @JsonKey()
   final String appVersion;
+  @override
+  @JsonKey()
+  final bool nextPageLoading;
 
   @override
   String toString() {
-    return 'HomeScreenUiState(products: $products, appVersion: $appVersion)';
+    return 'HomeScreenUiState(products: $products, appVersion: $appVersion, nextPageLoading: $nextPageLoading)';
   }
 
   @override
@@ -133,11 +155,14 @@ class _$HomeScreenUiStateImpl implements _HomeScreenUiState {
             (identical(other.products, products) ||
                 other.products == products) &&
             (identical(other.appVersion, appVersion) ||
-                other.appVersion == appVersion));
+                other.appVersion == appVersion) &&
+            (identical(other.nextPageLoading, nextPageLoading) ||
+                other.nextPageLoading == nextPageLoading));
   }
 
   @override
-  int get hashCode => Object.hash(runtimeType, products, appVersion);
+  int get hashCode =>
+      Object.hash(runtimeType, products, appVersion, nextPageLoading);
 
   /// Create a copy of HomeScreenUiState
   /// with the given fields replaced by the non-null parameter values.
@@ -152,12 +177,15 @@ class _$HomeScreenUiStateImpl implements _HomeScreenUiState {
 abstract class _HomeScreenUiState implements HomeScreenUiState {
   const factory _HomeScreenUiState(
       {final AsyncValue<List<WmsProduct>> products,
-      final String appVersion}) = _$HomeScreenUiStateImpl;
+      final String appVersion,
+      final bool nextPageLoading}) = _$HomeScreenUiStateImpl;
 
   @override
   AsyncValue<List<WmsProduct>> get products;
   @override
   String get appVersion;
+  @override
+  bool get nextPageLoading;
 
   /// Create a copy of HomeScreenUiState
   /// with the given fields replaced by the non-null parameter values.

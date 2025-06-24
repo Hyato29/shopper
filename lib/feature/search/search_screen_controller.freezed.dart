@@ -20,6 +20,7 @@ mixin _$SearchScreenUiState {
       throw _privateConstructorUsedError;
   String get searchKey => throw _privateConstructorUsedError;
   Event<bool>? get nextPageLoading => throw _privateConstructorUsedError;
+  Event<dynamic>? get addProductSuccess => throw _privateConstructorUsedError;
 
   /// Create a copy of SearchScreenUiState
   /// with the given fields replaced by the non-null parameter values.
@@ -37,7 +38,8 @@ abstract class $SearchScreenUiStateCopyWith<$Res> {
   $Res call(
       {AsyncValue<List<WmsProduct>> products,
       String searchKey,
-      Event<bool>? nextPageLoading});
+      Event<bool>? nextPageLoading,
+      Event<dynamic>? addProductSuccess});
 }
 
 /// @nodoc
@@ -58,6 +60,7 @@ class _$SearchScreenUiStateCopyWithImpl<$Res, $Val extends SearchScreenUiState>
     Object? products = null,
     Object? searchKey = null,
     Object? nextPageLoading = freezed,
+    Object? addProductSuccess = freezed,
   }) {
     return _then(_value.copyWith(
       products: null == products
@@ -72,6 +75,10 @@ class _$SearchScreenUiStateCopyWithImpl<$Res, $Val extends SearchScreenUiState>
           ? _value.nextPageLoading
           : nextPageLoading // ignore: cast_nullable_to_non_nullable
               as Event<bool>?,
+      addProductSuccess: freezed == addProductSuccess
+          ? _value.addProductSuccess
+          : addProductSuccess // ignore: cast_nullable_to_non_nullable
+              as Event<dynamic>?,
     ) as $Val);
   }
 }
@@ -87,7 +94,8 @@ abstract class _$$SearchScreenUiStateImplCopyWith<$Res>
   $Res call(
       {AsyncValue<List<WmsProduct>> products,
       String searchKey,
-      Event<bool>? nextPageLoading});
+      Event<bool>? nextPageLoading,
+      Event<dynamic>? addProductSuccess});
 }
 
 /// @nodoc
@@ -106,6 +114,7 @@ class __$$SearchScreenUiStateImplCopyWithImpl<$Res>
     Object? products = null,
     Object? searchKey = null,
     Object? nextPageLoading = freezed,
+    Object? addProductSuccess = freezed,
   }) {
     return _then(_$SearchScreenUiStateImpl(
       products: null == products
@@ -120,6 +129,10 @@ class __$$SearchScreenUiStateImplCopyWithImpl<$Res>
           ? _value.nextPageLoading
           : nextPageLoading // ignore: cast_nullable_to_non_nullable
               as Event<bool>?,
+      addProductSuccess: freezed == addProductSuccess
+          ? _value.addProductSuccess
+          : addProductSuccess // ignore: cast_nullable_to_non_nullable
+              as Event<dynamic>?,
     ));
   }
 }
@@ -130,7 +143,8 @@ class _$SearchScreenUiStateImpl implements _SearchScreenUiState {
   const _$SearchScreenUiStateImpl(
       {this.products = const AsyncData([]),
       this.searchKey = '',
-      this.nextPageLoading = null});
+      this.nextPageLoading = null,
+      this.addProductSuccess = null});
 
   @override
   @JsonKey()
@@ -141,10 +155,13 @@ class _$SearchScreenUiStateImpl implements _SearchScreenUiState {
   @override
   @JsonKey()
   final Event<bool>? nextPageLoading;
+  @override
+  @JsonKey()
+  final Event<dynamic>? addProductSuccess;
 
   @override
   String toString() {
-    return 'SearchScreenUiState(products: $products, searchKey: $searchKey, nextPageLoading: $nextPageLoading)';
+    return 'SearchScreenUiState(products: $products, searchKey: $searchKey, nextPageLoading: $nextPageLoading, addProductSuccess: $addProductSuccess)';
   }
 
   @override
@@ -157,12 +174,14 @@ class _$SearchScreenUiStateImpl implements _SearchScreenUiState {
             (identical(other.searchKey, searchKey) ||
                 other.searchKey == searchKey) &&
             (identical(other.nextPageLoading, nextPageLoading) ||
-                other.nextPageLoading == nextPageLoading));
+                other.nextPageLoading == nextPageLoading) &&
+            (identical(other.addProductSuccess, addProductSuccess) ||
+                other.addProductSuccess == addProductSuccess));
   }
 
   @override
-  int get hashCode =>
-      Object.hash(runtimeType, products, searchKey, nextPageLoading);
+  int get hashCode => Object.hash(
+      runtimeType, products, searchKey, nextPageLoading, addProductSuccess);
 
   /// Create a copy of SearchScreenUiState
   /// with the given fields replaced by the non-null parameter values.
@@ -178,7 +197,8 @@ abstract class _SearchScreenUiState implements SearchScreenUiState {
   const factory _SearchScreenUiState(
       {final AsyncValue<List<WmsProduct>> products,
       final String searchKey,
-      final Event<bool>? nextPageLoading}) = _$SearchScreenUiStateImpl;
+      final Event<bool>? nextPageLoading,
+      final Event<dynamic>? addProductSuccess}) = _$SearchScreenUiStateImpl;
 
   @override
   AsyncValue<List<WmsProduct>> get products;
@@ -186,6 +206,8 @@ abstract class _SearchScreenUiState implements SearchScreenUiState {
   String get searchKey;
   @override
   Event<bool>? get nextPageLoading;
+  @override
+  Event<dynamic>? get addProductSuccess;
 
   /// Create a copy of SearchScreenUiState
   /// with the given fields replaced by the non-null parameter values.

@@ -115,10 +115,7 @@ class _HomeScreenState extends ConsumerState<SearchScreen> {
             );
           },
           error: (_, __) {
-            return MyEmptyState.error(
-              context: context,
-              onRetried: ref.read(_controller.notifier).onRetrySeach,
-            );
+            return Text("Error");
           },
           loading: () {
             return const Center(child: CircularProgressIndicator());
@@ -133,13 +130,7 @@ class _HomeScreenState extends ConsumerState<SearchScreen> {
 
     return InkWell(
       onTap: () async {
-        final price = double.tryParse(data.productPrice) ?? 0.0;
-        final params = ProductDetailParams(
-          productName: data.productName,
-          productPrice: price,
-        );
-        await context.pushNamed(AppRouter.productDetailRoute, extra: params);
-        ref.read(_controller.notifier).onRetrySeach();
+        
       },
       child: Column(
         children: [

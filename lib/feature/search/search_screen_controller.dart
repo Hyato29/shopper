@@ -1,3 +1,5 @@
+// lib/feature/search/search_screen_controller.dart
+
 import 'dart:async';
 
 import 'package:freezed_annotation/freezed_annotation.dart';
@@ -10,6 +12,16 @@ import 'package:fskeleton/core.dart';
 
 part 'search_screen_controller.freezed.dart';
 
+@freezed
+class SearchScreenUiState with _$SearchScreenUiState {
+  const factory SearchScreenUiState({
+    @Default(AsyncData([])) AsyncValue<List<WmsProduct>> products,
+    @Default('') String searchKey,
+    @Default(null) Event<bool>? nextPageLoading,
+    @Default(null) Event? addProductSuccess,
+  }) = _SearchScreenUiState;
+}
+
 class SearchScreenController extends StateNotifier<SearchScreenUiState> {
   SearchScreenController(
     this._authRepository,
@@ -21,8 +33,8 @@ class SearchScreenController extends StateNotifier<SearchScreenUiState> {
   final CommonController _commonController;
   final WmsApiRepository _wmsApiRepository;
 
-  static final provider = StateNotifierProvider.autoDispose<
-      SearchScreenController, SearchScreenUiState>(
+  static final provider =
+      StateNotifierProvider.autoDispose<SearchScreenController, SearchScreenUiState>(
     (ref) {
       return SearchScreenController(
         ref.watch(AuthRepository.provider),
@@ -33,10 +45,9 @@ class SearchScreenController extends StateNotifier<SearchScreenUiState> {
   );
 
   Timer? _debounceTimer;
-
   int _currentPage = 1;
   int? _lastPage;
-  String _currentSeachKey = '';
+  String _currentSearchKey = '';
 
   @override
   void dispose() {
@@ -44,7 +55,7 @@ class SearchScreenController extends StateNotifier<SearchScreenUiState> {
     super.dispose();
   }
 
-  Future<void> onScreenLoaded() async {
+  void onScreenLoaded() {
     state = state.copyWith(products: const AsyncData([]));
   }
 
@@ -57,86 +68,102 @@ class SearchScreenController extends StateNotifier<SearchScreenUiState> {
     _debounceTimer = Timer(const Duration(milliseconds: 500), () {
       if (searchKey.length >= 3) {
         state = state.copyWith(searchKey: searchKey);
-        _currentSeachKey = searchKey;
+        _currentSearchKey = searchKey;
         loadProducts();
       } else {
+        // Kosongkan daftar jika query terlalu pendek
         state = state.copyWith(products: const AsyncData([]));
       }
     });
   }
 
-  void onRetrySeach() {
-    onChangeSearchKey(state.searchKey);
+  void onRetrySearch() {
+    loadProducts();
   }
-
 
   Future<void> loadProducts() async {
     _currentPage = 1;
     _lastPage = null;
     state = state.copyWith(products: const AsyncValue.loading());
+
     final result = await AsyncValue.guard(
       () => _wmsApiRepository.searchProduct(
-        searchQuery: _currentSeachKey,
+        searchQuery: _currentSearchKey,
         page: _currentPage,
       ),
     );
-    _commonController.showLoading(isLoading: false);
-    if (!mounted) return;
-    return result.when(
-      data: (data) {
-        _lastPage = data.lastPage;
-        state = state.copyWith(products: AsyncData(data.data));
-      },
-      error: (_, __) {
-        _commonController.handleCommonError(result.error!, () {});
-        state = state.copyWith(
-          products: AsyncError(
-            result.error!,
-            StackTrace.current,
-          ),
-        );
-      },
-      loading: () {},
-    );
+
+    if (mounted) {
+      final AsyncValue<List<WmsProduct>> newProductState = result.when(
+        data: (apiResponse) {
+          _currentPage = apiResponse.pagination.currentPage;
+          _lastPage = apiResponse.pagination.totalPages;
+          return AsyncValue.data(apiResponse.data);
+        },
+        error: (e, s) => AsyncValue.error(e, s),
+        loading: () => const AsyncValue.loading(),
+      );
+      state = state.copyWith(products: newProductState);
+    }
   }
 
   Future<void> loadNextProducts() async {
-    if (_currentSeachKey.isEmpty || _currentPage == _lastPage) return;
+    if (state.nextPageLoading?.data == true || _currentPage >= (_lastPage ?? _currentPage)) {
+      return;
+    }
 
-    _currentPage += 1;
     state = state.copyWith(nextPageLoading: Event(true));
+    _currentPage++;
+
     final result = await AsyncValue.guard(
       () => _wmsApiRepository.searchProduct(
-        searchQuery: _currentSeachKey,
+        searchQuery: _currentSearchKey,
         page: _currentPage,
       ),
     );
-    state = state.copyWith(nextPageLoading: Event(false));
-    if (!mounted) return;
-    return result.when(
-      data: (data) {
+
+    if (mounted) {
+      result.whenData((apiResponse) {
+        _currentPage = apiResponse.pagination.currentPage;
+        _lastPage = apiResponse.pagination.totalPages;
         state = state.copyWith(
-          products: AsyncValue.data([
+          products: AsyncData([
             ...?state.products.value,
-            ...data.data,
+            ...apiResponse.data,
           ]),
         );
+      });
+      state = state.copyWith(nextPageLoading: Event(false));
+    }
+  }
+
+  // Fungsi ini ditambahkan kembali jika Anda ingin menyimpan produk langsung dari halaman pencarian
+  Future<void> onProductTapped(WmsProduct data) async {
+    _commonController.showLoading(isLoading: true);
+
+    final result = await AsyncValue.guard(
+      () => _wmsApiRepository.saveProductScan(
+          productName: data.productName,
+          productPrice: double.tryParse(data.productPrice) ?? 0.0,
+          quantity: 1, // Default quantity
+          status: 'Lolos', // Default status
+          imageUrl: data.imageUrl,
+      )
+    );
+    
+    _commonController.showLoading(isLoading: false);
+    if (!mounted) return;
+
+    result.when(
+      data: (_) {
+        state = state.copyWith(addProductSuccess: Event(null));
       },
-      error: (_, __) {
-        _currentPage -= 1;
+      error: (e, s) {
+        _commonController.handleCommonError(e, () {
+          onProductTapped(data);
+        });
       },
       loading: () {},
     );
   }
-
-  
-}
-
-@freezed
-class SearchScreenUiState with _$SearchScreenUiState {
-  const factory SearchScreenUiState({
-    @Default(AsyncData([])) AsyncValue<List<WmsProduct>> products,
-    @Default('') String searchKey,
-    @Default(null) Event<bool>? nextPageLoading,
-  }) = _SearchScreenUiState;
 }
