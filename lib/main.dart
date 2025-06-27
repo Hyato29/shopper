@@ -8,12 +8,6 @@ Future<void> main() async {
 
   await EnvLoader.load(file: '.env.dev');
 
-  final serpApiNetworkConfig = NetworkConfig(
-    apiScheme: EnvLoader.get('SERP_API_SCHEME'),
-    apiHost: EnvLoader.get('SERP_API_HOST'),
-    apiPort: EnvLoader.get('SERP_API_PORT'),
-  );
-
   final wmsApiConfig = NetworkConfig(
     apiScheme: EnvLoader.get('WMS_API_SCHEME'),
     apiHost: EnvLoader.get('WMS_API_HOST'),
@@ -24,7 +18,6 @@ Future<void> main() async {
     ProviderScope(
       observers: const [],
       overrides: [
-        NetworkConfig.serpApiProvider.overrideWithValue(serpApiNetworkConfig),
         NetworkConfig.wmsApiProvider.overrideWithValue(wmsApiConfig),
       ],
       child: const App(),

@@ -3,7 +3,6 @@ import 'package:flutter_svg/svg.dart';
 import 'package:fskeleton/app/common/common_screen.dart';
 import 'package:fskeleton/app/data/wms/model/wms_product/wms_product.dart';
 import 'package:fskeleton/app/localizations/ui_text.dart';
-import 'package:fskeleton/app/navigation/router.dart';
 import 'package:fskeleton/app/ui/buttons/button_size.dart';
 import 'package:fskeleton/app/ui/buttons/my_primary_button.dart';
 import 'package:fskeleton/app/ui/common_loading.dart';
@@ -13,7 +12,6 @@ import 'package:fskeleton/app/ui/theme/my_colors.dart';
 import 'package:fskeleton/app/ui/theme/my_text.dart';
 import 'package:fskeleton/app/utils/string_formatter.dart';
 import 'package:fskeleton/core.dart';
-import 'package:fskeleton/feature/product_detail/product_detail_params.dart';
 import 'package:fskeleton/feature/search/search_screen_controller.dart';
 import 'package:go_router/go_router.dart';
 

@@ -1,9 +1,9 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:fskeleton/app/common/common_screen.dart';
+import 'package:fskeleton/app/data/network_config.dart';
 import 'package:fskeleton/app/data/wms/model/wms_bundle/wms_bundle.dart';
 import 'package:fskeleton/app/data/wms/model/wms_product/wms_product.dart';
-import 'package:fskeleton/app/ui/animated_visibility.dart';
 import 'package:fskeleton/app/ui/buttons/button_size.dart';
 import 'package:fskeleton/app/ui/buttons/my_primary_button.dart';
 import 'package:fskeleton/app/ui/buttons/my_text_button.dart';
@@ -102,7 +102,8 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen>
           padding: const EdgeInsets.only(right: 8.0),
           child: MyTextButton(
             onPressed: _showCreateBundleDialog,
-            label: Text('+ Buat Bundle', style: MyText.smSemiBold),
+            label: Text('+ Buat Bundle',
+                style: MyText.smSemiBold.copyWith(color: MyColors.primary500)),
           ),
         ),
       ];
@@ -120,186 +121,9 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen>
           placeholder: 'Nama Bundle',
         ),
         primaryButton: "Buat Bundle",
-        onPrimaryButtonPressed: () {
-        },
+        onPrimaryButtonPressed: () {},
         secondaryButton: "Batalkan",
         onSecondaryButtonPressed: () {},
-      ),
-    );
-  }
-
-  Widget _bundleList() {
-    final bundles = ref.watch(_controller.select((s) => s.bundles));
-    final selectedBundle =
-        ref.watch(_controller.select((s) => s.selectedBundle));
-
-    return bundles.when(
-      data: (data) {
-        if (data.isEmpty) {
-          return MyEmptyState.empty(title: "Belum ada bundle");
-        }
-        return ListView.separated(
-          itemCount: data.length,
-          separatorBuilder: (_, __) => const Divider(height: 1),
-          itemBuilder: (context, index) {
-            final bundle = data[index];
-            final isSelected = selectedBundle == bundle;
-            return isSelected
-                ? Column(
-                    children: [
-                      _bundleListItem(bundle),
-                      AnimatedVisibility(
-                        isVisible: isSelected,
-                        child: _bundleDetailSection(bundle),
-                      ),
-                    ],
-                  )
-                : Column(
-                    children: [
-                      _bundleListItem(bundle),
-                    ],
-                  );
-          },
-        );
-      },
-      error: (e, s) => MyEmptyState.error(
-        context: context,
-        onRetried: ref.read(_controller.notifier).loadBundles,
-      ),
-      loading: () => const Center(child: CircularProgressIndicator()),
-    );
-  }
-
-  Widget _bundleListItem(WmsBundle bundle) {
-    return ListTile(
-      tileColor: MyColors.white,
-      leading:
-          const Icon(Icons.folder_outlined, color: MyColors.primary500, size: 32),
-      title: Text(bundle.nameBundle, style: MyText.base),
-      trailing: IconButton(
-        icon: const Icon(Icons.more_horiz, color: MyColors.neutral80),
-        onPressed: () {},
-      ),
-      onTap: () {
-        ref.read(_controller.notifier).selectBundle(bundle);
-      },
-    );
-  }
-
-  Widget _bundleDetailSection(WmsBundle bundle) {
-    return ColoredBox(
-      color: MyColors.bodyBackground,
-      child: Column(
-        children: [
-          Padding(
-            padding: const EdgeInsets.all(16),
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Column(
-                  children: [
-                    const Icon(Icons.qr_code_2_sharp,
-                        size: 80, color: MyColors.black),
-                    const SizedBox(height: 4),
-                    Text(bundle.barcodeBundle, style: MyText.xs),
-                    const SizedBox(height: 8),
-                    SizedBox(
-                      height: 36,
-                      child: MyPrimaryButton(
-                        buttonSize: ButtonSize.small,
-                        onPressed: () {},
-                        label: Text(
-                          "Print Barcode",
-                          style:
-                              MyText.xsSemiBold.copyWith(color: MyColors.white),
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-                const SizedBox(width: 24),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(bundle.nameBundle,
-                          style: MyText.baseSemiBold,
-                          maxLines: 2,
-                          overflow: TextOverflow.ellipsis),
-                      const SizedBox(height: 16),
-                      _detailHarga("Harga Retail", bundle.totalPriceBundle),
-                      const SizedBox(height: 12),
-                      _detailQty("Qty", bundle.totalProductBundle.toString()),
-                      const SizedBox(height: 12),
-                      _detailHarga(
-                          "Harga Diskon", bundle.totalPriceCustomBundle),
-                    ],
-                  ),
-                ),
-              ],
-            ),
-          ),
-          const Divider(height: 1),
-          if (bundle.productBundles.isNotEmpty)
-            ...bundle.productBundles
-                .map((product) => _productInBundleItem(product))
-          else
-            const Padding(
-              padding: EdgeInsets.all(16.0),
-              child: Text("Tidak ada produk di dalam bundle ini."),
-            ),
-        ],
-      ),
-    );
-  }
-
-  Widget _productInBundleItem(ProductInBundle product) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0),
-      decoration: const BoxDecoration(
-          border:
-              Border(top: BorderSide(color: MyColors.neutral40, width: 0.5))),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          if (product.image != null && product.image!.isNotEmpty)
-            ClipRRect(
-              borderRadius: BorderRadius.circular(8),
-              child: CachedNetworkImage(
-                imageUrl: product.image!,
-                width: 40,
-                height: 40,
-                fit: BoxFit.cover,
-                errorWidget: (context, url, error) => _imagePlaceholder(),
-                placeholder: (context, url) => _imagePlaceholder(),
-              ),
-            )
-          else
-            _imagePlaceholder(),
-          const SizedBox(width: 12),
-          _statusChip(),
-          const SizedBox(width: 8),
-          Expanded(
-            child: Text(
-              product.newNameProduct,
-              style: MyText.sm,
-              maxLines: 2,
-              overflow: TextOverflow.ellipsis,
-            ),
-          ),
-          const SizedBox(width: 8),
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-            decoration: BoxDecoration(
-              color: MyColors.secondaryGreen500,
-              borderRadius: BorderRadius.circular(6),
-            ),
-            child: Text(
-              double.parse(product.displayPrice).truncate().toCurrencyFormat(),
-              style: MyText.xsSemiBold.copyWith(color: MyColors.white),
-            ),
-          )
-        ],
       ),
     );
   }
@@ -319,7 +143,6 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen>
     final products = ref.watch(_controller.select((s) => s.products));
     final selectedProduct =
         ref.watch(_controller.select((s) => s.selectedProduct));
-
     return products.when(
       data: (data) {
         if (data.isEmpty) {
@@ -327,12 +150,14 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen>
         }
         return ListView.separated(
           controller: _scrollController,
+          padding: const EdgeInsets.symmetric(vertical: 8),
           itemCount: data.length +
               (ref.watch(_controller.select((s) => s.nextPageLoading))?.data ==
                       true
                   ? 1
                   : 0),
-          separatorBuilder: (_, __) => const Divider(height: 1),
+          separatorBuilder: (_, __) =>
+              const Divider(height: 1, indent: 16, endIndent: 16),
           itemBuilder: (context, index) {
             if (index == data.length) {
               return _loadingBottomWidget();
@@ -364,61 +189,85 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen>
           },
         );
       },
-      error: (_, __) => Text("data"),
+      error: (e, s) => MyEmptyState.error(
+        context: context,
+        onRetried: () => ref.read(_controller.notifier).loadProducts(),
+      ),
       loading: () => const Center(child: CircularProgressIndicator()),
     );
   }
 
   Widget _historyListItem(WmsProduct product) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // if (product.image != null && product.image!.isNotEmpty)
-          //   ClipRRect(
-          //     borderRadius: BorderRadius.circular(8),
-          //     child: CachedNetworkImage(
-          //       imageUrl: product.image!,
-          //       width: 48,
-          //       height: 48,
-          //       fit: BoxFit.cover,
-          //       errorWidget: (context, url, error) => _imagePlaceholder(),
-          //       placeholder: (context, url) => _imagePlaceholder(),
-          //     ),
-          //   )
-          // else
-          //   _imagePlaceholder(),
-          const SizedBox(width: 20),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  product.productName,
-                  style: MyText.sm,
-                  maxLines: 4,
-                  overflow: TextOverflow.ellipsis,
+    final wmsConfig = ref.watch(NetworkConfig.wmsApiProvider);
+    final baseUrl =
+        "${wmsConfig.apiScheme}://${wmsConfig.apiHost}:${wmsConfig.apiPort}";
+
+    return InkWell(
+      onTap: () => ref.read(_controller.notifier).selectProduct(product),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            if (product.imageUrl != null && product.imageUrl!.isNotEmpty)
+              Container(
+                decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(12),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.grey.withOpacity(0.5),
+                        spreadRadius: 1,
+                        blurRadius: 5,
+                        offset: const Offset(0, 3),
+                      )
+                    ]),
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(8),
+                  child: CachedNetworkImage(
+                    imageUrl: baseUrl + product.imageUrl!,
+                    width: 48,
+                    height: 48,
+                    fit: BoxFit.cover,
+                    errorWidget: (context, url, error) => _imagePlaceholder(),
+                    placeholder: (context, url) => _imagePlaceholder(),
+                  ),
                 ),
-                const SizedBox(height: 5),
-                Row(
-                  children: [
-                    _priceChip(product.productPrice),
-                    const SizedBox(width: 8),
-                  ],
-                ),
-              ],
+              )
+            else
+              _imagePlaceholder(),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      if (product.status != null) _statusChip(product.status!),
+                      const SizedBox(width: 8),
+                      Expanded(
+                        child: Text(
+                          product.productName,
+                          style: MyText.sm,
+                          maxLines: 5,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
             ),
-          ),
-          const SizedBox(width: 12),
-          _statusChip(),
-        ],
+            const SizedBox(width: 12),
+            _priceChip(product.productPrice),
+          ],
+        ),
       ),
     );
   }
 
   Widget _detailSection(WmsProduct product) {
-    // final barcodeName = product.user?.formatBarcodeName ?? "NO-BARCODE";
+    const barcodeName = "NO-BARCODE";
     return Container(
       width: double.infinity,
       color: MyColors.bodyBackground,
@@ -434,7 +283,7 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen>
                 color: MyColors.black,
               ),
               const SizedBox(height: 4),
-              // Text(barcodeName, style: MyText.xs),
+              Text(barcodeName, style: MyText.xs),
               const SizedBox(height: 8),
               SizedBox(
                 height: 36,
@@ -463,9 +312,9 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen>
                 const SizedBox(height: 16),
                 _detailHarga("Harga Retail", product.productPrice),
                 const SizedBox(height: 12),
-                _detailQty("Qty", "1"),
+                _detailQty("Qty", product.quantity.toString()),
                 const SizedBox(height: 12),
-                _detailHarga("Harga Diskon", "0"),
+                _detailHarga("Harga Diskon", product.fixedPrice == null ? "0" : product.fixedPrice.toString()),
               ],
             ),
           ),
@@ -498,21 +347,44 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen>
     );
   }
 
-  Widget _priceChip(String price) {
-    final formattedPrice = double.parse(price).truncate().toCurrencyFormat();
-    return Text(formattedPrice,
-        style: MyText.smSemiBold.copyWith(color: MyColors.primary700));
+  Widget _bundleList() {
+    final bundles = ref.watch(_controller.select((s) => s.bundles));
+
+    return bundles.when(
+      data: (data) {
+        if (data.isEmpty) {
+          return MyEmptyState.empty(title: "Belum ada bundle");
+        }
+        return ListView.separated(
+          itemCount: data.length,
+          separatorBuilder: (_, __) =>
+              const Divider(height: 1, indent: 16, endIndent: 16),
+          itemBuilder: (context, index) {
+            final bundle = data[index];
+            return _bundleListItem(bundle);
+          },
+        );
+      },
+      error: (e, s) => MyEmptyState.error(
+        context: context,
+        onRetried: ref.read(_controller.notifier).loadBundles,
+      ),
+      loading: () => const Center(child: CircularProgressIndicator()),
+    );
   }
 
-  Widget _statusChip() {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
-      decoration: BoxDecoration(
-        color: MyColors.success50,
-        borderRadius: BorderRadius.circular(20),
+  Widget _bundleListItem(WmsBundle bundle) {
+    return ListTile(
+      contentPadding:
+          const EdgeInsets.symmetric(horizontal: 16.0, vertical: 4.0),
+      leading: const Icon(Icons.folder_outlined,
+          color: MyColors.neutral80, size: 28),
+      title: Text(bundle.nameBundle, style: MyText.sm),
+      trailing: IconButton(
+        icon: const Icon(Icons.more_horiz, color: MyColors.neutral80),
+        onPressed: () {},
       ),
-      child: Text("Lolos",
-          style: MyText.xsSemiBold.copyWith(color: MyColors.success700)),
+      onTap: () {},
     );
   }
 
@@ -526,6 +398,51 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen>
       ),
       child: const Icon(Icons.image_not_supported_outlined,
           color: MyColors.neutral70, size: 24),
+    );
+  }
+
+  Widget _statusChip(String status) {
+    Color chipColor, textColor;
+    String statusText = status;
+    switch (status.toLowerCase()) {
+      case 'damaged':
+        chipColor = MyColors.danger50;
+        textColor = MyColors.danger700;
+        break;
+      case 'karantina':
+        chipColor = MyColors.alert50;
+        textColor = MyColors.alert700;
+        break;
+      default:
+        chipColor = MyColors.success50;
+        textColor = MyColors.success700;
+        statusText = "Lolos";
+    }
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+      decoration: BoxDecoration(
+        color: chipColor,
+        borderRadius: BorderRadius.circular(20),
+      ),
+      child:
+          Text(statusText, style: MyText.xsSemiBold.copyWith(color: textColor)),
+    );
+  }
+
+  Widget _priceChip(String price) {
+    final priceValue = double.tryParse(price) ?? 0;
+    final formattedPrice = priceValue.truncate().toCurrencyFormat();
+
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+      decoration: BoxDecoration(
+        color: MyColors.neutral30,
+        borderRadius: BorderRadius.circular(6),
+      ),
+      child: Text(
+        formattedPrice,
+        style: MyText.xsSemiBold,
+      ),
     );
   }
 

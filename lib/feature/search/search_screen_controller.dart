@@ -141,29 +141,29 @@ class SearchScreenController extends StateNotifier<SearchScreenUiState> {
   Future<void> onProductTapped(WmsProduct data) async {
     _commonController.showLoading(isLoading: true);
 
-    final result = await AsyncValue.guard(
-      () => _wmsApiRepository.saveProductScan(
-          productName: data.productName,
-          productPrice: double.tryParse(data.productPrice) ?? 0.0,
-          quantity: 1, // Default quantity
-          status: 'Lolos', // Default status
-          imageUrl: data.imageUrl,
-      )
-    );
+    // final result = await AsyncValue.guard(
+    //   () => _wmsApiRepository.saveProductScan(
+    //       productName: data.productName,
+    //       productPrice: double.tryParse(data.productPrice) ?? 0.0,
+    //       quantity: 1, // Default quantity
+    //       status: 'Lolos', // Default status
+    //       imageUrl: data.imageUrl,
+    //   )
+    // );
     
     _commonController.showLoading(isLoading: false);
     if (!mounted) return;
 
-    result.when(
-      data: (_) {
-        state = state.copyWith(addProductSuccess: Event(null));
-      },
-      error: (e, s) {
-        _commonController.handleCommonError(e, () {
-          onProductTapped(data);
-        });
-      },
-      loading: () {},
-    );
+    // result.when(
+    //   data: (_) {
+    //     state = state.copyWith(addProductSuccess: Event(null));
+    //   },
+    //   error: (e, s) {
+    //     _commonController.handleCommonError(e, () {
+    //       onProductTapped(data);
+    //     });
+    //   },
+    //   loading: () {},
+    // );
   }
 }

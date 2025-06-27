@@ -7,7 +7,6 @@ environment:
   sdk: ">=3.4.0 <4.0.0"
 
 dependencies:
-  amazon_cognito_identity_dart_2: ^3.6.5
   cached_network_image: ^3.2.3
   camera: ^0.10.5+5
   collection: ^1.16.0
@@ -36,7 +35,6 @@ dependencies:
   path_provider: ^2.0.15
   permission_handler: ^12.0.0+1
   pretty_dio_logger: ^1.4.0
-  recase: ^4.1.0
   shared_preferences: ^2.2.3
   win32: ^5.5.3
 

@@ -29,7 +29,7 @@ _$ProductScanDataImpl _$$ProductScanDataImplFromJson(
     _$ProductScanDataImpl(
       productName: json['product_name'] as String? ?? '',
       productPrice: (json['product_price'] as num?)?.toDouble() ?? 0.0,
-      imageUrl: json['image_url'] as String?,
+      imageUrl: json['imageUrl'] as String?,
     );
 
 Map<String, dynamic> _$$ProductScanDataImplToJson(
@@ -37,5 +37,5 @@ Map<String, dynamic> _$$ProductScanDataImplToJson(
     <String, dynamic>{
       'product_name': instance.productName,
       'product_price': instance.productPrice,
-      'image_url': instance.imageUrl,
+      'imageUrl': instance.imageUrl,
     };

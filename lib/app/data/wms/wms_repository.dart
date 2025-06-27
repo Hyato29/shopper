@@ -1,4 +1,8 @@
 import 'dart:async';
+import 'dart:convert';
+import 'dart:io';
+import 'package:dio/dio.dart';
+import 'package:fskeleton/app/data/ecommerce/model/ecommerce_product.dart';
 import 'package:fskeleton/app/data/wms/model/wms_bundle/wms_bundle.dart';
 import 'package:fskeleton/app/data/wms/model/wms_category/wms_category.dart';
 import 'package:fskeleton/app/data/wms/model/wms_identify/identify_product_response.dart';
@@ -35,13 +39,21 @@ class WmsApiRepository {
     }
   }
 
-  Future<IdentifyProductResponse> identifyProduct({
-    required String imageUrl,
+  Future<IdentifyProductResponse> identifyProductFromFile({
+    required File imageFile,
   }) async {
     try {
+      String fileName = imageFile.path.split('/').last;
+      FormData formData = FormData.fromMap({
+        "image": await MultipartFile.fromFile(
+          imageFile.path,
+          filename: fileName,
+        ),
+      });
+
       final response = await _httpClient.post<Map<String, dynamic>>(
         path: '/api/v1/identify-product',
-        body: {'imageUrl': imageUrl},
+        body: formData,
       );
       return IdentifyProductResponse.fromJson(response);
     } on HttpStatusCodeException catch (_) {
@@ -68,22 +80,33 @@ class WmsApiRepository {
     required double productPrice,
     required int quantity,
     required String status,
-    String? imageUrl,
+    required File imageFile, // File gambar asli
+    String? imageUrl, // URL gambar dari e-commerce
     double? fixedPrice,
     List<int>? categoryIds,
   }) async {
     try {
+      String fileName = imageFile.path.split('/').last;
+
+      FormData formData = FormData.fromMap({
+        'productName': productName,
+        'productPrice': productPrice.toString(),
+        'quantity': quantity,
+        'status': status,
+        if (fixedPrice != null) 'fixedPrice': fixedPrice.toString(),
+        if (categoryIds != null) 'categoryIds': json.encode(categoryIds),
+        // PERBAIKAN: Kirim imageUrl dari e-commerce jika ada
+        if (imageUrl != null) 'imageUrl': imageUrl,
+        // Tetap kirim file gambar asli untuk disimpan di server
+        'image': await MultipartFile.fromFile(
+          imageFile.path,
+          filename: fileName,
+        ),
+      });
+
       await _httpClient.post(
         path: '/api/v1/product-scans',
-        body: {
-          'productName': productName,
-          'productPrice': productPrice,
-          'quantity': quantity,
-          'status': status,
-          'imageUrl': imageUrl,
-          'fixedPrice': fixedPrice,
-          'categoryIds': categoryIds,
-        },
+        body: formData,
       );
     } catch (e) {
       rethrow;
@@ -103,6 +126,20 @@ class WmsApiRepository {
       );
       return WmsGetBundleBasicResponse.fromJson(response).data.resource;
     } on HttpStatusCodeException catch (_) {
+      rethrow;
+    }
+  }
+
+  Future<EcommerceSearchResult> searchEcommerce(
+      {required String productName}) async {
+    try {
+      final response = await _httpClient.post<Map<String, dynamic>>(
+        path: '/api/v1/search-ecommerce',
+        body: {'productName': productName},
+      );
+      final responseData = response['data'] as Map<String, dynamic>;
+      return EcommerceSearchResult.fromJson(responseData);
+    } catch (e) {
       rethrow;
     }
   }

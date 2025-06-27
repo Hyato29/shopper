@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/cupertino.dart';
 import 'package:fskeleton/app/data/auth/auth_repository.dart';
 import 'package:fskeleton/core.dart';
+import 'package:fskeleton/feature/ecommerce/ecommerce_search_screen.dart';
 import 'package:fskeleton/feature/history/history_screen.dart';
 import 'package:fskeleton/feature/home/home_screen.dart';
 import 'package:fskeleton/feature/login/login_screen.dart';
@@ -24,6 +25,7 @@ class AppRouter {
   static const successRoute = 'success_list';
   static const searchRoute = 'search_screen_route';
   static const historyRoute = 'history';
+  static const ecommerceSearchRoute = 'ecommerce-search';
 
   final AuthRepository _authRepository;
 
@@ -89,6 +91,15 @@ class AppRouter {
             path: '/$historyRoute',
             builder: (context, state) {
               return const HistoryScreen();
+            },
+          ),
+          GoRoute(
+            name: ecommerceSearchRoute,
+            path: '/$ecommerceSearchRoute',
+            builder: (context, state) {
+              // Terima map sebagai parameter
+              final params = state.extra! as Map<String, String>;
+              return EcommerceSearchScreen(searchParams: params);
             },
           ),
         ],

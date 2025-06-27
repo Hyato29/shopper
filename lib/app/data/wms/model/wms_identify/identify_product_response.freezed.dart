@@ -235,6 +235,7 @@ ProductScanData _$ProductScanDataFromJson(Map<String, dynamic> json) {
 mixin _$ProductScanData {
   String get productName => throw _privateConstructorUsedError;
   double get productPrice => throw _privateConstructorUsedError;
+  @JsonKey(name: 'imageUrl')
   String? get imageUrl => throw _privateConstructorUsedError;
 
   /// Serializes this ProductScanData to a JSON map.
@@ -253,7 +254,10 @@ abstract class $ProductScanDataCopyWith<$Res> {
           ProductScanData value, $Res Function(ProductScanData) then) =
       _$ProductScanDataCopyWithImpl<$Res, ProductScanData>;
   @useResult
-  $Res call({String productName, double productPrice, String? imageUrl});
+  $Res call(
+      {String productName,
+      double productPrice,
+      @JsonKey(name: 'imageUrl') String? imageUrl});
 }
 
 /// @nodoc
@@ -300,7 +304,10 @@ abstract class _$$ProductScanDataImplCopyWith<$Res>
       __$$ProductScanDataImplCopyWithImpl<$Res>;
   @override
   @useResult
-  $Res call({String productName, double productPrice, String? imageUrl});
+  $Res call(
+      {String productName,
+      double productPrice,
+      @JsonKey(name: 'imageUrl') String? imageUrl});
 }
 
 /// @nodoc
@@ -342,7 +349,9 @@ class __$$ProductScanDataImplCopyWithImpl<$Res>
 @JsonSerializable(fieldRename: FieldRename.snake)
 class _$ProductScanDataImpl implements _ProductScanData {
   const _$ProductScanDataImpl(
-      {this.productName = '', this.productPrice = 0.0, this.imageUrl});
+      {this.productName = '',
+      this.productPrice = 0.0,
+      @JsonKey(name: 'imageUrl') this.imageUrl});
 
   factory _$ProductScanDataImpl.fromJson(Map<String, dynamic> json) =>
       _$$ProductScanDataImplFromJson(json);
@@ -354,6 +363,7 @@ class _$ProductScanDataImpl implements _ProductScanData {
   @JsonKey()
   final double productPrice;
   @override
+  @JsonKey(name: 'imageUrl')
   final String? imageUrl;
 
   @override
@@ -398,9 +408,10 @@ class _$ProductScanDataImpl implements _ProductScanData {
 
 abstract class _ProductScanData implements ProductScanData {
   const factory _ProductScanData(
-      {final String productName,
-      final double productPrice,
-      final String? imageUrl}) = _$ProductScanDataImpl;
+          {final String productName,
+          final double productPrice,
+          @JsonKey(name: 'imageUrl') final String? imageUrl}) =
+      _$ProductScanDataImpl;
 
   factory _ProductScanData.fromJson(Map<String, dynamic> json) =
       _$ProductScanDataImpl.fromJson;
@@ -410,6 +421,7 @@ abstract class _ProductScanData implements ProductScanData {
   @override
   double get productPrice;
   @override
+  @JsonKey(name: 'imageUrl')
   String? get imageUrl;
 
   /// Create a copy of ProductScanData

@@ -1,13 +1,13 @@
-// lib/feature/product_detail/product_detail_params.dart
-
 class ProductDetailParams {
   final String productName;
   final double productPrice;
-  final String? imageUrl; // Kita tambahkan imageUrl agar bisa diteruskan
+  final String? imageUrl; // Ini akan null, tapi biarkan untuk jaga-jaga
+  final String localImagePath; // <-- TAMBAHKAN INI
 
   ProductDetailParams({
     required this.productName,
     required this.productPrice,
     this.imageUrl,
+    required this.localImagePath, // <-- TAMBAHKAN INI
   });
 }

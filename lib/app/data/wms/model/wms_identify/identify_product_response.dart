@@ -22,7 +22,7 @@ class ProductScanData with _$ProductScanData {
   const factory ProductScanData({
     @Default('') String productName,
     @Default(0.0) double productPrice,
-    String? imageUrl,
+    @JsonKey(name: 'imageUrl') String? imageUrl,
   }) = _ProductScanData;
 
   factory ProductScanData.fromJson(Map<String, dynamic> json) =>

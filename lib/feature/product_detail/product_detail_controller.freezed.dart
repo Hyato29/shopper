@@ -20,8 +20,10 @@ mixin _$ProductDetailState {
       throw _privateConstructorUsedError;
   String? get selectedStatus => throw _privateConstructorUsedError;
   int get quantity => throw _privateConstructorUsedError;
-  Set<int> get selectedCategoryIds => throw _privateConstructorUsedError;
-  bool get isSaving => throw _privateConstructorUsedError;
+  int? get selectedCategoryId => throw _privateConstructorUsedError;
+  bool get isSaving =>
+      throw _privateConstructorUsedError; // TAMBAHKAN STATE INI untuk menandai navigasi
+  Event<bool>? get navigateBack => throw _privateConstructorUsedError;
 
   /// Create a copy of ProductDetailState
   /// with the given fields replaced by the non-null parameter values.
@@ -40,8 +42,9 @@ abstract class $ProductDetailStateCopyWith<$Res> {
       {AsyncValue<List<Category>> categories,
       String? selectedStatus,
       int quantity,
-      Set<int> selectedCategoryIds,
-      bool isSaving});
+      int? selectedCategoryId,
+      bool isSaving,
+      Event<bool>? navigateBack});
 }
 
 /// @nodoc
@@ -62,8 +65,9 @@ class _$ProductDetailStateCopyWithImpl<$Res, $Val extends ProductDetailState>
     Object? categories = null,
     Object? selectedStatus = freezed,
     Object? quantity = null,
-    Object? selectedCategoryIds = null,
+    Object? selectedCategoryId = freezed,
     Object? isSaving = null,
+    Object? navigateBack = freezed,
   }) {
     return _then(_value.copyWith(
       categories: null == categories
@@ -78,14 +82,18 @@ class _$ProductDetailStateCopyWithImpl<$Res, $Val extends ProductDetailState>
           ? _value.quantity
           : quantity // ignore: cast_nullable_to_non_nullable
               as int,
-      selectedCategoryIds: null == selectedCategoryIds
-          ? _value.selectedCategoryIds
-          : selectedCategoryIds // ignore: cast_nullable_to_non_nullable
-              as Set<int>,
+      selectedCategoryId: freezed == selectedCategoryId
+          ? _value.selectedCategoryId
+          : selectedCategoryId // ignore: cast_nullable_to_non_nullable
+              as int?,
       isSaving: null == isSaving
           ? _value.isSaving
           : isSaving // ignore: cast_nullable_to_non_nullable
               as bool,
+      navigateBack: freezed == navigateBack
+          ? _value.navigateBack
+          : navigateBack // ignore: cast_nullable_to_non_nullable
+              as Event<bool>?,
     ) as $Val);
   }
 }
@@ -102,8 +110,9 @@ abstract class _$$ProductDetailStateImplCopyWith<$Res>
       {AsyncValue<List<Category>> categories,
       String? selectedStatus,
       int quantity,
-      Set<int> selectedCategoryIds,
-      bool isSaving});
+      int? selectedCategoryId,
+      bool isSaving,
+      Event<bool>? navigateBack});
 }
 
 /// @nodoc
@@ -122,8 +131,9 @@ class __$$ProductDetailStateImplCopyWithImpl<$Res>
     Object? categories = null,
     Object? selectedStatus = freezed,
     Object? quantity = null,
-    Object? selectedCategoryIds = null,
+    Object? selectedCategoryId = freezed,
     Object? isSaving = null,
+    Object? navigateBack = freezed,
   }) {
     return _then(_$ProductDetailStateImpl(
       categories: null == categories
@@ -138,14 +148,18 @@ class __$$ProductDetailStateImplCopyWithImpl<$Res>
           ? _value.quantity
           : quantity // ignore: cast_nullable_to_non_nullable
               as int,
-      selectedCategoryIds: null == selectedCategoryIds
-          ? _value._selectedCategoryIds
-          : selectedCategoryIds // ignore: cast_nullable_to_non_nullable
-              as Set<int>,
+      selectedCategoryId: freezed == selectedCategoryId
+          ? _value.selectedCategoryId
+          : selectedCategoryId // ignore: cast_nullable_to_non_nullable
+              as int?,
       isSaving: null == isSaving
           ? _value.isSaving
           : isSaving // ignore: cast_nullable_to_non_nullable
               as bool,
+      navigateBack: freezed == navigateBack
+          ? _value.navigateBack
+          : navigateBack // ignore: cast_nullable_to_non_nullable
+              as Event<bool>?,
     ));
   }
 }
@@ -155,38 +169,32 @@ class __$$ProductDetailStateImplCopyWithImpl<$Res>
 class _$ProductDetailStateImpl implements _ProductDetailState {
   const _$ProductDetailStateImpl(
       {this.categories = const AsyncData([]),
-      this.selectedStatus = null,
+      this.selectedStatus,
       this.quantity = 1,
-      final Set<int> selectedCategoryIds = const {},
-      this.isSaving = false})
-      : _selectedCategoryIds = selectedCategoryIds;
+      this.selectedCategoryId,
+      this.isSaving = false,
+      this.navigateBack});
 
   @override
   @JsonKey()
   final AsyncValue<List<Category>> categories;
   @override
-  @JsonKey()
   final String? selectedStatus;
   @override
   @JsonKey()
   final int quantity;
-  final Set<int> _selectedCategoryIds;
   @override
-  @JsonKey()
-  Set<int> get selectedCategoryIds {
-    if (_selectedCategoryIds is EqualUnmodifiableSetView)
-      return _selectedCategoryIds;
-    // ignore: implicit_dynamic_type
-    return EqualUnmodifiableSetView(_selectedCategoryIds);
-  }
-
+  final int? selectedCategoryId;
   @override
   @JsonKey()
   final bool isSaving;
+// TAMBAHKAN STATE INI untuk menandai navigasi
+  @override
+  final Event<bool>? navigateBack;
 
   @override
   String toString() {
-    return 'ProductDetailState(categories: $categories, selectedStatus: $selectedStatus, quantity: $quantity, selectedCategoryIds: $selectedCategoryIds, isSaving: $isSaving)';
+    return 'ProductDetailState(categories: $categories, selectedStatus: $selectedStatus, quantity: $quantity, selectedCategoryId: $selectedCategoryId, isSaving: $isSaving, navigateBack: $navigateBack)';
   }
 
   @override
@@ -200,20 +208,17 @@ class _$ProductDetailStateImpl implements _ProductDetailState {
                 other.selectedStatus == selectedStatus) &&
             (identical(other.quantity, quantity) ||
                 other.quantity == quantity) &&
-            const DeepCollectionEquality()
-                .equals(other._selectedCategoryIds, _selectedCategoryIds) &&
+            (identical(other.selectedCategoryId, selectedCategoryId) ||
+                other.selectedCategoryId == selectedCategoryId) &&
             (identical(other.isSaving, isSaving) ||
-                other.isSaving == isSaving));
+                other.isSaving == isSaving) &&
+            (identical(other.navigateBack, navigateBack) ||
+                other.navigateBack == navigateBack));
   }
 
   @override
-  int get hashCode => Object.hash(
-      runtimeType,
-      categories,
-      selectedStatus,
-      quantity,
-      const DeepCollectionEquality().hash(_selectedCategoryIds),
-      isSaving);
+  int get hashCode => Object.hash(runtimeType, categories, selectedStatus,
+      quantity, selectedCategoryId, isSaving, navigateBack);
 
   /// Create a copy of ProductDetailState
   /// with the given fields replaced by the non-null parameter values.
@@ -230,8 +235,9 @@ abstract class _ProductDetailState implements ProductDetailState {
       {final AsyncValue<List<Category>> categories,
       final String? selectedStatus,
       final int quantity,
-      final Set<int> selectedCategoryIds,
-      final bool isSaving}) = _$ProductDetailStateImpl;
+      final int? selectedCategoryId,
+      final bool isSaving,
+      final Event<bool>? navigateBack}) = _$ProductDetailStateImpl;
 
   @override
   AsyncValue<List<Category>> get categories;
@@ -240,9 +246,11 @@ abstract class _ProductDetailState implements ProductDetailState {
   @override
   int get quantity;
   @override
-  Set<int> get selectedCategoryIds;
+  int? get selectedCategoryId;
   @override
-  bool get isSaving;
+  bool get isSaving; // TAMBAHKAN STATE INI untuk menandai navigasi
+  @override
+  Event<bool>? get navigateBack;
 
   /// Create a copy of ProductDetailState
   /// with the given fields replaced by the non-null parameter values.

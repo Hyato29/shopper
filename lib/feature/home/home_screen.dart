@@ -1,5 +1,3 @@
-// lib/feature/home/home_screen.dart
-
 import 'dart:io';
 
 import 'package:cached_network_image/cached_network_image.dart';
@@ -19,7 +17,6 @@ import 'package:fskeleton/app/ui/theme/my_colors.dart';
 import 'package:fskeleton/app/ui/theme/my_text.dart';
 import 'package:fskeleton/core.dart';
 import 'package:fskeleton/feature/home/home_screen_controller.dart';
-import 'package:fskeleton/feature/product_detail/product_detail_params.dart';
 import 'package:go_router/go_router.dart';
 import 'package:permission_handler/permission_handler.dart';
 
@@ -43,14 +40,15 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
-    // ... (build method Anda sudah benar, tidak perlu diubah)
     return CommonScreen(
       child: Scaffold(
         appBar: AppBar(
+          toolbarHeight: 64,
           backgroundColor: Colors.white,
+          elevation: 0,
           title: Text(
-            context.localizations.priceSearchingSystem,
-            style: MyText.baseSemiBold,
+            "Sistem Pencarian Harga",
+            style: MyText.lgSemiBold.copyWith(color: MyColors.black),
           ),
           actions: [_appBarSettings(context)],
         ),
@@ -61,13 +59,12 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             child: SingleChildScrollView(
               physics: const AlwaysScrollableScrollPhysics(),
               child: Padding(
-                padding: const EdgeInsets.symmetric(vertical: 20),
+                padding: const EdgeInsets.symmetric(vertical: 10),
                 child: Column(
                   children: [
-                    const SizedBox(height: 8),
                     Text(
                       context.localizations.getProductPhotoWithCameraOrGallery,
-                      style: MyText.xs.copyWith(color: MyColors.neutral80),
+                      style: MyText.sm.copyWith(color: MyColors.neutral80),
                     ),
                     const SizedBox(height: 16),
                     _dashboardContent(),
@@ -84,23 +81,21 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     );
   }
 
-  // --- WIDGET-WIDGET UI ---
-  // Semua widget UI Anda (seperti _appBarSettings, _scanHistoryBox, dll) sudah benar.
-  // Kita hanya akan fokus pada fungsi logika di bawah.
-  Padding _appBarSettings(BuildContext context) {
+  Widget _appBarSettings(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.only(right: 20),
-      child: PopupMenuButton<String>(
-        onSelected: (value) {
-          if (value == 'Logout') {
-            ref.read(_controller.notifier).onLogout();
-          }
-        },
-        itemBuilder: (_) => [
-          const PopupMenuItem(value: 'Logout', child: Text('Logout')),
-          const PopupMenuItem(value: 'Printer', child: Text('Printer')),
-        ],
-        icon: const Icon(Icons.settings, color: Colors.blue),
+      padding: const EdgeInsets.only(right: 12.0),
+      child: TextButton.icon(
+        onPressed: () {},
+        icon: const Icon(Icons.settings, color: MyColors.primary500),
+        label: Text(
+          "Pengaturan",
+          style: MyText.sm.copyWith(color: MyColors.primary500),
+        ),
+        style: TextButton.styleFrom(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(8),
+          ),
+        ),
       ),
     );
   }
@@ -119,7 +114,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
 
   Widget _historyHeader() {
     return Padding(
-      padding: const EdgeInsets.fromLTRB(20, 20, 10, 10),
+      padding: const EdgeInsets.fromLTRB(20, 20, 10, 20),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
@@ -128,7 +123,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             onPressed: () => context.pushNamed(AppRouter.historyRoute),
             label: Text(
               "Lihat Semua",
-              style: MyText.smSemiBold.copyWith(color: MyColors.primary500),
+              style: MyText.xsSemiBold.copyWith(color: MyColors.primary500),
             ),
           )
         ],
@@ -151,6 +146,13 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         }
         final itemsToShow = products.take(3).toList();
         return Container(
+          decoration: const BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.only(
+              bottomLeft: Radius.circular(12),
+              bottomRight: Radius.circular(12),
+            )
+          ),
           padding: const EdgeInsets.symmetric(horizontal: 20),
           child: Column(
             children: itemsToShow
@@ -175,36 +177,55 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   }
 
   Widget _historyItem(WmsProduct product, bool isLast) {
+    final wmsConfig = ref.watch(NetworkConfig.wmsApiProvider);
+    final baseUrl =
+        "${wmsConfig.apiScheme}://${wmsConfig.apiHost}:${wmsConfig.apiPort}";
+
     return Column(
       children: [
         Padding(
           padding: const EdgeInsets.symmetric(vertical: 16.0),
           child: Row(
-            crossAxisAlignment: CrossAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               if (product.imageUrl != null && product.imageUrl!.isNotEmpty)
-                ClipRRect(
-                  borderRadius: BorderRadius.circular(8),
-                  child: CachedNetworkImage(
-                    imageUrl: product.imageUrl!,
-                    width: 48,
-                    height: 48,
-                    fit: BoxFit.cover,
-                    errorWidget: (_, __, ___) => _imagePlaceholder(),
-                    placeholder: (_, __) => _imagePlaceholder(),
+                Container(
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(12),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.grey.withOpacity(0.5),
+                        spreadRadius: 1,
+                        blurRadius: 5,
+                        offset: const Offset(0, 3),
+                      )
+                    ]
+                  ),
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(8),
+                    child: CachedNetworkImage(
+                      imageUrl: baseUrl + product.imageUrl!,
+                      width: 48,
+                      height: 48,
+                      fit: BoxFit.cover,
+                      errorWidget: (_, __, ___) => _imagePlaceholder(),
+                      placeholder: (_, __) => _imagePlaceholder(),
+                    ),
                   ),
                 )
               else
                 _imagePlaceholder(),
               const SizedBox(width: 12),
-              Expanded(
-                child: Text(product.productName,
-                    style: MyText.sm,
-                    maxLines: 2,
-                    overflow: TextOverflow.ellipsis),
-              ),
-              const SizedBox(width: 12),
               if (product.status != null) _statusChip(product.status!),
+              const SizedBox(width: 8),
+              Expanded(
+                child: Text(
+                  product.productName,
+                  style: MyText.sm,
+                  maxLines: 5,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ),
             ],
           ),
         ),
@@ -215,6 +236,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
 
   Widget _statusChip(String status) {
     Color chipColor, textColor;
+    String statusText = status;
+
     switch (status.toLowerCase()) {
       case 'damaged':
         chipColor = MyColors.danger50;
@@ -227,6 +250,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
       default:
         chipColor = MyColors.success50;
         textColor = MyColors.success700;
+        statusText = "Lolos";
     }
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
@@ -234,7 +258,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         color: chipColor,
         borderRadius: BorderRadius.circular(20),
       ),
-      child: Text(status, style: MyText.xsSemiBold.copyWith(color: textColor)),
+      child:
+          Text(statusText, style: MyText.xsSemiBold.copyWith(color: textColor)),
     );
   }
 
@@ -301,6 +326,14 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
           color: MyColors.white,
           borderRadius: BorderRadius.circular(16),
           border: Border.all(color: MyColors.neutral30),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.grey.withOpacity(0.1),
+              spreadRadius: 1,
+              blurRadius: 5,
+              offset: const Offset(0, 3),
+            ),
+          ],
         ),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -375,8 +408,6 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     );
   }
 
-  // --- FUNGSI LOGIKA YANG DIPERBAIKI ---
-
   Future<void> _cameraOrImagePickerAction({required bool isCamera}) async {
     final image = await ref
         .read(ImagePickerService.provider)
@@ -384,40 +415,23 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
 
     if (image == null || !mounted) return;
 
-    // Memanggil controller untuk identifikasi produk
-    final productData = await ref
+    final productName = await ref
         .read(_controller.notifier)
         .identifyProduct(file: File(image.path));
 
-    // Memeriksa hasil dari controller
-    if (productData != null && mounted) {
-      // ---- JIKA SUKSES ----
-      // Buat parameter untuk halaman detail
-      final params = ProductDetailParams(
-        productName: productData.productName,
-        productPrice: productData.productPrice,
-        imageUrl: productData.imageUrl,
-      );
-
-      // Tunggu hasil dari halaman detail (jika user menekan simpan, kita dapat 'true')
-      final shouldRefresh = await context.pushNamed<bool>(
-        AppRouter.productDetailRoute,
-        extra: params,
-      );
-
-      // Jika halaman detail mengirim `true`, refresh riwayat di halaman utama
-      if (shouldRefresh == true) {
-        ref.read(_controller.notifier).loadProducts();
-      }
+    if (productName != null && productName.isNotEmpty && mounted) {
+      final searchParams = {
+        'productName': productName,
+        'localImagePath': image.path,
+      };
+      context.pushNamed(AppRouter.ecommerceSearchRoute, extra: searchParams);
     } else if (mounted) {
-      // ---- JIKA GAGAL (productData adalah null) ----
-      // Tampilkan alert error kepada pengguna
       showMyAlert(
         context: context,
-        data: MyAlertData(
+        data: const MyAlertData(
           title: "Gagal Mengidentifikasi Produk",
           content:
-              "Sistem tidak dapat mengenali produk dari gambar yang diberikan. Silakan coba lagi dengan gambar yang lebih jelas.",
+              "Sistem tidak dapat mengenali produk dari gambar yang diberikan.",
           primaryButton: "Mengerti",
         ),
       );
@@ -427,13 +441,10 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   Future<bool> _requestPermissionAndRedirect({required bool isCamera}) async {
     Permission permission;
 
-    // Menentukan permission yang akan diminta
     if (isCamera) {
       permission = Permission.camera;
     } else {
       if (Platform.isAndroid) {
-        // Untuk Android 13 (SDK 33) ke atas, gunakan Permission.photos
-        // Jika tidak, gunakan Permission.storage
         final androidInfo = await DeviceInfoPlugin().androidInfo;
         if (androidInfo.version.sdkInt >= 33) {
           permission = Permission.photos;
@@ -441,27 +452,23 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
           permission = Permission.storage;
         }
       } else {
-        // Untuk iOS, selalu gunakan Permission.photos
         permission = Permission.photos;
       }
     }
 
-    // Meminta izin
     final status = await permission.request();
 
-    // Cek status izin
     if (status.isGranted) {
-      return true; // Izin diberikan
+      return true;
     }
 
-    // Jika ditolak permanen atau terbatas, tampilkan dialog
     if (status.isPermanentlyDenied || status.isRestricted) {
       if (mounted) {
         _showPermissionDialog(isCamera: isCamera);
       }
     }
 
-    return false; // Izin ditolak
+    return false;
   }
 
   void _showPermissionDialog({required bool isCamera}) {

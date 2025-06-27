@@ -5,15 +5,11 @@ import 'dart:io';
 
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:fskeleton/app/common/common_controller.dart';
-import 'package:fskeleton/app/config/env_loader.dart';
 import 'package:fskeleton/app/data/auth/auth_repository.dart';
-import 'package:fskeleton/app/data/wms/model/wms_identify/identify_product_response.dart';
 import 'package:fskeleton/app/data/wms/model/wms_product/wms_product.dart';
 import 'package:fskeleton/app/data/wms/wms_repository.dart';
-import 'package:fskeleton/app/utils/aws_s3_upload/aws_s3_upload.dart';
 import 'package:fskeleton/core.dart';
 import 'package:package_info_plus/package_info_plus.dart';
-import 'package:path/path.dart';
 
 part 'home_screen_controller.freezed.dart';
 
@@ -99,8 +95,9 @@ class HomeScreenController extends StateNotifier<HomeScreenUiState> {
 
   // Pastikan Anda juga memiliki fungsi ini jika ada fitur "load more"
   Future<void> loadNextProducts() async {
-    if (state.nextPageLoading || _currentPage >= (_lastPage ?? _currentPage))
+    if (state.nextPageLoading || _currentPage >= (_lastPage ?? _currentPage)) {
       return;
+    }
 
     state = state.copyWith(nextPageLoading: true);
     _currentPage++;
@@ -125,47 +122,57 @@ class HomeScreenController extends StateNotifier<HomeScreenUiState> {
     }
   }
 
-  Future<ProductScanData?> identifyProduct({required File file}) async {
+  // Future<ProductScanData?> identifyProduct({required File file}) async {
+  //   _commonController.showLoading(isLoading: true);
+
+  //   // Panggil langsung repository untuk mengirim file
+  //   final result = await AsyncValue.guard(
+  //     () => _wmsApiRepository.identifyProductFromFile(imageFile: file),
+  //   );
+
+  //   _commonController.showLoading(isLoading: false);
+
+  //   if (!mounted) return null;
+
+  //   if (result.hasError) {
+  //     _commonController.handleCommonError(
+  //         result.error ?? Exception('Unknown error'),
+  //         () => identifyProduct(file: file));
+  //     return null;
+  //   }
+
+  //   final response = result.asData?.value;
+  //   if (response != null && response.success && response.data != null) {
+  //     // imageUrl sekarang akan null karena backend tidak mengirimkannya lagi
+  //     // Ini tidak masalah karena ProductDetailParams mengizinkan null
+  //     return response.data;
+  //   } else {
+  //     _commonController.handleCommonError(
+  //         Exception(response?.message ?? 'Gagal mengidentifikasi produk.'),
+  //         null);
+  //     return null;
+  //   }
+  // }
+
+  Future<String?> identifyProduct({required File file}) async {
     _commonController.showLoading(isLoading: true);
-
-    final imageUrl = await AwsS3.uploadFile(
-      accessKey: EnvLoader.get('AWS_ACCESS_KEY_ROOT'),
-      secretKey: EnvLoader.get('AWS_SECRET_KEY_ROOT'),
-      file: file,
-      bucket: EnvLoader.get('AWS_BUCKET_NAME'),
-      region: EnvLoader.get('AWS_REGION'),
-      filename: basename(file.path),
-    );
-
-    if (imageUrl == null) {
-      _commonController.showLoading(isLoading: false);
-      _commonController.handleCommonError(
-          Exception("Gagal mengunggah gambar"), null);
-      return null;
-    }
-
     final result = await AsyncValue.guard(
-      () => _wmsApiRepository.identifyProduct(imageUrl: imageUrl),
+      () => _wmsApiRepository.identifyProductFromFile(imageFile: file),
     );
-
     _commonController.showLoading(isLoading: false);
-
     if (!mounted) return null;
 
     if (result.hasError) {
-      _commonController.handleCommonError(
-          result.error ?? Exception('Unknown error'),
-          () => identifyProduct(file: file));
+      _commonController.handleCommonError(result, null);
       return null;
     }
 
     final response = result.asData?.value;
     if (response != null && response.success && response.data != null) {
-      return response.data;
+      // HANYA KEMBALIKAN NAMA PRODUK
+      return response.data!.productName;
     } else {
-      _commonController.handleCommonError(
-          Exception(response?.message ?? 'Gagal mengidentifikasi produk.'),
-          null);
+      _commonController.handleCommonError(Exception(response?.message), null);
       return null;
     }
   }
