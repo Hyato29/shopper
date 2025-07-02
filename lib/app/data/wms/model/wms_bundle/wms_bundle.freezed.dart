@@ -123,8 +123,7 @@ class __$$WmsGetBundleBasicResponseImplCopyWithImpl<$Res>
 }
 
 /// @nodoc
-
-@JsonSerializable(fieldRename: FieldRename.snake)
+@JsonSerializable()
 class _$WmsGetBundleBasicResponseImpl implements _WmsGetBundleBasicResponse {
   const _$WmsGetBundleBasicResponseImpl({required this.data});
 
@@ -314,20 +313,17 @@ class __$$WmsGetBundleResponseImplCopyWithImpl<$Res>
 }
 
 /// @nodoc
-
-@JsonSerializable(fieldRename: FieldRename.snake)
+@JsonSerializable()
 class _$WmsGetBundleResponseImpl implements _WmsGetBundleResponse {
   const _$WmsGetBundleResponseImpl(
-      {this.status = false, this.message = '', required this.resource});
+      {required this.status, required this.message, required this.resource});
 
   factory _$WmsGetBundleResponseImpl.fromJson(Map<String, dynamic> json) =>
       _$$WmsGetBundleResponseImplFromJson(json);
 
   @override
-  @JsonKey()
   final bool status;
   @override
-  @JsonKey()
   final String message;
   @override
   final WmsGetBundleResource resource;
@@ -372,8 +368,8 @@ class _$WmsGetBundleResponseImpl implements _WmsGetBundleResponse {
 
 abstract class _WmsGetBundleResponse implements WmsGetBundleResponse {
   const factory _WmsGetBundleResponse(
-          {final bool status,
-          final String message,
+          {required final bool status,
+          required final String message,
           required final WmsGetBundleResource resource}) =
       _$WmsGetBundleResponseImpl;
 
@@ -402,8 +398,9 @@ WmsGetBundleResource _$WmsGetBundleResourceFromJson(Map<String, dynamic> json) {
 /// @nodoc
 mixin _$WmsGetBundleResource {
   int get currentPage => throw _privateConstructorUsedError;
-  List<WmsBundle> get data => throw _privateConstructorUsedError;
   int get lastPage => throw _privateConstructorUsedError;
+  int get total => throw _privateConstructorUsedError;
+  List<WmsBundle> get data => throw _privateConstructorUsedError;
 
   /// Serializes this WmsGetBundleResource to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
@@ -421,7 +418,7 @@ abstract class $WmsGetBundleResourceCopyWith<$Res> {
           $Res Function(WmsGetBundleResource) then) =
       _$WmsGetBundleResourceCopyWithImpl<$Res, WmsGetBundleResource>;
   @useResult
-  $Res call({int currentPage, List<WmsBundle> data, int lastPage});
+  $Res call({int currentPage, int lastPage, int total, List<WmsBundle> data});
 }
 
 /// @nodoc
@@ -441,22 +438,27 @@ class _$WmsGetBundleResourceCopyWithImpl<$Res,
   @override
   $Res call({
     Object? currentPage = null,
-    Object? data = null,
     Object? lastPage = null,
+    Object? total = null,
+    Object? data = null,
   }) {
     return _then(_value.copyWith(
       currentPage: null == currentPage
           ? _value.currentPage
           : currentPage // ignore: cast_nullable_to_non_nullable
               as int,
-      data: null == data
-          ? _value.data
-          : data // ignore: cast_nullable_to_non_nullable
-              as List<WmsBundle>,
       lastPage: null == lastPage
           ? _value.lastPage
           : lastPage // ignore: cast_nullable_to_non_nullable
               as int,
+      total: null == total
+          ? _value.total
+          : total // ignore: cast_nullable_to_non_nullable
+              as int,
+      data: null == data
+          ? _value.data
+          : data // ignore: cast_nullable_to_non_nullable
+              as List<WmsBundle>,
     ) as $Val);
   }
 }
@@ -469,7 +471,7 @@ abstract class _$$WmsGetBundleResourceImplCopyWith<$Res>
       __$$WmsGetBundleResourceImplCopyWithImpl<$Res>;
   @override
   @useResult
-  $Res call({int currentPage, List<WmsBundle> data, int lastPage});
+  $Res call({int currentPage, int lastPage, int total, List<WmsBundle> data});
 }
 
 /// @nodoc
@@ -486,22 +488,27 @@ class __$$WmsGetBundleResourceImplCopyWithImpl<$Res>
   @override
   $Res call({
     Object? currentPage = null,
-    Object? data = null,
     Object? lastPage = null,
+    Object? total = null,
+    Object? data = null,
   }) {
     return _then(_$WmsGetBundleResourceImpl(
       currentPage: null == currentPage
           ? _value.currentPage
           : currentPage // ignore: cast_nullable_to_non_nullable
               as int,
-      data: null == data
-          ? _value._data
-          : data // ignore: cast_nullable_to_non_nullable
-              as List<WmsBundle>,
       lastPage: null == lastPage
           ? _value.lastPage
           : lastPage // ignore: cast_nullable_to_non_nullable
               as int,
+      total: null == total
+          ? _value.total
+          : total // ignore: cast_nullable_to_non_nullable
+              as int,
+      data: null == data
+          ? _value._data
+          : data // ignore: cast_nullable_to_non_nullable
+              as List<WmsBundle>,
     ));
   }
 }
@@ -511,17 +518,21 @@ class __$$WmsGetBundleResourceImplCopyWithImpl<$Res>
 @JsonSerializable(fieldRename: FieldRename.snake)
 class _$WmsGetBundleResourceImpl implements _WmsGetBundleResource {
   const _$WmsGetBundleResourceImpl(
-      {this.currentPage = 0,
-      final List<WmsBundle> data = const [],
-      this.lastPage = 0})
+      {required this.currentPage,
+      required this.lastPage,
+      required this.total,
+      final List<WmsBundle> data = const []})
       : _data = data;
 
   factory _$WmsGetBundleResourceImpl.fromJson(Map<String, dynamic> json) =>
       _$$WmsGetBundleResourceImplFromJson(json);
 
   @override
-  @JsonKey()
   final int currentPage;
+  @override
+  final int lastPage;
+  @override
+  final int total;
   final List<WmsBundle> _data;
   @override
   @JsonKey()
@@ -532,12 +543,8 @@ class _$WmsGetBundleResourceImpl implements _WmsGetBundleResource {
   }
 
   @override
-  @JsonKey()
-  final int lastPage;
-
-  @override
   String toString() {
-    return 'WmsGetBundleResource(currentPage: $currentPage, data: $data, lastPage: $lastPage)';
+    return 'WmsGetBundleResource(currentPage: $currentPage, lastPage: $lastPage, total: $total, data: $data)';
   }
 
   @override
@@ -547,15 +554,16 @@ class _$WmsGetBundleResourceImpl implements _WmsGetBundleResource {
             other is _$WmsGetBundleResourceImpl &&
             (identical(other.currentPage, currentPage) ||
                 other.currentPage == currentPage) &&
-            const DeepCollectionEquality().equals(other._data, _data) &&
             (identical(other.lastPage, lastPage) ||
-                other.lastPage == lastPage));
+                other.lastPage == lastPage) &&
+            (identical(other.total, total) || other.total == total) &&
+            const DeepCollectionEquality().equals(other._data, _data));
   }
 
   @JsonKey(includeFromJson: false, includeToJson: false)
   @override
-  int get hashCode => Object.hash(runtimeType, currentPage,
-      const DeepCollectionEquality().hash(_data), lastPage);
+  int get hashCode => Object.hash(runtimeType, currentPage, lastPage, total,
+      const DeepCollectionEquality().hash(_data));
 
   /// Create a copy of WmsGetBundleResource
   /// with the given fields replaced by the non-null parameter values.
@@ -577,9 +585,10 @@ class _$WmsGetBundleResourceImpl implements _WmsGetBundleResource {
 
 abstract class _WmsGetBundleResource implements WmsGetBundleResource {
   const factory _WmsGetBundleResource(
-      {final int currentPage,
-      final List<WmsBundle> data,
-      final int lastPage}) = _$WmsGetBundleResourceImpl;
+      {required final int currentPage,
+      required final int lastPage,
+      required final int total,
+      final List<WmsBundle> data}) = _$WmsGetBundleResourceImpl;
 
   factory _WmsGetBundleResource.fromJson(Map<String, dynamic> json) =
       _$WmsGetBundleResourceImpl.fromJson;
@@ -587,9 +596,11 @@ abstract class _WmsGetBundleResource implements WmsGetBundleResource {
   @override
   int get currentPage;
   @override
-  List<WmsBundle> get data;
-  @override
   int get lastPage;
+  @override
+  int get total;
+  @override
+  List<WmsBundle> get data;
 
   /// Create a copy of WmsGetBundleResource
   /// with the given fields replaced by the non-null parameter values.
@@ -610,7 +621,7 @@ mixin _$WmsBundle {
   String get barcodeBundle => throw _privateConstructorUsedError;
   int get totalProductBundle => throw _privateConstructorUsedError;
   String get totalPriceBundle => throw _privateConstructorUsedError;
-  String get totalPriceCustomBundle => throw _privateConstructorUsedError;
+  String? get totalPriceCustomBundle => throw _privateConstructorUsedError;
   List<ProductInBundle> get productBundles =>
       throw _privateConstructorUsedError;
 
@@ -635,7 +646,7 @@ abstract class $WmsBundleCopyWith<$Res> {
       String barcodeBundle,
       int totalProductBundle,
       String totalPriceBundle,
-      String totalPriceCustomBundle,
+      String? totalPriceCustomBundle,
       List<ProductInBundle> productBundles});
 }
 
@@ -659,7 +670,7 @@ class _$WmsBundleCopyWithImpl<$Res, $Val extends WmsBundle>
     Object? barcodeBundle = null,
     Object? totalProductBundle = null,
     Object? totalPriceBundle = null,
-    Object? totalPriceCustomBundle = null,
+    Object? totalPriceCustomBundle = freezed,
     Object? productBundles = null,
   }) {
     return _then(_value.copyWith(
@@ -683,10 +694,10 @@ class _$WmsBundleCopyWithImpl<$Res, $Val extends WmsBundle>
           ? _value.totalPriceBundle
           : totalPriceBundle // ignore: cast_nullable_to_non_nullable
               as String,
-      totalPriceCustomBundle: null == totalPriceCustomBundle
+      totalPriceCustomBundle: freezed == totalPriceCustomBundle
           ? _value.totalPriceCustomBundle
           : totalPriceCustomBundle // ignore: cast_nullable_to_non_nullable
-              as String,
+              as String?,
       productBundles: null == productBundles
           ? _value.productBundles
           : productBundles // ignore: cast_nullable_to_non_nullable
@@ -709,7 +720,7 @@ abstract class _$$WmsBundleImplCopyWith<$Res>
       String barcodeBundle,
       int totalProductBundle,
       String totalPriceBundle,
-      String totalPriceCustomBundle,
+      String? totalPriceCustomBundle,
       List<ProductInBundle> productBundles});
 }
 
@@ -731,7 +742,7 @@ class __$$WmsBundleImplCopyWithImpl<$Res>
     Object? barcodeBundle = null,
     Object? totalProductBundle = null,
     Object? totalPriceBundle = null,
-    Object? totalPriceCustomBundle = null,
+    Object? totalPriceCustomBundle = freezed,
     Object? productBundles = null,
   }) {
     return _then(_$WmsBundleImpl(
@@ -755,10 +766,10 @@ class __$$WmsBundleImplCopyWithImpl<$Res>
           ? _value.totalPriceBundle
           : totalPriceBundle // ignore: cast_nullable_to_non_nullable
               as String,
-      totalPriceCustomBundle: null == totalPriceCustomBundle
+      totalPriceCustomBundle: freezed == totalPriceCustomBundle
           ? _value.totalPriceCustomBundle
           : totalPriceCustomBundle // ignore: cast_nullable_to_non_nullable
-              as String,
+              as String?,
       productBundles: null == productBundles
           ? _value._productBundles
           : productBundles // ignore: cast_nullable_to_non_nullable
@@ -772,12 +783,12 @@ class __$$WmsBundleImplCopyWithImpl<$Res>
 @JsonSerializable(fieldRename: FieldRename.snake)
 class _$WmsBundleImpl implements _WmsBundle {
   const _$WmsBundleImpl(
-      {this.id = 0,
-      this.nameBundle = '',
-      this.barcodeBundle = '',
-      this.totalProductBundle = 0,
-      this.totalPriceBundle = "0.00",
-      this.totalPriceCustomBundle = "0.00",
+      {required this.id,
+      required this.nameBundle,
+      required this.barcodeBundle,
+      required this.totalProductBundle,
+      required this.totalPriceBundle,
+      this.totalPriceCustomBundle,
       final List<ProductInBundle> productBundles = const []})
       : _productBundles = productBundles;
 
@@ -785,23 +796,17 @@ class _$WmsBundleImpl implements _WmsBundle {
       _$$WmsBundleImplFromJson(json);
 
   @override
-  @JsonKey()
   final int id;
   @override
-  @JsonKey()
   final String nameBundle;
   @override
-  @JsonKey()
   final String barcodeBundle;
   @override
-  @JsonKey()
   final int totalProductBundle;
   @override
-  @JsonKey()
   final String totalPriceBundle;
   @override
-  @JsonKey()
-  final String totalPriceCustomBundle;
+  final String? totalPriceCustomBundle;
   final List<ProductInBundle> _productBundles;
   @override
   @JsonKey()
@@ -866,12 +871,12 @@ class _$WmsBundleImpl implements _WmsBundle {
 
 abstract class _WmsBundle implements WmsBundle {
   const factory _WmsBundle(
-      {final int id,
-      final String nameBundle,
-      final String barcodeBundle,
-      final int totalProductBundle,
-      final String totalPriceBundle,
-      final String totalPriceCustomBundle,
+      {required final int id,
+      required final String nameBundle,
+      required final String barcodeBundle,
+      required final int totalProductBundle,
+      required final String totalPriceBundle,
+      final String? totalPriceCustomBundle,
       final List<ProductInBundle> productBundles}) = _$WmsBundleImpl;
 
   factory _WmsBundle.fromJson(Map<String, dynamic> json) =
@@ -888,7 +893,7 @@ abstract class _WmsBundle implements WmsBundle {
   @override
   String get totalPriceBundle;
   @override
-  String get totalPriceCustomBundle;
+  String? get totalPriceCustomBundle;
   @override
   List<ProductInBundle> get productBundles;
 
@@ -908,8 +913,9 @@ ProductInBundle _$ProductInBundleFromJson(Map<String, dynamic> json) {
 mixin _$ProductInBundle {
   int get id => throw _privateConstructorUsedError;
   String get newNameProduct => throw _privateConstructorUsedError;
-  String get displayPrice => throw _privateConstructorUsedError;
   String? get image => throw _privateConstructorUsedError;
+  @JsonKey(name: 'display_price')
+  String get displayPrice => throw _privateConstructorUsedError;
 
   /// Serializes this ProductInBundle to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
@@ -928,7 +934,10 @@ abstract class $ProductInBundleCopyWith<$Res> {
       _$ProductInBundleCopyWithImpl<$Res, ProductInBundle>;
   @useResult
   $Res call(
-      {int id, String newNameProduct, String displayPrice, String? image});
+      {int id,
+      String newNameProduct,
+      String? image,
+      @JsonKey(name: 'display_price') String displayPrice});
 }
 
 /// @nodoc
@@ -948,8 +957,8 @@ class _$ProductInBundleCopyWithImpl<$Res, $Val extends ProductInBundle>
   $Res call({
     Object? id = null,
     Object? newNameProduct = null,
-    Object? displayPrice = null,
     Object? image = freezed,
+    Object? displayPrice = null,
   }) {
     return _then(_value.copyWith(
       id: null == id
@@ -960,14 +969,14 @@ class _$ProductInBundleCopyWithImpl<$Res, $Val extends ProductInBundle>
           ? _value.newNameProduct
           : newNameProduct // ignore: cast_nullable_to_non_nullable
               as String,
-      displayPrice: null == displayPrice
-          ? _value.displayPrice
-          : displayPrice // ignore: cast_nullable_to_non_nullable
-              as String,
       image: freezed == image
           ? _value.image
           : image // ignore: cast_nullable_to_non_nullable
               as String?,
+      displayPrice: null == displayPrice
+          ? _value.displayPrice
+          : displayPrice // ignore: cast_nullable_to_non_nullable
+              as String,
     ) as $Val);
   }
 }
@@ -981,7 +990,10 @@ abstract class _$$ProductInBundleImplCopyWith<$Res>
   @override
   @useResult
   $Res call(
-      {int id, String newNameProduct, String displayPrice, String? image});
+      {int id,
+      String newNameProduct,
+      String? image,
+      @JsonKey(name: 'display_price') String displayPrice});
 }
 
 /// @nodoc
@@ -999,8 +1011,8 @@ class __$$ProductInBundleImplCopyWithImpl<$Res>
   $Res call({
     Object? id = null,
     Object? newNameProduct = null,
-    Object? displayPrice = null,
     Object? image = freezed,
+    Object? displayPrice = null,
   }) {
     return _then(_$ProductInBundleImpl(
       id: null == id
@@ -1011,14 +1023,14 @@ class __$$ProductInBundleImplCopyWithImpl<$Res>
           ? _value.newNameProduct
           : newNameProduct // ignore: cast_nullable_to_non_nullable
               as String,
-      displayPrice: null == displayPrice
-          ? _value.displayPrice
-          : displayPrice // ignore: cast_nullable_to_non_nullable
-              as String,
       image: freezed == image
           ? _value.image
           : image // ignore: cast_nullable_to_non_nullable
               as String?,
+      displayPrice: null == displayPrice
+          ? _value.displayPrice
+          : displayPrice // ignore: cast_nullable_to_non_nullable
+              as String,
     ));
   }
 }
@@ -1028,29 +1040,27 @@ class __$$ProductInBundleImplCopyWithImpl<$Res>
 @JsonSerializable(fieldRename: FieldRename.snake)
 class _$ProductInBundleImpl implements _ProductInBundle {
   const _$ProductInBundleImpl(
-      {this.id = 0,
-      this.newNameProduct = '',
-      this.displayPrice = "0.00",
-      this.image});
+      {required this.id,
+      required this.newNameProduct,
+      this.image,
+      @JsonKey(name: 'display_price') required this.displayPrice});
 
   factory _$ProductInBundleImpl.fromJson(Map<String, dynamic> json) =>
       _$$ProductInBundleImplFromJson(json);
 
   @override
-  @JsonKey()
   final int id;
   @override
-  @JsonKey()
   final String newNameProduct;
   @override
-  @JsonKey()
-  final String displayPrice;
-  @override
   final String? image;
+  @override
+  @JsonKey(name: 'display_price')
+  final String displayPrice;
 
   @override
   String toString() {
-    return 'ProductInBundle(id: $id, newNameProduct: $newNameProduct, displayPrice: $displayPrice, image: $image)';
+    return 'ProductInBundle(id: $id, newNameProduct: $newNameProduct, image: $image, displayPrice: $displayPrice)';
   }
 
   @override
@@ -1061,15 +1071,15 @@ class _$ProductInBundleImpl implements _ProductInBundle {
             (identical(other.id, id) || other.id == id) &&
             (identical(other.newNameProduct, newNameProduct) ||
                 other.newNameProduct == newNameProduct) &&
+            (identical(other.image, image) || other.image == image) &&
             (identical(other.displayPrice, displayPrice) ||
-                other.displayPrice == displayPrice) &&
-            (identical(other.image, image) || other.image == image));
+                other.displayPrice == displayPrice));
   }
 
   @JsonKey(includeFromJson: false, includeToJson: false)
   @override
   int get hashCode =>
-      Object.hash(runtimeType, id, newNameProduct, displayPrice, image);
+      Object.hash(runtimeType, id, newNameProduct, image, displayPrice);
 
   /// Create a copy of ProductInBundle
   /// with the given fields replaced by the non-null parameter values.
@@ -1090,10 +1100,11 @@ class _$ProductInBundleImpl implements _ProductInBundle {
 
 abstract class _ProductInBundle implements ProductInBundle {
   const factory _ProductInBundle(
-      {final int id,
-      final String newNameProduct,
-      final String displayPrice,
-      final String? image}) = _$ProductInBundleImpl;
+          {required final int id,
+          required final String newNameProduct,
+          final String? image,
+          @JsonKey(name: 'display_price') required final String displayPrice}) =
+      _$ProductInBundleImpl;
 
   factory _ProductInBundle.fromJson(Map<String, dynamic> json) =
       _$ProductInBundleImpl.fromJson;
@@ -1103,9 +1114,10 @@ abstract class _ProductInBundle implements ProductInBundle {
   @override
   String get newNameProduct;
   @override
-  String get displayPrice;
-  @override
   String? get image;
+  @override
+  @JsonKey(name: 'display_price')
+  String get displayPrice;
 
   /// Create a copy of ProductInBundle
   /// with the given fields replaced by the non-null parameter values.

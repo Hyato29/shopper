@@ -1,14 +1,13 @@
 // lib/feature/search/search_screen_controller.dart
 
 import 'dart:async';
-
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:fskeleton/app/common/common_controller.dart';
-import 'package:fskeleton/app/data/auth/auth_repository.dart';
 import 'package:fskeleton/app/data/wms/model/wms_product/wms_product.dart';
 import 'package:fskeleton/app/data/wms/wms_repository.dart';
 import 'package:fskeleton/app/utils/event.dart';
 import 'package:fskeleton/core.dart';
+import 'package:fskeleton/feature/result/product_detail_params.dart';
 
 part 'search_screen_controller.freezed.dart';
 
@@ -18,18 +17,15 @@ class SearchScreenUiState with _$SearchScreenUiState {
     @Default(AsyncData([])) AsyncValue<List<WmsProduct>> products,
     @Default('') String searchKey,
     @Default(null) Event<bool>? nextPageLoading,
-    @Default(null) Event? addProductSuccess,
   }) = _SearchScreenUiState;
 }
 
 class SearchScreenController extends StateNotifier<SearchScreenUiState> {
   SearchScreenController(
-    this._authRepository,
     this._commonController,
     this._wmsApiRepository,
   ) : super(const SearchScreenUiState());
 
-  final AuthRepository _authRepository;
   final CommonController _commonController;
   final WmsApiRepository _wmsApiRepository;
 
@@ -37,7 +33,6 @@ class SearchScreenController extends StateNotifier<SearchScreenUiState> {
       StateNotifierProvider.autoDispose<SearchScreenController, SearchScreenUiState>(
     (ref) {
       return SearchScreenController(
-        ref.watch(AuthRepository.provider),
         ref.watch(CommonController.provider.notifier),
         ref.watch(WmsApiRepository.provider),
       );
@@ -59,29 +54,21 @@ class SearchScreenController extends StateNotifier<SearchScreenUiState> {
     state = state.copyWith(products: const AsyncData([]));
   }
 
-  void onLogout() {
-    _authRepository.clearSession();
-  }
-
   void onChangeSearchKey(String searchKey) {
     _debounceTimer?.cancel();
     _debounceTimer = Timer(const Duration(milliseconds: 500), () {
-      if (searchKey.length >= 3) {
-        state = state.copyWith(searchKey: searchKey);
-        _currentSearchKey = searchKey;
-        loadProducts();
-      } else {
-        // Kosongkan daftar jika query terlalu pendek
-        state = state.copyWith(products: const AsyncData([]));
-      }
+      state = state.copyWith(searchKey: searchKey);
+      _currentSearchKey = searchKey;
+      loadProducts();
     });
   }
 
-  void onRetrySearch() {
-    loadProducts();
-  }
-
   Future<void> loadProducts() async {
+    if (_currentSearchKey.isEmpty) {
+      state = state.copyWith(products: const AsyncData([]));
+      return;
+    }
+
     _currentPage = 1;
     _lastPage = null;
     state = state.copyWith(products: const AsyncValue.loading());
@@ -94,16 +81,18 @@ class SearchScreenController extends StateNotifier<SearchScreenUiState> {
     );
 
     if (mounted) {
-      final AsyncValue<List<WmsProduct>> newProductState = result.when(
-        data: (apiResponse) {
-          _currentPage = apiResponse.pagination.currentPage;
-          _lastPage = apiResponse.pagination.totalPages;
-          return AsyncValue.data(apiResponse.data);
+      result.when(
+        data: (resource) {
+          _currentPage = resource.currentPage;
+          _lastPage = resource.lastPage;
+          state = state.copyWith(products: AsyncData(resource.data));
         },
-        error: (e, s) => AsyncValue.error(e, s),
-        loading: () => const AsyncValue.loading(),
+        error: (e, s) {
+          state = state.copyWith(products: AsyncError(e, s));
+          _commonController.handleCommonError(e, () => loadProducts());
+        },
+        loading: () {},
       );
-      state = state.copyWith(products: newProductState);
     }
   }
 
@@ -123,13 +112,13 @@ class SearchScreenController extends StateNotifier<SearchScreenUiState> {
     );
 
     if (mounted) {
-      result.whenData((apiResponse) {
-        _currentPage = apiResponse.pagination.currentPage;
-        _lastPage = apiResponse.pagination.totalPages;
+      result.whenData((resource) {
+        _currentPage = resource.currentPage;
+        _lastPage = resource.lastPage;
         state = state.copyWith(
           products: AsyncData([
             ...?state.products.value,
-            ...apiResponse.data,
+            ...resource.data,
           ]),
         );
       });
@@ -137,33 +126,13 @@ class SearchScreenController extends StateNotifier<SearchScreenUiState> {
     }
   }
 
-  // Fungsi ini ditambahkan kembali jika Anda ingin menyimpan produk langsung dari halaman pencarian
-  Future<void> onProductTapped(WmsProduct data) async {
-    _commonController.showLoading(isLoading: true);
-
-    // final result = await AsyncValue.guard(
-    //   () => _wmsApiRepository.saveProductScan(
-    //       productName: data.productName,
-    //       productPrice: double.tryParse(data.productPrice) ?? 0.0,
-    //       quantity: 1, // Default quantity
-    //       status: 'Lolos', // Default status
-    //       imageUrl: data.imageUrl,
-    //   )
-    // );
-    
-    _commonController.showLoading(isLoading: false);
-    if (!mounted) return;
-
-    // result.when(
-    //   data: (_) {
-    //     state = state.copyWith(addProductSuccess: Event(null));
-    //   },
-    //   error: (e, s) {
-    //     _commonController.handleCommonError(e, () {
-    //       onProductTapped(data);
-    //     });
-    //   },
-    //   loading: () {},
-    // );
+  ProductDetailParams prepareProductForDetail(WmsProduct product) {
+    return ProductDetailParams(
+      productName: product.productName,
+      productPrice: double.tryParse(product.productPrice) ?? 0.0,
+      imageUrl: product.image, // Gunakan field 'image' dari WMS
+      localImagePath: '',
+      listEcomerce: [], 
+    );
   }
 }

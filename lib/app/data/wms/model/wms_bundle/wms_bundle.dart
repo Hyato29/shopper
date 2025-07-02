@@ -1,4 +1,3 @@
-// lib/app/data/wms/model/wms_bundle.dart
 
 import 'package:freezed_annotation/freezed_annotation.dart';
 
@@ -7,7 +6,6 @@ part 'wms_bundle.g.dart';
 
 @freezed
 class WmsGetBundleBasicResponse with _$WmsGetBundleBasicResponse {
-  @JsonSerializable(fieldRename: FieldRename.snake)
   const factory WmsGetBundleBasicResponse({
     required WmsGetBundleResponse data,
   }) = _WmsGetBundleBasicResponse;
@@ -18,10 +16,9 @@ class WmsGetBundleBasicResponse with _$WmsGetBundleBasicResponse {
 
 @freezed
 class WmsGetBundleResponse with _$WmsGetBundleResponse {
-  @JsonSerializable(fieldRename: FieldRename.snake)
   const factory WmsGetBundleResponse({
-    @Default(false) bool status,
-    @Default('') String message,
+    required bool status,
+    required String message,
     required WmsGetBundleResource resource,
   }) = _WmsGetBundleResponse;
 
@@ -33,9 +30,10 @@ class WmsGetBundleResponse with _$WmsGetBundleResponse {
 class WmsGetBundleResource with _$WmsGetBundleResource {
   @JsonSerializable(fieldRename: FieldRename.snake)
   const factory WmsGetBundleResource({
-    @Default(0) int currentPage,
+    required int currentPage,
+    required int lastPage,
+    required int total,
     @Default([]) List<WmsBundle> data,
-    @Default(0) int lastPage,
   }) = _WmsGetBundleResource;
 
   factory WmsGetBundleResource.fromJson(Map<String, dynamic> json) =>
@@ -46,12 +44,12 @@ class WmsGetBundleResource with _$WmsGetBundleResource {
 class WmsBundle with _$WmsBundle {
   @JsonSerializable(fieldRename: FieldRename.snake)
   const factory WmsBundle({
-    @Default(0) int id,
-    @Default('') String nameBundle,
-    @Default('') String barcodeBundle,
-    @Default(0) int totalProductBundle,
-    @Default("0.00") String totalPriceBundle,
-    @Default("0.00") String totalPriceCustomBundle,
+    required int id,
+    required String nameBundle,
+    required String barcodeBundle,
+    required int totalProductBundle,
+    required String totalPriceBundle,
+    String? totalPriceCustomBundle,
     @Default([]) List<ProductInBundle> productBundles,
   }) = _WmsBundle;
 
@@ -63,10 +61,10 @@ class WmsBundle with _$WmsBundle {
 class ProductInBundle with _$ProductInBundle {
   @JsonSerializable(fieldRename: FieldRename.snake)
   const factory ProductInBundle({
-    @Default(0) int id,
-    @Default('') String newNameProduct,
-    @Default("0.00") String displayPrice,
+    required int id,
+    required String newNameProduct,
     String? image,
+    @JsonKey(name: 'display_price') required String displayPrice,
   }) = _ProductInBundle;
 
   factory ProductInBundle.fromJson(Map<String, dynamic> json) =>

@@ -213,5 +213,5 @@ class AppLocalizationsId extends AppLocalizations {
 
   @override
   String get getProductPhotoWithCameraOrGallery =>
-      'Ambil foto produk melalui akses kamera atau galeri.';
+      'Ambil foto produk atau cari produk anda dari galeri';
 }

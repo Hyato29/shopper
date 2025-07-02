@@ -1,7 +1,7 @@
 // lib/feature/history/history_screen_controller.dart
 
 import 'dart:async';
-
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:fskeleton/app/common/common_controller.dart';
 import 'package:fskeleton/app/data/wms/model/wms_bundle/wms_bundle.dart';
@@ -21,25 +21,25 @@ class HistoryScreenUiState with _$HistoryScreenUiState {
     @Default(null) Event<bool>? nextPageLoading,
     WmsProduct? selectedProduct,
     WmsBundle? selectedBundle,
+    Event<bool>? bundleCreated,
   }) = _HistoryScreenUiState;
 }
 
-
 class HistoryScreenController extends StateNotifier<HistoryScreenUiState> {
   HistoryScreenController(
+    this._commonController,
     this._wmsApiRepository,
-    this._commonController, // Menambahkan CommonController
   ) : super(const HistoryScreenUiState());
 
+  final CommonController _commonController;
   final WmsApiRepository _wmsApiRepository;
-  final CommonController _commonController; // Menambahkan CommonController
 
-  static final provider =
-      StateNotifierProvider.autoDispose<HistoryScreenController, HistoryScreenUiState>(
+  static final provider = StateNotifierProvider.autoDispose<
+      HistoryScreenController, HistoryScreenUiState>(
     (ref) {
       return HistoryScreenController(
+        ref.watch(CommonController.provider.notifier),
         ref.watch(WmsApiRepository.provider),
-        ref.watch(CommonController.provider.notifier), // Menambahkan CommonController
       );
     },
   );
@@ -47,6 +47,7 @@ class HistoryScreenController extends StateNotifier<HistoryScreenUiState> {
   Timer? _debounceTimer;
   int _currentPage = 1;
   int? _lastPage;
+  String _currentSearchKey = '';
 
   @override
   void dispose() {
@@ -54,93 +55,103 @@ class HistoryScreenController extends StateNotifier<HistoryScreenUiState> {
     super.dispose();
   }
 
-  Future<void> onScreenLoaded() async {
-    await loadProducts();
-    await loadBundles();
-  }
-
-  Future<void> loadBundles() async {
-    state = state.copyWith(bundles: const AsyncValue.loading());
-    final result = await AsyncValue.guard(() => _wmsApiRepository.getBundles());
-    if (!mounted) return;
-    result.when(
-      data: (bundleResource) {
-        state = state.copyWith(bundles: AsyncData(bundleResource.data));
-      },
-      error: (e, s) {
-        state = state.copyWith(bundles: AsyncError(e, s));
-      },
-      loading: () {},
-    );
+  void onScreenLoaded() {
+    loadProducts();
+    loadBundles();
   }
 
   void onChangeSearchKey(String searchKey) {
     _debounceTimer?.cancel();
     _debounceTimer = Timer(const Duration(milliseconds: 500), () {
       state = state.copyWith(searchKey: searchKey);
+      _currentSearchKey = searchKey;
       loadProducts();
     });
   }
-
-  void onRetrySearch() {
+  
+  void onRetrySeach() {
     loadProducts();
   }
 
+  // --- FUNGSI INI TELAH DIPERBAIKI ---
   Future<void> loadProducts() async {
     _currentPage = 1;
     _lastPage = null;
-    state = state.copyWith(
-        products: const AsyncValue.loading(), selectedProduct: null);
-        
+    state = state.copyWith(products: const AsyncValue.loading(), selectedProduct: null);
+
     final result = await AsyncValue.guard(
       () => _wmsApiRepository.searchProduct(
-        searchQuery: state.searchKey,
+        searchQuery: _currentSearchKey,
         page: _currentPage,
       ),
     );
 
     if (mounted) {
-      final AsyncValue<List<WmsProduct>> newProductState = result.when(
-        data: (apiResponse) {
-          _currentPage = apiResponse.pagination.currentPage;
-          _lastPage = apiResponse.pagination.totalPages;
-          return AsyncValue.data(apiResponse.data);
+      // Gunakan .when untuk menangani semua kasus (data, error, loading)
+      result.when(
+        data: (resource) {
+          _currentPage = resource.currentPage;
+          _lastPage = resource.lastPage;
+          state = state.copyWith(products: AsyncData(resource.data));
         },
         error: (e, s) {
-           _commonController.handleCommonError(e, () => loadProducts());
-           return AsyncValue.error(e, s);
+          // Tetap set state ke error agar UI bisa menampilkannya
+          state = state.copyWith(products: AsyncError(e, s));
+          _commonController.handleCommonError(e, () => loadProducts());
         },
-        loading: () => const AsyncValue.loading(),
+        loading: () {
+          // State sudah di-set ke loading di atas
+        },
       );
-      state = state.copyWith(products: newProductState);
     }
   }
 
+  // --- FUNGSI INI TELAH DIPERBAIKI ---
   Future<void> loadNextProducts() async {
-    if (state.nextPageLoading?.data == true || _currentPage >= (_lastPage ?? _currentPage)) return;
+    if (state.nextPageLoading?.data == true || _currentPage >= (_lastPage ?? _currentPage)) {
+      return;
+    }
 
     state = state.copyWith(nextPageLoading: Event(true));
     _currentPage++;
-    
+
     final result = await AsyncValue.guard(
       () => _wmsApiRepository.searchProduct(
-        searchQuery: state.searchKey,
+        searchQuery: _currentSearchKey,
         page: _currentPage,
       ),
     );
 
     if (mounted) {
-       result.whenData((apiResponse) {
-        _currentPage = apiResponse.pagination.currentPage;
-        _lastPage = apiResponse.pagination.totalPages;
+      result.whenData((resource) {
+        _currentPage = resource.currentPage;
+        _lastPage = resource.lastPage;
         state = state.copyWith(
           products: AsyncData([
             ...?state.products.value,
-            ...apiResponse.data,
+            ...resource.data,
           ]),
         );
       });
+      // Set loading ke false setelah selesai
       state = state.copyWith(nextPageLoading: Event(false));
+    }
+  }
+  
+  // --- Sisa kode tidak ada perubahan ---
+  Future<void> loadBundles() async {
+    state = state.copyWith(bundles: const AsyncValue.loading());
+    final result = await AsyncValue.guard(() => _wmsApiRepository.getBundles());
+    if (mounted) {
+      result.when(
+        data: (bundleResource) {
+          state = state.copyWith(bundles: AsyncData(bundleResource.data));
+        },
+        error: (e, s) {
+          state = state.copyWith(bundles: AsyncError(e, s));
+        },
+        loading: () {},
+      );
     }
   }
 
@@ -157,6 +168,42 @@ class HistoryScreenController extends StateNotifier<HistoryScreenUiState> {
       state = state.copyWith(selectedBundle: null);
     } else {
       state = state.copyWith(selectedBundle: bundle);
+    }
+  }
+
+  Future<void> createBundle(String name) async {
+    _commonController.showLoading(isLoading: true);
+    final result = await AsyncValue.guard(
+      () => _wmsApiRepository.createBundle(name: name),
+    );
+    _commonController.showLoading(isLoading: false);
+
+    if (result.hasError) {
+      _commonController.handleCommonError(
+        result.error ?? Exception("Gagal membuat bundle"),
+        () => createBundle(name),
+      );
+      state = state.copyWith(bundleCreated: Event(false));
+    } else {
+      await loadBundles();
+      state = state.copyWith(bundleCreated: Event(true));
+    }
+  }
+
+  Future<void> deleteBundle(int bundleId) async {
+    _commonController.showLoading(isLoading: true);
+    final result = await AsyncValue.guard(
+      () => _wmsApiRepository.deleteBundle(bundleId: bundleId),
+    );
+    _commonController.showLoading(isLoading: false);
+
+    if (result.hasError) {
+      _commonController.handleCommonError(
+        result.error ?? Exception("Gagal menghapus bundle"),
+        () => deleteBundle(bundleId),
+      );
+    } else {
+      await loadBundles();
     }
   }
 }

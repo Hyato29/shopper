@@ -1,11 +1,8 @@
 import 'dart:async';
-import 'dart:convert';
 import 'dart:io';
 import 'package:dio/dio.dart';
-import 'package:fskeleton/app/data/ecommerce/model/ecommerce_product.dart';
 import 'package:fskeleton/app/data/wms/model/wms_bundle/wms_bundle.dart';
 import 'package:fskeleton/app/data/wms/model/wms_category/wms_category.dart';
-import 'package:fskeleton/app/data/wms/model/wms_identify/identify_product_response.dart';
 import 'package:fskeleton/app/data/wms/model/wms_product/wms_product.dart';
 import 'package:fskeleton/core.dart';
 
@@ -13,63 +10,25 @@ class WmsApiRepository {
   WmsApiRepository(this._httpClient);
 
   static final provider = Provider((ref) {
-    return WmsApiRepository(
-      ref.watch(HttpClient.wmsApiProvider),
-    );
+    return WmsApiRepository(ref.watch(HttpClient.wmsApiProvider));
   });
 
   final HttpClient _httpClient;
 
-  Future<ProductScanApiResponse> searchProduct({
+  Future<WmsProductScanResource> searchProduct({
     required String searchQuery,
     int page = 1,
   }) async {
     try {
       final response = await _httpClient.get<Map<String, dynamic>>(
-        path: '/api/v1/product-scans',
+        path: '/api/product_scans',
         queryParameters: {
           'q': searchQuery,
-          'page': page,
+          'page': page.toString(),
         },
       );
-      // Langsung parse menggunakan model baru yang sudah sesuai
-      return ProductScanApiResponse.fromJson(response);
-    } on HttpStatusCodeException catch (_) {
-      rethrow;
-    }
-  }
-
-  Future<IdentifyProductResponse> identifyProductFromFile({
-    required File imageFile,
-  }) async {
-    try {
-      String fileName = imageFile.path.split('/').last;
-      FormData formData = FormData.fromMap({
-        "image": await MultipartFile.fromFile(
-          imageFile.path,
-          filename: fileName,
-        ),
-      });
-
-      final response = await _httpClient.post<Map<String, dynamic>>(
-        path: '/api/v1/identify-product',
-        body: formData,
-      );
-      return IdentifyProductResponse.fromJson(response);
-    } on HttpStatusCodeException catch (_) {
-      rethrow;
-    }
-  }
-
-  Future<List<Category>> getCategories() async {
-    try {
-      final response = await _httpClient.get<Map<String, dynamic>>(
-        path: '/api/v1/categories',
-      );
-      final List<dynamic> data = response['data'] as List<dynamic>;
-      return data
-          .map((e) => Category.fromJson(e as Map<String, dynamic>))
-          .toList();
+      final parsedResponse = WmsProductScanResponse.fromJson(response);
+      return parsedResponse.data.resource;
     } catch (e) {
       rethrow;
     }
@@ -80,8 +39,8 @@ class WmsApiRepository {
     required double productPrice,
     required int quantity,
     required String status,
-    required File imageFile, // File gambar asli
-    String? imageUrl, // URL gambar dari e-commerce
+    required File imageFile,
+    String? imageUrl,
     double? fixedPrice,
     List<int>? categoryIds,
   }) async {
@@ -89,15 +48,14 @@ class WmsApiRepository {
       String fileName = imageFile.path.split('/').last;
 
       FormData formData = FormData.fromMap({
-        'productName': productName,
-        'productPrice': productPrice.toString(),
+        'product_name': productName,
+        'product_price': productPrice,
         'quantity': quantity,
         'status': status,
-        if (fixedPrice != null) 'fixedPrice': fixedPrice.toString(),
-        if (categoryIds != null) 'categoryIds': json.encode(categoryIds),
-        // PERBAIKAN: Kirim imageUrl dari e-commerce jika ada
-        if (imageUrl != null) 'imageUrl': imageUrl,
-        // Tetap kirim file gambar asli untuk disimpan di server
+        if (imageUrl != null) 'image': imageUrl,
+        if (fixedPrice != null) 'fixed_price': fixedPrice,
+        if (categoryIds != null && categoryIds.isNotEmpty)
+          'category_ids': categoryIds,
         'image': await MultipartFile.fromFile(
           imageFile.path,
           filename: fileName,
@@ -105,7 +63,7 @@ class WmsApiRepository {
       });
 
       await _httpClient.post(
-        path: '/api/v1/product-scans',
+        path: '/api/product_scans',
         body: formData,
       );
     } catch (e) {
@@ -113,7 +71,18 @@ class WmsApiRepository {
     }
   }
 
-  // Fungsi getBundles dan lainnya bisa tetap ada jika masih digunakan
+  Future<List<Category>> getCategories() async {
+    try {
+      final response = await _httpClient.get<Map<String, dynamic>>(
+        path: '/api/categories',
+      );
+      final parsedResponse = WmsCategoryResponse.fromJson(response);
+      return parsedResponse.data.resource;
+    } catch (e) {
+      rethrow;
+    }
+  }
+
   Future<WmsGetBundleResource> getBundles({
     int page = 1,
   }) async {
@@ -121,24 +90,32 @@ class WmsApiRepository {
       final response = await _httpClient.get<Map<String, dynamic>>(
         path: '/api/bundle',
         queryParameters: {
-          'page': page,
+          'page': page.toString(),
         },
       );
-      return WmsGetBundleBasicResponse.fromJson(response).data.resource;
+      final parsedResponse = WmsGetBundleBasicResponse.fromJson(response);
+      return parsedResponse.data.resource;
     } on HttpStatusCodeException catch (_) {
       rethrow;
     }
   }
 
-  Future<EcommerceSearchResult> searchEcommerce(
-      {required String productName}) async {
+  Future<void> createBundle({required String name}) async {
     try {
-      final response = await _httpClient.post<Map<String, dynamic>>(
-        path: '/api/v1/search-ecommerce',
-        body: {'productName': productName},
+      await _httpClient.post(
+        path: '/api/bundle',
+        body: {'name_bundle': name},
       );
-      final responseData = response['data'] as Map<String, dynamic>;
-      return EcommerceSearchResult.fromJson(responseData);
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  Future<void> deleteBundle({required int bundleId}) async {
+    try {
+      await _httpClient.delete(
+        path: '/api/bundle/$bundleId',
+      );
     } catch (e) {
       rethrow;
     }

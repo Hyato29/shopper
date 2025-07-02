@@ -14,147 +14,498 @@ T _$identity<T>(T value) => value;
 final _privateConstructorUsedError = UnsupportedError(
     'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more information: https://github.com/rrousselGit/freezed#adding-getters-and-methods-to-our-models');
 
-ProductScanApiResponse _$ProductScanApiResponseFromJson(
+WmsProductScanResponse _$WmsProductScanResponseFromJson(
     Map<String, dynamic> json) {
-  return _ProductScanApiResponse.fromJson(json);
+  return _WmsProductScanResponse.fromJson(json);
 }
 
 /// @nodoc
-mixin _$ProductScanApiResponse {
-  bool get success => throw _privateConstructorUsedError;
-  String get message => throw _privateConstructorUsedError;
-  PaginationData get pagination => throw _privateConstructorUsedError;
-  List<WmsProduct> get data => throw _privateConstructorUsedError;
+mixin _$WmsProductScanResponse {
+  WmsProductScanData get data => throw _privateConstructorUsedError;
 
-  /// Serializes this ProductScanApiResponse to a JSON map.
+  /// Serializes this WmsProductScanResponse to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
 
-  /// Create a copy of ProductScanApiResponse
+  /// Create a copy of WmsProductScanResponse
   /// with the given fields replaced by the non-null parameter values.
   @JsonKey(includeFromJson: false, includeToJson: false)
-  $ProductScanApiResponseCopyWith<ProductScanApiResponse> get copyWith =>
+  $WmsProductScanResponseCopyWith<WmsProductScanResponse> get copyWith =>
       throw _privateConstructorUsedError;
 }
 
 /// @nodoc
-abstract class $ProductScanApiResponseCopyWith<$Res> {
-  factory $ProductScanApiResponseCopyWith(ProductScanApiResponse value,
-          $Res Function(ProductScanApiResponse) then) =
-      _$ProductScanApiResponseCopyWithImpl<$Res, ProductScanApiResponse>;
+abstract class $WmsProductScanResponseCopyWith<$Res> {
+  factory $WmsProductScanResponseCopyWith(WmsProductScanResponse value,
+          $Res Function(WmsProductScanResponse) then) =
+      _$WmsProductScanResponseCopyWithImpl<$Res, WmsProductScanResponse>;
   @useResult
-  $Res call(
-      {bool success,
-      String message,
-      PaginationData pagination,
-      List<WmsProduct> data});
+  $Res call({WmsProductScanData data});
 
-  $PaginationDataCopyWith<$Res> get pagination;
+  $WmsProductScanDataCopyWith<$Res> get data;
 }
 
 /// @nodoc
-class _$ProductScanApiResponseCopyWithImpl<$Res,
-        $Val extends ProductScanApiResponse>
-    implements $ProductScanApiResponseCopyWith<$Res> {
-  _$ProductScanApiResponseCopyWithImpl(this._value, this._then);
+class _$WmsProductScanResponseCopyWithImpl<$Res,
+        $Val extends WmsProductScanResponse>
+    implements $WmsProductScanResponseCopyWith<$Res> {
+  _$WmsProductScanResponseCopyWithImpl(this._value, this._then);
 
   // ignore: unused_field
   final $Val _value;
   // ignore: unused_field
   final $Res Function($Val) _then;
 
-  /// Create a copy of ProductScanApiResponse
+  /// Create a copy of WmsProductScanResponse
   /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
-    Object? success = null,
-    Object? message = null,
-    Object? pagination = null,
     Object? data = null,
   }) {
     return _then(_value.copyWith(
-      success: null == success
-          ? _value.success
-          : success // ignore: cast_nullable_to_non_nullable
+      data: null == data
+          ? _value.data
+          : data // ignore: cast_nullable_to_non_nullable
+              as WmsProductScanData,
+    ) as $Val);
+  }
+
+  /// Create a copy of WmsProductScanResponse
+  /// with the given fields replaced by the non-null parameter values.
+  @override
+  @pragma('vm:prefer-inline')
+  $WmsProductScanDataCopyWith<$Res> get data {
+    return $WmsProductScanDataCopyWith<$Res>(_value.data, (value) {
+      return _then(_value.copyWith(data: value) as $Val);
+    });
+  }
+}
+
+/// @nodoc
+abstract class _$$WmsProductScanResponseImplCopyWith<$Res>
+    implements $WmsProductScanResponseCopyWith<$Res> {
+  factory _$$WmsProductScanResponseImplCopyWith(
+          _$WmsProductScanResponseImpl value,
+          $Res Function(_$WmsProductScanResponseImpl) then) =
+      __$$WmsProductScanResponseImplCopyWithImpl<$Res>;
+  @override
+  @useResult
+  $Res call({WmsProductScanData data});
+
+  @override
+  $WmsProductScanDataCopyWith<$Res> get data;
+}
+
+/// @nodoc
+class __$$WmsProductScanResponseImplCopyWithImpl<$Res>
+    extends _$WmsProductScanResponseCopyWithImpl<$Res,
+        _$WmsProductScanResponseImpl>
+    implements _$$WmsProductScanResponseImplCopyWith<$Res> {
+  __$$WmsProductScanResponseImplCopyWithImpl(
+      _$WmsProductScanResponseImpl _value,
+      $Res Function(_$WmsProductScanResponseImpl) _then)
+      : super(_value, _then);
+
+  /// Create a copy of WmsProductScanResponse
+  /// with the given fields replaced by the non-null parameter values.
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({
+    Object? data = null,
+  }) {
+    return _then(_$WmsProductScanResponseImpl(
+      data: null == data
+          ? _value.data
+          : data // ignore: cast_nullable_to_non_nullable
+              as WmsProductScanData,
+    ));
+  }
+}
+
+/// @nodoc
+@JsonSerializable()
+class _$WmsProductScanResponseImpl implements _WmsProductScanResponse {
+  const _$WmsProductScanResponseImpl({required this.data});
+
+  factory _$WmsProductScanResponseImpl.fromJson(Map<String, dynamic> json) =>
+      _$$WmsProductScanResponseImplFromJson(json);
+
+  @override
+  final WmsProductScanData data;
+
+  @override
+  String toString() {
+    return 'WmsProductScanResponse(data: $data)';
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return identical(this, other) ||
+        (other.runtimeType == runtimeType &&
+            other is _$WmsProductScanResponseImpl &&
+            (identical(other.data, data) || other.data == data));
+  }
+
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  @override
+  int get hashCode => Object.hash(runtimeType, data);
+
+  /// Create a copy of WmsProductScanResponse
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  @override
+  @pragma('vm:prefer-inline')
+  _$$WmsProductScanResponseImplCopyWith<_$WmsProductScanResponseImpl>
+      get copyWith => __$$WmsProductScanResponseImplCopyWithImpl<
+          _$WmsProductScanResponseImpl>(this, _$identity);
+
+  @override
+  Map<String, dynamic> toJson() {
+    return _$$WmsProductScanResponseImplToJson(
+      this,
+    );
+  }
+}
+
+abstract class _WmsProductScanResponse implements WmsProductScanResponse {
+  const factory _WmsProductScanResponse(
+      {required final WmsProductScanData data}) = _$WmsProductScanResponseImpl;
+
+  factory _WmsProductScanResponse.fromJson(Map<String, dynamic> json) =
+      _$WmsProductScanResponseImpl.fromJson;
+
+  @override
+  WmsProductScanData get data;
+
+  /// Create a copy of WmsProductScanResponse
+  /// with the given fields replaced by the non-null parameter values.
+  @override
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  _$$WmsProductScanResponseImplCopyWith<_$WmsProductScanResponseImpl>
+      get copyWith => throw _privateConstructorUsedError;
+}
+
+WmsProductScanData _$WmsProductScanDataFromJson(Map<String, dynamic> json) {
+  return _WmsProductScanData.fromJson(json);
+}
+
+/// @nodoc
+mixin _$WmsProductScanData {
+  bool get status => throw _privateConstructorUsedError;
+  String get message => throw _privateConstructorUsedError;
+  WmsProductScanResource get resource => throw _privateConstructorUsedError;
+
+  /// Serializes this WmsProductScanData to a JSON map.
+  Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
+
+  /// Create a copy of WmsProductScanData
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  $WmsProductScanDataCopyWith<WmsProductScanData> get copyWith =>
+      throw _privateConstructorUsedError;
+}
+
+/// @nodoc
+abstract class $WmsProductScanDataCopyWith<$Res> {
+  factory $WmsProductScanDataCopyWith(
+          WmsProductScanData value, $Res Function(WmsProductScanData) then) =
+      _$WmsProductScanDataCopyWithImpl<$Res, WmsProductScanData>;
+  @useResult
+  $Res call({bool status, String message, WmsProductScanResource resource});
+
+  $WmsProductScanResourceCopyWith<$Res> get resource;
+}
+
+/// @nodoc
+class _$WmsProductScanDataCopyWithImpl<$Res, $Val extends WmsProductScanData>
+    implements $WmsProductScanDataCopyWith<$Res> {
+  _$WmsProductScanDataCopyWithImpl(this._value, this._then);
+
+  // ignore: unused_field
+  final $Val _value;
+  // ignore: unused_field
+  final $Res Function($Val) _then;
+
+  /// Create a copy of WmsProductScanData
+  /// with the given fields replaced by the non-null parameter values.
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({
+    Object? status = null,
+    Object? message = null,
+    Object? resource = null,
+  }) {
+    return _then(_value.copyWith(
+      status: null == status
+          ? _value.status
+          : status // ignore: cast_nullable_to_non_nullable
               as bool,
       message: null == message
           ? _value.message
           : message // ignore: cast_nullable_to_non_nullable
               as String,
-      pagination: null == pagination
-          ? _value.pagination
-          : pagination // ignore: cast_nullable_to_non_nullable
-              as PaginationData,
+      resource: null == resource
+          ? _value.resource
+          : resource // ignore: cast_nullable_to_non_nullable
+              as WmsProductScanResource,
+    ) as $Val);
+  }
+
+  /// Create a copy of WmsProductScanData
+  /// with the given fields replaced by the non-null parameter values.
+  @override
+  @pragma('vm:prefer-inline')
+  $WmsProductScanResourceCopyWith<$Res> get resource {
+    return $WmsProductScanResourceCopyWith<$Res>(_value.resource, (value) {
+      return _then(_value.copyWith(resource: value) as $Val);
+    });
+  }
+}
+
+/// @nodoc
+abstract class _$$WmsProductScanDataImplCopyWith<$Res>
+    implements $WmsProductScanDataCopyWith<$Res> {
+  factory _$$WmsProductScanDataImplCopyWith(_$WmsProductScanDataImpl value,
+          $Res Function(_$WmsProductScanDataImpl) then) =
+      __$$WmsProductScanDataImplCopyWithImpl<$Res>;
+  @override
+  @useResult
+  $Res call({bool status, String message, WmsProductScanResource resource});
+
+  @override
+  $WmsProductScanResourceCopyWith<$Res> get resource;
+}
+
+/// @nodoc
+class __$$WmsProductScanDataImplCopyWithImpl<$Res>
+    extends _$WmsProductScanDataCopyWithImpl<$Res, _$WmsProductScanDataImpl>
+    implements _$$WmsProductScanDataImplCopyWith<$Res> {
+  __$$WmsProductScanDataImplCopyWithImpl(_$WmsProductScanDataImpl _value,
+      $Res Function(_$WmsProductScanDataImpl) _then)
+      : super(_value, _then);
+
+  /// Create a copy of WmsProductScanData
+  /// with the given fields replaced by the non-null parameter values.
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({
+    Object? status = null,
+    Object? message = null,
+    Object? resource = null,
+  }) {
+    return _then(_$WmsProductScanDataImpl(
+      status: null == status
+          ? _value.status
+          : status // ignore: cast_nullable_to_non_nullable
+              as bool,
+      message: null == message
+          ? _value.message
+          : message // ignore: cast_nullable_to_non_nullable
+              as String,
+      resource: null == resource
+          ? _value.resource
+          : resource // ignore: cast_nullable_to_non_nullable
+              as WmsProductScanResource,
+    ));
+  }
+}
+
+/// @nodoc
+@JsonSerializable()
+class _$WmsProductScanDataImpl implements _WmsProductScanData {
+  const _$WmsProductScanDataImpl(
+      {required this.status, required this.message, required this.resource});
+
+  factory _$WmsProductScanDataImpl.fromJson(Map<String, dynamic> json) =>
+      _$$WmsProductScanDataImplFromJson(json);
+
+  @override
+  final bool status;
+  @override
+  final String message;
+  @override
+  final WmsProductScanResource resource;
+
+  @override
+  String toString() {
+    return 'WmsProductScanData(status: $status, message: $message, resource: $resource)';
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return identical(this, other) ||
+        (other.runtimeType == runtimeType &&
+            other is _$WmsProductScanDataImpl &&
+            (identical(other.status, status) || other.status == status) &&
+            (identical(other.message, message) || other.message == message) &&
+            (identical(other.resource, resource) ||
+                other.resource == resource));
+  }
+
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  @override
+  int get hashCode => Object.hash(runtimeType, status, message, resource);
+
+  /// Create a copy of WmsProductScanData
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  @override
+  @pragma('vm:prefer-inline')
+  _$$WmsProductScanDataImplCopyWith<_$WmsProductScanDataImpl> get copyWith =>
+      __$$WmsProductScanDataImplCopyWithImpl<_$WmsProductScanDataImpl>(
+          this, _$identity);
+
+  @override
+  Map<String, dynamic> toJson() {
+    return _$$WmsProductScanDataImplToJson(
+      this,
+    );
+  }
+}
+
+abstract class _WmsProductScanData implements WmsProductScanData {
+  const factory _WmsProductScanData(
+          {required final bool status,
+          required final String message,
+          required final WmsProductScanResource resource}) =
+      _$WmsProductScanDataImpl;
+
+  factory _WmsProductScanData.fromJson(Map<String, dynamic> json) =
+      _$WmsProductScanDataImpl.fromJson;
+
+  @override
+  bool get status;
+  @override
+  String get message;
+  @override
+  WmsProductScanResource get resource;
+
+  /// Create a copy of WmsProductScanData
+  /// with the given fields replaced by the non-null parameter values.
+  @override
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  _$$WmsProductScanDataImplCopyWith<_$WmsProductScanDataImpl> get copyWith =>
+      throw _privateConstructorUsedError;
+}
+
+WmsProductScanResource _$WmsProductScanResourceFromJson(
+    Map<String, dynamic> json) {
+  return _WmsProductScanResource.fromJson(json);
+}
+
+/// @nodoc
+mixin _$WmsProductScanResource {
+  int get currentPage => throw _privateConstructorUsedError;
+  int get lastPage => throw _privateConstructorUsedError;
+  int get total => throw _privateConstructorUsedError;
+  List<WmsProduct> get data => throw _privateConstructorUsedError;
+
+  /// Serializes this WmsProductScanResource to a JSON map.
+  Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
+
+  /// Create a copy of WmsProductScanResource
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  $WmsProductScanResourceCopyWith<WmsProductScanResource> get copyWith =>
+      throw _privateConstructorUsedError;
+}
+
+/// @nodoc
+abstract class $WmsProductScanResourceCopyWith<$Res> {
+  factory $WmsProductScanResourceCopyWith(WmsProductScanResource value,
+          $Res Function(WmsProductScanResource) then) =
+      _$WmsProductScanResourceCopyWithImpl<$Res, WmsProductScanResource>;
+  @useResult
+  $Res call({int currentPage, int lastPage, int total, List<WmsProduct> data});
+}
+
+/// @nodoc
+class _$WmsProductScanResourceCopyWithImpl<$Res,
+        $Val extends WmsProductScanResource>
+    implements $WmsProductScanResourceCopyWith<$Res> {
+  _$WmsProductScanResourceCopyWithImpl(this._value, this._then);
+
+  // ignore: unused_field
+  final $Val _value;
+  // ignore: unused_field
+  final $Res Function($Val) _then;
+
+  /// Create a copy of WmsProductScanResource
+  /// with the given fields replaced by the non-null parameter values.
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({
+    Object? currentPage = null,
+    Object? lastPage = null,
+    Object? total = null,
+    Object? data = null,
+  }) {
+    return _then(_value.copyWith(
+      currentPage: null == currentPage
+          ? _value.currentPage
+          : currentPage // ignore: cast_nullable_to_non_nullable
+              as int,
+      lastPage: null == lastPage
+          ? _value.lastPage
+          : lastPage // ignore: cast_nullable_to_non_nullable
+              as int,
+      total: null == total
+          ? _value.total
+          : total // ignore: cast_nullable_to_non_nullable
+              as int,
       data: null == data
           ? _value.data
           : data // ignore: cast_nullable_to_non_nullable
               as List<WmsProduct>,
     ) as $Val);
   }
-
-  /// Create a copy of ProductScanApiResponse
-  /// with the given fields replaced by the non-null parameter values.
-  @override
-  @pragma('vm:prefer-inline')
-  $PaginationDataCopyWith<$Res> get pagination {
-    return $PaginationDataCopyWith<$Res>(_value.pagination, (value) {
-      return _then(_value.copyWith(pagination: value) as $Val);
-    });
-  }
 }
 
 /// @nodoc
-abstract class _$$ProductScanApiResponseImplCopyWith<$Res>
-    implements $ProductScanApiResponseCopyWith<$Res> {
-  factory _$$ProductScanApiResponseImplCopyWith(
-          _$ProductScanApiResponseImpl value,
-          $Res Function(_$ProductScanApiResponseImpl) then) =
-      __$$ProductScanApiResponseImplCopyWithImpl<$Res>;
+abstract class _$$WmsProductScanResourceImplCopyWith<$Res>
+    implements $WmsProductScanResourceCopyWith<$Res> {
+  factory _$$WmsProductScanResourceImplCopyWith(
+          _$WmsProductScanResourceImpl value,
+          $Res Function(_$WmsProductScanResourceImpl) then) =
+      __$$WmsProductScanResourceImplCopyWithImpl<$Res>;
   @override
   @useResult
-  $Res call(
-      {bool success,
-      String message,
-      PaginationData pagination,
-      List<WmsProduct> data});
-
-  @override
-  $PaginationDataCopyWith<$Res> get pagination;
+  $Res call({int currentPage, int lastPage, int total, List<WmsProduct> data});
 }
 
 /// @nodoc
-class __$$ProductScanApiResponseImplCopyWithImpl<$Res>
-    extends _$ProductScanApiResponseCopyWithImpl<$Res,
-        _$ProductScanApiResponseImpl>
-    implements _$$ProductScanApiResponseImplCopyWith<$Res> {
-  __$$ProductScanApiResponseImplCopyWithImpl(
-      _$ProductScanApiResponseImpl _value,
-      $Res Function(_$ProductScanApiResponseImpl) _then)
+class __$$WmsProductScanResourceImplCopyWithImpl<$Res>
+    extends _$WmsProductScanResourceCopyWithImpl<$Res,
+        _$WmsProductScanResourceImpl>
+    implements _$$WmsProductScanResourceImplCopyWith<$Res> {
+  __$$WmsProductScanResourceImplCopyWithImpl(
+      _$WmsProductScanResourceImpl _value,
+      $Res Function(_$WmsProductScanResourceImpl) _then)
       : super(_value, _then);
 
-  /// Create a copy of ProductScanApiResponse
+  /// Create a copy of WmsProductScanResource
   /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
-    Object? success = null,
-    Object? message = null,
-    Object? pagination = null,
+    Object? currentPage = null,
+    Object? lastPage = null,
+    Object? total = null,
     Object? data = null,
   }) {
-    return _then(_$ProductScanApiResponseImpl(
-      success: null == success
-          ? _value.success
-          : success // ignore: cast_nullable_to_non_nullable
-              as bool,
-      message: null == message
-          ? _value.message
-          : message // ignore: cast_nullable_to_non_nullable
-              as String,
-      pagination: null == pagination
-          ? _value.pagination
-          : pagination // ignore: cast_nullable_to_non_nullable
-              as PaginationData,
+    return _then(_$WmsProductScanResourceImpl(
+      currentPage: null == currentPage
+          ? _value.currentPage
+          : currentPage // ignore: cast_nullable_to_non_nullable
+              as int,
+      lastPage: null == lastPage
+          ? _value.lastPage
+          : lastPage // ignore: cast_nullable_to_non_nullable
+              as int,
+      total: null == total
+          ? _value.total
+          : total // ignore: cast_nullable_to_non_nullable
+              as int,
       data: null == data
           ? _value._data
           : data // ignore: cast_nullable_to_non_nullable
@@ -164,26 +515,25 @@ class __$$ProductScanApiResponseImplCopyWithImpl<$Res>
 }
 
 /// @nodoc
-@JsonSerializable()
-class _$ProductScanApiResponseImpl implements _ProductScanApiResponse {
-  const _$ProductScanApiResponseImpl(
-      {this.success = false,
-      this.message = '',
-      required this.pagination,
+
+@JsonSerializable(fieldRename: FieldRename.snake)
+class _$WmsProductScanResourceImpl implements _WmsProductScanResource {
+  const _$WmsProductScanResourceImpl(
+      {required this.currentPage,
+      required this.lastPage,
+      required this.total,
       final List<WmsProduct> data = const []})
       : _data = data;
 
-  factory _$ProductScanApiResponseImpl.fromJson(Map<String, dynamic> json) =>
-      _$$ProductScanApiResponseImplFromJson(json);
+  factory _$WmsProductScanResourceImpl.fromJson(Map<String, dynamic> json) =>
+      _$$WmsProductScanResourceImplFromJson(json);
 
   @override
-  @JsonKey()
-  final bool success;
+  final int currentPage;
   @override
-  @JsonKey()
-  final String message;
+  final int lastPage;
   @override
-  final PaginationData pagination;
+  final int total;
   final List<WmsProduct> _data;
   @override
   @JsonKey()
@@ -195,260 +545,69 @@ class _$ProductScanApiResponseImpl implements _ProductScanApiResponse {
 
   @override
   String toString() {
-    return 'ProductScanApiResponse(success: $success, message: $message, pagination: $pagination, data: $data)';
+    return 'WmsProductScanResource(currentPage: $currentPage, lastPage: $lastPage, total: $total, data: $data)';
   }
 
   @override
   bool operator ==(Object other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
-            other is _$ProductScanApiResponseImpl &&
-            (identical(other.success, success) || other.success == success) &&
-            (identical(other.message, message) || other.message == message) &&
-            (identical(other.pagination, pagination) ||
-                other.pagination == pagination) &&
+            other is _$WmsProductScanResourceImpl &&
+            (identical(other.currentPage, currentPage) ||
+                other.currentPage == currentPage) &&
+            (identical(other.lastPage, lastPage) ||
+                other.lastPage == lastPage) &&
+            (identical(other.total, total) || other.total == total) &&
             const DeepCollectionEquality().equals(other._data, _data));
   }
 
   @JsonKey(includeFromJson: false, includeToJson: false)
   @override
-  int get hashCode => Object.hash(runtimeType, success, message, pagination,
+  int get hashCode => Object.hash(runtimeType, currentPage, lastPage, total,
       const DeepCollectionEquality().hash(_data));
 
-  /// Create a copy of ProductScanApiResponse
+  /// Create a copy of WmsProductScanResource
   /// with the given fields replaced by the non-null parameter values.
   @JsonKey(includeFromJson: false, includeToJson: false)
   @override
   @pragma('vm:prefer-inline')
-  _$$ProductScanApiResponseImplCopyWith<_$ProductScanApiResponseImpl>
-      get copyWith => __$$ProductScanApiResponseImplCopyWithImpl<
-          _$ProductScanApiResponseImpl>(this, _$identity);
+  _$$WmsProductScanResourceImplCopyWith<_$WmsProductScanResourceImpl>
+      get copyWith => __$$WmsProductScanResourceImplCopyWithImpl<
+          _$WmsProductScanResourceImpl>(this, _$identity);
 
   @override
   Map<String, dynamic> toJson() {
-    return _$$ProductScanApiResponseImplToJson(
+    return _$$WmsProductScanResourceImplToJson(
       this,
     );
   }
 }
 
-abstract class _ProductScanApiResponse implements ProductScanApiResponse {
-  const factory _ProductScanApiResponse(
-      {final bool success,
-      final String message,
-      required final PaginationData pagination,
-      final List<WmsProduct> data}) = _$ProductScanApiResponseImpl;
-
-  factory _ProductScanApiResponse.fromJson(Map<String, dynamic> json) =
-      _$ProductScanApiResponseImpl.fromJson;
-
-  @override
-  bool get success;
-  @override
-  String get message;
-  @override
-  PaginationData get pagination;
-  @override
-  List<WmsProduct> get data;
-
-  /// Create a copy of ProductScanApiResponse
-  /// with the given fields replaced by the non-null parameter values.
-  @override
-  @JsonKey(includeFromJson: false, includeToJson: false)
-  _$$ProductScanApiResponseImplCopyWith<_$ProductScanApiResponseImpl>
-      get copyWith => throw _privateConstructorUsedError;
-}
-
-PaginationData _$PaginationDataFromJson(Map<String, dynamic> json) {
-  return _PaginationData.fromJson(json);
-}
-
-/// @nodoc
-mixin _$PaginationData {
-  int get currentPage => throw _privateConstructorUsedError;
-  int get totalPages => throw _privateConstructorUsedError;
-  int get totalItems => throw _privateConstructorUsedError;
-
-  /// Serializes this PaginationData to a JSON map.
-  Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
-
-  /// Create a copy of PaginationData
-  /// with the given fields replaced by the non-null parameter values.
-  @JsonKey(includeFromJson: false, includeToJson: false)
-  $PaginationDataCopyWith<PaginationData> get copyWith =>
-      throw _privateConstructorUsedError;
-}
-
-/// @nodoc
-abstract class $PaginationDataCopyWith<$Res> {
-  factory $PaginationDataCopyWith(
-          PaginationData value, $Res Function(PaginationData) then) =
-      _$PaginationDataCopyWithImpl<$Res, PaginationData>;
-  @useResult
-  $Res call({int currentPage, int totalPages, int totalItems});
-}
-
-/// @nodoc
-class _$PaginationDataCopyWithImpl<$Res, $Val extends PaginationData>
-    implements $PaginationDataCopyWith<$Res> {
-  _$PaginationDataCopyWithImpl(this._value, this._then);
-
-  // ignore: unused_field
-  final $Val _value;
-  // ignore: unused_field
-  final $Res Function($Val) _then;
-
-  /// Create a copy of PaginationData
-  /// with the given fields replaced by the non-null parameter values.
-  @pragma('vm:prefer-inline')
-  @override
-  $Res call({
-    Object? currentPage = null,
-    Object? totalPages = null,
-    Object? totalItems = null,
-  }) {
-    return _then(_value.copyWith(
-      currentPage: null == currentPage
-          ? _value.currentPage
-          : currentPage // ignore: cast_nullable_to_non_nullable
-              as int,
-      totalPages: null == totalPages
-          ? _value.totalPages
-          : totalPages // ignore: cast_nullable_to_non_nullable
-              as int,
-      totalItems: null == totalItems
-          ? _value.totalItems
-          : totalItems // ignore: cast_nullable_to_non_nullable
-              as int,
-    ) as $Val);
-  }
-}
-
-/// @nodoc
-abstract class _$$PaginationDataImplCopyWith<$Res>
-    implements $PaginationDataCopyWith<$Res> {
-  factory _$$PaginationDataImplCopyWith(_$PaginationDataImpl value,
-          $Res Function(_$PaginationDataImpl) then) =
-      __$$PaginationDataImplCopyWithImpl<$Res>;
-  @override
-  @useResult
-  $Res call({int currentPage, int totalPages, int totalItems});
-}
-
-/// @nodoc
-class __$$PaginationDataImplCopyWithImpl<$Res>
-    extends _$PaginationDataCopyWithImpl<$Res, _$PaginationDataImpl>
-    implements _$$PaginationDataImplCopyWith<$Res> {
-  __$$PaginationDataImplCopyWithImpl(
-      _$PaginationDataImpl _value, $Res Function(_$PaginationDataImpl) _then)
-      : super(_value, _then);
-
-  /// Create a copy of PaginationData
-  /// with the given fields replaced by the non-null parameter values.
-  @pragma('vm:prefer-inline')
-  @override
-  $Res call({
-    Object? currentPage = null,
-    Object? totalPages = null,
-    Object? totalItems = null,
-  }) {
-    return _then(_$PaginationDataImpl(
-      currentPage: null == currentPage
-          ? _value.currentPage
-          : currentPage // ignore: cast_nullable_to_non_nullable
-              as int,
-      totalPages: null == totalPages
-          ? _value.totalPages
-          : totalPages // ignore: cast_nullable_to_non_nullable
-              as int,
-      totalItems: null == totalItems
-          ? _value.totalItems
-          : totalItems // ignore: cast_nullable_to_non_nullable
-              as int,
-    ));
-  }
-}
-
-/// @nodoc
-@JsonSerializable()
-class _$PaginationDataImpl implements _PaginationData {
-  const _$PaginationDataImpl(
-      {required this.currentPage,
-      required this.totalPages,
-      required this.totalItems});
-
-  factory _$PaginationDataImpl.fromJson(Map<String, dynamic> json) =>
-      _$$PaginationDataImplFromJson(json);
-
-  @override
-  final int currentPage;
-  @override
-  final int totalPages;
-  @override
-  final int totalItems;
-
-  @override
-  String toString() {
-    return 'PaginationData(currentPage: $currentPage, totalPages: $totalPages, totalItems: $totalItems)';
-  }
-
-  @override
-  bool operator ==(Object other) {
-    return identical(this, other) ||
-        (other.runtimeType == runtimeType &&
-            other is _$PaginationDataImpl &&
-            (identical(other.currentPage, currentPage) ||
-                other.currentPage == currentPage) &&
-            (identical(other.totalPages, totalPages) ||
-                other.totalPages == totalPages) &&
-            (identical(other.totalItems, totalItems) ||
-                other.totalItems == totalItems));
-  }
-
-  @JsonKey(includeFromJson: false, includeToJson: false)
-  @override
-  int get hashCode =>
-      Object.hash(runtimeType, currentPage, totalPages, totalItems);
-
-  /// Create a copy of PaginationData
-  /// with the given fields replaced by the non-null parameter values.
-  @JsonKey(includeFromJson: false, includeToJson: false)
-  @override
-  @pragma('vm:prefer-inline')
-  _$$PaginationDataImplCopyWith<_$PaginationDataImpl> get copyWith =>
-      __$$PaginationDataImplCopyWithImpl<_$PaginationDataImpl>(
-          this, _$identity);
-
-  @override
-  Map<String, dynamic> toJson() {
-    return _$$PaginationDataImplToJson(
-      this,
-    );
-  }
-}
-
-abstract class _PaginationData implements PaginationData {
-  const factory _PaginationData(
+abstract class _WmsProductScanResource implements WmsProductScanResource {
+  const factory _WmsProductScanResource(
       {required final int currentPage,
-      required final int totalPages,
-      required final int totalItems}) = _$PaginationDataImpl;
+      required final int lastPage,
+      required final int total,
+      final List<WmsProduct> data}) = _$WmsProductScanResourceImpl;
 
-  factory _PaginationData.fromJson(Map<String, dynamic> json) =
-      _$PaginationDataImpl.fromJson;
+  factory _WmsProductScanResource.fromJson(Map<String, dynamic> json) =
+      _$WmsProductScanResourceImpl.fromJson;
 
   @override
   int get currentPage;
   @override
-  int get totalPages;
+  int get lastPage;
   @override
-  int get totalItems;
+  int get total;
+  @override
+  List<WmsProduct> get data;
 
-  /// Create a copy of PaginationData
+  /// Create a copy of WmsProductScanResource
   /// with the given fields replaced by the non-null parameter values.
   @override
   @JsonKey(includeFromJson: false, includeToJson: false)
-  _$$PaginationDataImplCopyWith<_$PaginationDataImpl> get copyWith =>
-      throw _privateConstructorUsedError;
+  _$$WmsProductScanResourceImplCopyWith<_$WmsProductScanResourceImpl>
+      get copyWith => throw _privateConstructorUsedError;
 }
 
 WmsProduct _$WmsProductFromJson(Map<String, dynamic> json) {
@@ -460,11 +619,12 @@ mixin _$WmsProduct {
   int get id => throw _privateConstructorUsedError;
   String get productName => throw _privateConstructorUsedError;
   String get productPrice => throw _privateConstructorUsedError;
-  int? get quantity => throw _privateConstructorUsedError;
-  String? get status => throw _privateConstructorUsedError;
-  String? get fixedPrice => throw _privateConstructorUsedError;
-  String? get imageUrl => throw _privateConstructorUsedError;
-  String get scannedAt => throw _privateConstructorUsedError;
+  String? get image =>
+      throw _privateConstructorUsedError; // Ini bisa berupa URL lengkap atau null
+  String? get imageUrl =>
+      throw _privateConstructorUsedError; // Ini path storage
+  String get createdAt => throw _privateConstructorUsedError;
+  WmsUser? get user => throw _privateConstructorUsedError;
 
   /// Serializes this WmsProduct to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
@@ -486,11 +646,12 @@ abstract class $WmsProductCopyWith<$Res> {
       {int id,
       String productName,
       String productPrice,
-      int? quantity,
-      String? status,
-      String? fixedPrice,
+      String? image,
       String? imageUrl,
-      String scannedAt});
+      String createdAt,
+      WmsUser? user});
+
+  $WmsUserCopyWith<$Res>? get user;
 }
 
 /// @nodoc
@@ -511,11 +672,10 @@ class _$WmsProductCopyWithImpl<$Res, $Val extends WmsProduct>
     Object? id = null,
     Object? productName = null,
     Object? productPrice = null,
-    Object? quantity = freezed,
-    Object? status = freezed,
-    Object? fixedPrice = freezed,
+    Object? image = freezed,
     Object? imageUrl = freezed,
-    Object? scannedAt = null,
+    Object? createdAt = null,
+    Object? user = freezed,
   }) {
     return _then(_value.copyWith(
       id: null == id
@@ -530,27 +690,37 @@ class _$WmsProductCopyWithImpl<$Res, $Val extends WmsProduct>
           ? _value.productPrice
           : productPrice // ignore: cast_nullable_to_non_nullable
               as String,
-      quantity: freezed == quantity
-          ? _value.quantity
-          : quantity // ignore: cast_nullable_to_non_nullable
-              as int?,
-      status: freezed == status
-          ? _value.status
-          : status // ignore: cast_nullable_to_non_nullable
-              as String?,
-      fixedPrice: freezed == fixedPrice
-          ? _value.fixedPrice
-          : fixedPrice // ignore: cast_nullable_to_non_nullable
+      image: freezed == image
+          ? _value.image
+          : image // ignore: cast_nullable_to_non_nullable
               as String?,
       imageUrl: freezed == imageUrl
           ? _value.imageUrl
           : imageUrl // ignore: cast_nullable_to_non_nullable
               as String?,
-      scannedAt: null == scannedAt
-          ? _value.scannedAt
-          : scannedAt // ignore: cast_nullable_to_non_nullable
+      createdAt: null == createdAt
+          ? _value.createdAt
+          : createdAt // ignore: cast_nullable_to_non_nullable
               as String,
+      user: freezed == user
+          ? _value.user
+          : user // ignore: cast_nullable_to_non_nullable
+              as WmsUser?,
     ) as $Val);
+  }
+
+  /// Create a copy of WmsProduct
+  /// with the given fields replaced by the non-null parameter values.
+  @override
+  @pragma('vm:prefer-inline')
+  $WmsUserCopyWith<$Res>? get user {
+    if (_value.user == null) {
+      return null;
+    }
+
+    return $WmsUserCopyWith<$Res>(_value.user!, (value) {
+      return _then(_value.copyWith(user: value) as $Val);
+    });
   }
 }
 
@@ -566,11 +736,13 @@ abstract class _$$WmsProductImplCopyWith<$Res>
       {int id,
       String productName,
       String productPrice,
-      int? quantity,
-      String? status,
-      String? fixedPrice,
+      String? image,
       String? imageUrl,
-      String scannedAt});
+      String createdAt,
+      WmsUser? user});
+
+  @override
+  $WmsUserCopyWith<$Res>? get user;
 }
 
 /// @nodoc
@@ -589,11 +761,10 @@ class __$$WmsProductImplCopyWithImpl<$Res>
     Object? id = null,
     Object? productName = null,
     Object? productPrice = null,
-    Object? quantity = freezed,
-    Object? status = freezed,
-    Object? fixedPrice = freezed,
+    Object? image = freezed,
     Object? imageUrl = freezed,
-    Object? scannedAt = null,
+    Object? createdAt = null,
+    Object? user = freezed,
   }) {
     return _then(_$WmsProductImpl(
       id: null == id
@@ -608,26 +779,22 @@ class __$$WmsProductImplCopyWithImpl<$Res>
           ? _value.productPrice
           : productPrice // ignore: cast_nullable_to_non_nullable
               as String,
-      quantity: freezed == quantity
-          ? _value.quantity
-          : quantity // ignore: cast_nullable_to_non_nullable
-              as int?,
-      status: freezed == status
-          ? _value.status
-          : status // ignore: cast_nullable_to_non_nullable
-              as String?,
-      fixedPrice: freezed == fixedPrice
-          ? _value.fixedPrice
-          : fixedPrice // ignore: cast_nullable_to_non_nullable
+      image: freezed == image
+          ? _value.image
+          : image // ignore: cast_nullable_to_non_nullable
               as String?,
       imageUrl: freezed == imageUrl
           ? _value.imageUrl
           : imageUrl // ignore: cast_nullable_to_non_nullable
               as String?,
-      scannedAt: null == scannedAt
-          ? _value.scannedAt
-          : scannedAt // ignore: cast_nullable_to_non_nullable
+      createdAt: null == createdAt
+          ? _value.createdAt
+          : createdAt // ignore: cast_nullable_to_non_nullable
               as String,
+      user: freezed == user
+          ? _value.user
+          : user // ignore: cast_nullable_to_non_nullable
+              as WmsUser?,
     ));
   }
 }
@@ -640,11 +807,10 @@ class _$WmsProductImpl implements _WmsProduct {
       {required this.id,
       required this.productName,
       required this.productPrice,
-      this.quantity,
-      this.status,
-      this.fixedPrice,
+      this.image,
       this.imageUrl,
-      required this.scannedAt});
+      required this.createdAt,
+      this.user});
 
   factory _$WmsProductImpl.fromJson(Map<String, dynamic> json) =>
       _$$WmsProductImplFromJson(json);
@@ -656,19 +822,19 @@ class _$WmsProductImpl implements _WmsProduct {
   @override
   final String productPrice;
   @override
-  final int? quantity;
-  @override
-  final String? status;
-  @override
-  final String? fixedPrice;
+  final String? image;
+// Ini bisa berupa URL lengkap atau null
   @override
   final String? imageUrl;
+// Ini path storage
   @override
-  final String scannedAt;
+  final String createdAt;
+  @override
+  final WmsUser? user;
 
   @override
   String toString() {
-    return 'WmsProduct(id: $id, productName: $productName, productPrice: $productPrice, quantity: $quantity, status: $status, fixedPrice: $fixedPrice, imageUrl: $imageUrl, scannedAt: $scannedAt)';
+    return 'WmsProduct(id: $id, productName: $productName, productPrice: $productPrice, image: $image, imageUrl: $imageUrl, createdAt: $createdAt, user: $user)';
   }
 
   @override
@@ -681,21 +847,18 @@ class _$WmsProductImpl implements _WmsProduct {
                 other.productName == productName) &&
             (identical(other.productPrice, productPrice) ||
                 other.productPrice == productPrice) &&
-            (identical(other.quantity, quantity) ||
-                other.quantity == quantity) &&
-            (identical(other.status, status) || other.status == status) &&
-            (identical(other.fixedPrice, fixedPrice) ||
-                other.fixedPrice == fixedPrice) &&
+            (identical(other.image, image) || other.image == image) &&
             (identical(other.imageUrl, imageUrl) ||
                 other.imageUrl == imageUrl) &&
-            (identical(other.scannedAt, scannedAt) ||
-                other.scannedAt == scannedAt));
+            (identical(other.createdAt, createdAt) ||
+                other.createdAt == createdAt) &&
+            (identical(other.user, user) || other.user == user));
   }
 
   @JsonKey(includeFromJson: false, includeToJson: false)
   @override
   int get hashCode => Object.hash(runtimeType, id, productName, productPrice,
-      quantity, status, fixedPrice, imageUrl, scannedAt);
+      image, imageUrl, createdAt, user);
 
   /// Create a copy of WmsProduct
   /// with the given fields replaced by the non-null parameter values.
@@ -718,11 +881,10 @@ abstract class _WmsProduct implements WmsProduct {
       {required final int id,
       required final String productName,
       required final String productPrice,
-      final int? quantity,
-      final String? status,
-      final String? fixedPrice,
+      final String? image,
       final String? imageUrl,
-      required final String scannedAt}) = _$WmsProductImpl;
+      required final String createdAt,
+      final WmsUser? user}) = _$WmsProductImpl;
 
   factory _WmsProduct.fromJson(Map<String, dynamic> json) =
       _$WmsProductImpl.fromJson;
@@ -734,15 +896,13 @@ abstract class _WmsProduct implements WmsProduct {
   @override
   String get productPrice;
   @override
-  int? get quantity;
+  String? get image; // Ini bisa berupa URL lengkap atau null
   @override
-  String? get status;
+  String? get imageUrl; // Ini path storage
   @override
-  String? get fixedPrice;
+  String get createdAt;
   @override
-  String? get imageUrl;
-  @override
-  String get scannedAt;
+  WmsUser? get user;
 
   /// Create a copy of WmsProduct
   /// with the given fields replaced by the non-null parameter values.

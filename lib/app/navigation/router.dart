@@ -7,8 +7,8 @@ import 'package:fskeleton/feature/ecommerce/ecommerce_search_screen.dart';
 import 'package:fskeleton/feature/history/history_screen.dart';
 import 'package:fskeleton/feature/home/home_screen.dart';
 import 'package:fskeleton/feature/login/login_screen.dart';
-import 'package:fskeleton/feature/product_detail/product_detail_params.dart';
-import 'package:fskeleton/feature/product_detail/product_detail_screen.dart';
+import 'package:fskeleton/feature/result/product_detail_params.dart';
+import 'package:fskeleton/feature/result/product_detail_screen.dart';
 import 'package:fskeleton/feature/search/search_screen.dart';
 import 'package:fskeleton/feature/success/success_screen.dart';
 import 'package:go_router/go_router.dart';
@@ -31,16 +31,16 @@ class AppRouter {
 
   late final router = GoRouter(
     initialLocation: '/$homeRoute',
-    // refreshListenable: _StreamListenable(_authRepository.isLoggedInStream),
-    // redirect: (context, state) async {
-    //   final isLoggedIn = await _authRepository.isLoggedIn();
-    //   final isLoginRequired = !(state.fullPath?.contains(loginRoute) ?? false);
-    //   if (!isLoggedIn && isLoginRequired) {
-    //     return '/$loginRoute';
-    //   }
+    refreshListenable: _StreamListenable(_authRepository.isLoggedInStream),
+    redirect: (context, state) async {
+      final isLoggedIn = await _authRepository.isLoggedIn();
+      final isLoginRequired = !(state.fullPath?.contains(loginRoute) ?? false);
+      if (!isLoggedIn && isLoginRequired) {
+        return '/$loginRoute';
+      }
 
-    //   return null;
-    // },
+      return null;
+    },
     routes: [
       ShellRoute(
         builder: (context, state, child) {
@@ -81,10 +81,7 @@ class AppRouter {
           GoRoute(
             name: searchRoute,
             path: '/$searchRoute',
-            builder: (context, state) => SearchScreen(
-              navigateToSuccessScreen: () =>
-                  context.pushNamed(AppRouter.successRoute),
-            ),
+            builder: (context, state) => const SearchScreen(),
           ),
           GoRoute(
             name: historyRoute,

@@ -24,6 +24,7 @@ class _AppState extends ConsumerState<App> {
       routerConfig: ref.watch(AppRouter.provider).router,
       supportedLocales: AppLocalizations.supportedLocales,
       localizationsDelegates: AppLocalizations.localizationsDelegates,
+      debugShowCheckedModeBanner: false,
       theme: myTheme,
       builder: (context, child) {
         return GestureDetector(

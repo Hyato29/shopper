@@ -235,8 +235,9 @@ ProductScanData _$ProductScanDataFromJson(Map<String, dynamic> json) {
 mixin _$ProductScanData {
   String get productName => throw _privateConstructorUsedError;
   double get productPrice => throw _privateConstructorUsedError;
-  @JsonKey(name: 'imageUrl')
-  String? get imageUrl => throw _privateConstructorUsedError;
+  String? get imageUrl =>
+      throw _privateConstructorUsedError; // TAMBAHKAN FIELD INI
+  List<String> get listEcomerce => throw _privateConstructorUsedError;
 
   /// Serializes this ProductScanData to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
@@ -257,7 +258,8 @@ abstract class $ProductScanDataCopyWith<$Res> {
   $Res call(
       {String productName,
       double productPrice,
-      @JsonKey(name: 'imageUrl') String? imageUrl});
+      String? imageUrl,
+      List<String> listEcomerce});
 }
 
 /// @nodoc
@@ -278,6 +280,7 @@ class _$ProductScanDataCopyWithImpl<$Res, $Val extends ProductScanData>
     Object? productName = null,
     Object? productPrice = null,
     Object? imageUrl = freezed,
+    Object? listEcomerce = null,
   }) {
     return _then(_value.copyWith(
       productName: null == productName
@@ -292,6 +295,10 @@ class _$ProductScanDataCopyWithImpl<$Res, $Val extends ProductScanData>
           ? _value.imageUrl
           : imageUrl // ignore: cast_nullable_to_non_nullable
               as String?,
+      listEcomerce: null == listEcomerce
+          ? _value.listEcomerce
+          : listEcomerce // ignore: cast_nullable_to_non_nullable
+              as List<String>,
     ) as $Val);
   }
 }
@@ -307,7 +314,8 @@ abstract class _$$ProductScanDataImplCopyWith<$Res>
   $Res call(
       {String productName,
       double productPrice,
-      @JsonKey(name: 'imageUrl') String? imageUrl});
+      String? imageUrl,
+      List<String> listEcomerce});
 }
 
 /// @nodoc
@@ -326,6 +334,7 @@ class __$$ProductScanDataImplCopyWithImpl<$Res>
     Object? productName = null,
     Object? productPrice = null,
     Object? imageUrl = freezed,
+    Object? listEcomerce = null,
   }) {
     return _then(_$ProductScanDataImpl(
       productName: null == productName
@@ -340,6 +349,10 @@ class __$$ProductScanDataImplCopyWithImpl<$Res>
           ? _value.imageUrl
           : imageUrl // ignore: cast_nullable_to_non_nullable
               as String?,
+      listEcomerce: null == listEcomerce
+          ? _value._listEcomerce
+          : listEcomerce // ignore: cast_nullable_to_non_nullable
+              as List<String>,
     ));
   }
 }
@@ -351,7 +364,9 @@ class _$ProductScanDataImpl implements _ProductScanData {
   const _$ProductScanDataImpl(
       {this.productName = '',
       this.productPrice = 0.0,
-      @JsonKey(name: 'imageUrl') this.imageUrl});
+      this.imageUrl,
+      final List<String> listEcomerce = const []})
+      : _listEcomerce = listEcomerce;
 
   factory _$ProductScanDataImpl.fromJson(Map<String, dynamic> json) =>
       _$$ProductScanDataImplFromJson(json);
@@ -363,12 +378,21 @@ class _$ProductScanDataImpl implements _ProductScanData {
   @JsonKey()
   final double productPrice;
   @override
-  @JsonKey(name: 'imageUrl')
   final String? imageUrl;
+// TAMBAHKAN FIELD INI
+  final List<String> _listEcomerce;
+// TAMBAHKAN FIELD INI
+  @override
+  @JsonKey()
+  List<String> get listEcomerce {
+    if (_listEcomerce is EqualUnmodifiableListView) return _listEcomerce;
+    // ignore: implicit_dynamic_type
+    return EqualUnmodifiableListView(_listEcomerce);
+  }
 
   @override
   String toString() {
-    return 'ProductScanData(productName: $productName, productPrice: $productPrice, imageUrl: $imageUrl)';
+    return 'ProductScanData(productName: $productName, productPrice: $productPrice, imageUrl: $imageUrl, listEcomerce: $listEcomerce)';
   }
 
   @override
@@ -381,13 +405,15 @@ class _$ProductScanDataImpl implements _ProductScanData {
             (identical(other.productPrice, productPrice) ||
                 other.productPrice == productPrice) &&
             (identical(other.imageUrl, imageUrl) ||
-                other.imageUrl == imageUrl));
+                other.imageUrl == imageUrl) &&
+            const DeepCollectionEquality()
+                .equals(other._listEcomerce, _listEcomerce));
   }
 
   @JsonKey(includeFromJson: false, includeToJson: false)
   @override
-  int get hashCode =>
-      Object.hash(runtimeType, productName, productPrice, imageUrl);
+  int get hashCode => Object.hash(runtimeType, productName, productPrice,
+      imageUrl, const DeepCollectionEquality().hash(_listEcomerce));
 
   /// Create a copy of ProductScanData
   /// with the given fields replaced by the non-null parameter values.
@@ -408,10 +434,10 @@ class _$ProductScanDataImpl implements _ProductScanData {
 
 abstract class _ProductScanData implements ProductScanData {
   const factory _ProductScanData(
-          {final String productName,
-          final double productPrice,
-          @JsonKey(name: 'imageUrl') final String? imageUrl}) =
-      _$ProductScanDataImpl;
+      {final String productName,
+      final double productPrice,
+      final String? imageUrl,
+      final List<String> listEcomerce}) = _$ProductScanDataImpl;
 
   factory _ProductScanData.fromJson(Map<String, dynamic> json) =
       _$ProductScanDataImpl.fromJson;
@@ -421,8 +447,9 @@ abstract class _ProductScanData implements ProductScanData {
   @override
   double get productPrice;
   @override
-  @JsonKey(name: 'imageUrl')
-  String? get imageUrl;
+  String? get imageUrl; // TAMBAHKAN FIELD INI
+  @override
+  List<String> get listEcomerce;
 
   /// Create a copy of ProductScanData
   /// with the given fields replaced by the non-null parameter values.

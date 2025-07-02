@@ -21,14 +21,14 @@ class EcommerceSearchController extends StateNotifier<EcommerceSearchState> {
 
   final WmsApiRepository _wmsApiRepository;
 
-  Future<void> search(String productName) async {
-    state = state.copyWith(searchResult: const AsyncValue.loading());
-    final result = await AsyncValue.guard(
-        () => _wmsApiRepository.searchEcommerce(productName: productName));
-    if (mounted) {
-      state = state.copyWith(searchResult: result);
-    }
-  }
+  // Future<void> search(String productName) async {
+  //   state = state.copyWith(searchResult: const AsyncValue.loading());
+  //   final result = await AsyncValue.guard(
+  //       () => _wmsApiRepository.searchEcommerce(productName: productName));
+  //   if (mounted) {
+  //     state = state.copyWith(searchResult: result);
+  //   }
+  // }
 }
 
 final ecommerceSearchControllerProvider = StateNotifierProvider.autoDispose<

@@ -7,7 +7,7 @@ import 'package:fskeleton/app/ui/empty_state.dart';
 import 'package:fskeleton/app/ui/theme/my_colors.dart';
 import 'package:fskeleton/app/ui/theme/my_text.dart';
 import 'package:fskeleton/feature/ecommerce/ecommerce_search_controller.dart';
-import 'package:fskeleton/feature/product_detail/product_detail_params.dart';
+import 'package:fskeleton/feature/result/product_detail_params.dart';
 import 'package:go_router/go_router.dart';
 
 class EcommerceSearchScreen extends ConsumerStatefulWidget {
@@ -32,9 +32,9 @@ class _EcommerceSearchScreenState extends ConsumerState<EcommerceSearchScreen>
     _productName = widget.searchParams['productName']!;
     _localImagePath = widget.searchParams['localImagePath']!;
 
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      ref.read(ecommerceSearchControllerProvider.notifier).search(_productName);
-    });
+    // WidgetsBinding.instance.addPostFrameCallback((_) {
+    //   ref.read(ecommerceSearchControllerProvider.notifier).search(_productName);
+    // });
   }
 
   @override
@@ -83,7 +83,7 @@ class _EcommerceSearchScreenState extends ConsumerState<EcommerceSearchScreen>
             context: context,
             onRetried: () => ref
                 .read(ecommerceSearchControllerProvider.notifier)
-                .search(_productName),
+                // .search(_productName),
           ),
         ),
       ),

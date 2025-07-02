@@ -21,8 +21,8 @@ Map<String, dynamic> _$$WmsGetBundleBasicResponseImplToJson(
 _$WmsGetBundleResponseImpl _$$WmsGetBundleResponseImplFromJson(
         Map<String, dynamic> json) =>
     _$WmsGetBundleResponseImpl(
-      status: json['status'] as bool? ?? false,
-      message: json['message'] as String? ?? '',
+      status: json['status'] as bool,
+      message: json['message'] as String,
       resource: WmsGetBundleResource.fromJson(
           json['resource'] as Map<String, dynamic>),
     );
@@ -38,31 +38,32 @@ Map<String, dynamic> _$$WmsGetBundleResponseImplToJson(
 _$WmsGetBundleResourceImpl _$$WmsGetBundleResourceImplFromJson(
         Map<String, dynamic> json) =>
     _$WmsGetBundleResourceImpl(
-      currentPage: (json['current_page'] as num?)?.toInt() ?? 0,
+      currentPage: (json['current_page'] as num).toInt(),
+      lastPage: (json['last_page'] as num).toInt(),
+      total: (json['total'] as num).toInt(),
       data: (json['data'] as List<dynamic>?)
               ?.map((e) => WmsBundle.fromJson(e as Map<String, dynamic>))
               .toList() ??
           const [],
-      lastPage: (json['last_page'] as num?)?.toInt() ?? 0,
     );
 
 Map<String, dynamic> _$$WmsGetBundleResourceImplToJson(
         _$WmsGetBundleResourceImpl instance) =>
     <String, dynamic>{
       'current_page': instance.currentPage,
-      'data': instance.data,
       'last_page': instance.lastPage,
+      'total': instance.total,
+      'data': instance.data,
     };
 
 _$WmsBundleImpl _$$WmsBundleImplFromJson(Map<String, dynamic> json) =>
     _$WmsBundleImpl(
-      id: (json['id'] as num?)?.toInt() ?? 0,
-      nameBundle: json['name_bundle'] as String? ?? '',
-      barcodeBundle: json['barcode_bundle'] as String? ?? '',
-      totalProductBundle: (json['total_product_bundle'] as num?)?.toInt() ?? 0,
-      totalPriceBundle: json['total_price_bundle'] as String? ?? "0.00",
-      totalPriceCustomBundle:
-          json['total_price_custom_bundle'] as String? ?? "0.00",
+      id: (json['id'] as num).toInt(),
+      nameBundle: json['name_bundle'] as String,
+      barcodeBundle: json['barcode_bundle'] as String,
+      totalProductBundle: (json['total_product_bundle'] as num).toInt(),
+      totalPriceBundle: json['total_price_bundle'] as String,
+      totalPriceCustomBundle: json['total_price_custom_bundle'] as String?,
       productBundles: (json['product_bundles'] as List<dynamic>?)
               ?.map((e) => ProductInBundle.fromJson(e as Map<String, dynamic>))
               .toList() ??
@@ -83,10 +84,10 @@ Map<String, dynamic> _$$WmsBundleImplToJson(_$WmsBundleImpl instance) =>
 _$ProductInBundleImpl _$$ProductInBundleImplFromJson(
         Map<String, dynamic> json) =>
     _$ProductInBundleImpl(
-      id: (json['id'] as num?)?.toInt() ?? 0,
-      newNameProduct: json['new_name_product'] as String? ?? '',
-      displayPrice: json['display_price'] as String? ?? "0.00",
+      id: (json['id'] as num).toInt(),
+      newNameProduct: json['new_name_product'] as String,
       image: json['image'] as String?,
+      displayPrice: json['display_price'] as String,
     );
 
 Map<String, dynamic> _$$ProductInBundleImplToJson(
@@ -94,6 +95,6 @@ Map<String, dynamic> _$$ProductInBundleImplToJson(
     <String, dynamic>{
       'id': instance.id,
       'new_name_product': instance.newNameProduct,
-      'display_price': instance.displayPrice,
       'image': instance.image,
+      'display_price': instance.displayPrice,
     };

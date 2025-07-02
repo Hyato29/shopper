@@ -1,4 +1,3 @@
-// lib/feature/product_detail/product_detail_controller.dart
 
 import 'dart:io';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -6,8 +5,8 @@ import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:fskeleton/app/common/common_controller.dart';
 import 'package:fskeleton/app/data/wms/model/wms_category/wms_category.dart';
 import 'package:fskeleton/app/data/wms/wms_repository.dart';
-import 'package:fskeleton/app/utils/event.dart'; // <-- Pastikan import ini ada
-import 'product_detail_params.dart';
+import 'package:fskeleton/app/utils/event.dart';
+import 'package:fskeleton/feature/result/product_detail_params.dart';
 
 part 'product_detail_controller.freezed.dart';
 
@@ -19,7 +18,6 @@ class ProductDetailState with _$ProductDetailState {
     @Default(1) int quantity,
     int? selectedCategoryId,
     @Default(false) bool isSaving,
-    // TAMBAHKAN STATE INI untuk menandai navigasi
     Event<bool>? navigateBack, 
   }) = _ProductDetailState;
 }
@@ -31,7 +29,6 @@ class ProductDetailController extends StateNotifier<ProductDetailState> {
   final WmsApiRepository _wmsRepository;
   final CommonController _commonController;
 
-  // ... (kode onScreenLoaded, onStatusChanged, onQuantityChanged, onCategoryChanged tetap sama) ...
   Future<void> onScreenLoaded() async {
     state = state.copyWith(categories: const AsyncValue.loading());
     final result = await AsyncValue.guard(() => _wmsRepository.getCategories());
@@ -53,7 +50,6 @@ class ProductDetailController extends StateNotifier<ProductDetailState> {
   }
 
 
-  // PERBAIKAN: Fungsi saveData tidak lagi mengembalikan bool
   Future<void> saveData(ProductDetailParams params) async {
     if (state.selectedStatus == null || state.quantity <= 0) {
       _commonController.handleCommonError(
@@ -75,7 +71,6 @@ class ProductDetailController extends StateNotifier<ProductDetailState> {
           status: state.selectedStatus!,
           categoryIds: categoryIdsToSend,
           imageFile: imageFile,
-          // Menggunakan imageUrl dari e-commerce untuk disimpan
           imageUrl: params.imageUrl 
         ));
 
@@ -85,7 +80,6 @@ class ProductDetailController extends StateNotifier<ProductDetailState> {
       _commonController.handleCommonError(
           result.error ?? Exception("Gagal menyimpan data"), null);
     } else {
-      // Jika berhasil, kirim event untuk navigasi
       state = state.copyWith(navigateBack: Event(true));
     }
   }

@@ -8,9 +8,9 @@ part of 'wms_user.dart';
 
 _$WmsUserImpl _$$WmsUserImplFromJson(Map<String, dynamic> json) =>
     _$WmsUserImpl(
-      id: (json['id'] as num?)?.toInt() ?? 0,
-      name: json['name'] as String? ?? '',
-      username: json['username'] as String? ?? '',
+      id: (json['id'] as num).toInt(),
+      name: json['name'] as String,
+      username: json['username'] as String,
       formatBarcodeName: json['format_barcode_name'] as String?,
     );
 

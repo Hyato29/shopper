@@ -23,6 +23,7 @@ mixin _$HistoryScreenUiState {
   Event<bool>? get nextPageLoading => throw _privateConstructorUsedError;
   WmsProduct? get selectedProduct => throw _privateConstructorUsedError;
   WmsBundle? get selectedBundle => throw _privateConstructorUsedError;
+  Event<bool>? get bundleCreated => throw _privateConstructorUsedError;
 
   /// Create a copy of HistoryScreenUiState
   /// with the given fields replaced by the non-null parameter values.
@@ -43,7 +44,8 @@ abstract class $HistoryScreenUiStateCopyWith<$Res> {
       String searchKey,
       Event<bool>? nextPageLoading,
       WmsProduct? selectedProduct,
-      WmsBundle? selectedBundle});
+      WmsBundle? selectedBundle,
+      Event<bool>? bundleCreated});
 
   $WmsProductCopyWith<$Res>? get selectedProduct;
   $WmsBundleCopyWith<$Res>? get selectedBundle;
@@ -71,6 +73,7 @@ class _$HistoryScreenUiStateCopyWithImpl<$Res,
     Object? nextPageLoading = freezed,
     Object? selectedProduct = freezed,
     Object? selectedBundle = freezed,
+    Object? bundleCreated = freezed,
   }) {
     return _then(_value.copyWith(
       products: null == products
@@ -97,6 +100,10 @@ class _$HistoryScreenUiStateCopyWithImpl<$Res,
           ? _value.selectedBundle
           : selectedBundle // ignore: cast_nullable_to_non_nullable
               as WmsBundle?,
+      bundleCreated: freezed == bundleCreated
+          ? _value.bundleCreated
+          : bundleCreated // ignore: cast_nullable_to_non_nullable
+              as Event<bool>?,
     ) as $Val);
   }
 
@@ -143,7 +150,8 @@ abstract class _$$HistoryScreenUiStateImplCopyWith<$Res>
       String searchKey,
       Event<bool>? nextPageLoading,
       WmsProduct? selectedProduct,
-      WmsBundle? selectedBundle});
+      WmsBundle? selectedBundle,
+      Event<bool>? bundleCreated});
 
   @override
   $WmsProductCopyWith<$Res>? get selectedProduct;
@@ -170,6 +178,7 @@ class __$$HistoryScreenUiStateImplCopyWithImpl<$Res>
     Object? nextPageLoading = freezed,
     Object? selectedProduct = freezed,
     Object? selectedBundle = freezed,
+    Object? bundleCreated = freezed,
   }) {
     return _then(_$HistoryScreenUiStateImpl(
       products: null == products
@@ -196,6 +205,10 @@ class __$$HistoryScreenUiStateImplCopyWithImpl<$Res>
           ? _value.selectedBundle
           : selectedBundle // ignore: cast_nullable_to_non_nullable
               as WmsBundle?,
+      bundleCreated: freezed == bundleCreated
+          ? _value.bundleCreated
+          : bundleCreated // ignore: cast_nullable_to_non_nullable
+              as Event<bool>?,
     ));
   }
 }
@@ -209,7 +222,8 @@ class _$HistoryScreenUiStateImpl implements _HistoryScreenUiState {
       this.searchKey = '',
       this.nextPageLoading = null,
       this.selectedProduct,
-      this.selectedBundle});
+      this.selectedBundle,
+      this.bundleCreated});
 
   @override
   @JsonKey()
@@ -227,10 +241,12 @@ class _$HistoryScreenUiStateImpl implements _HistoryScreenUiState {
   final WmsProduct? selectedProduct;
   @override
   final WmsBundle? selectedBundle;
+  @override
+  final Event<bool>? bundleCreated;
 
   @override
   String toString() {
-    return 'HistoryScreenUiState(products: $products, bundles: $bundles, searchKey: $searchKey, nextPageLoading: $nextPageLoading, selectedProduct: $selectedProduct, selectedBundle: $selectedBundle)';
+    return 'HistoryScreenUiState(products: $products, bundles: $bundles, searchKey: $searchKey, nextPageLoading: $nextPageLoading, selectedProduct: $selectedProduct, selectedBundle: $selectedBundle, bundleCreated: $bundleCreated)';
   }
 
   @override
@@ -248,12 +264,14 @@ class _$HistoryScreenUiStateImpl implements _HistoryScreenUiState {
             (identical(other.selectedProduct, selectedProduct) ||
                 other.selectedProduct == selectedProduct) &&
             (identical(other.selectedBundle, selectedBundle) ||
-                other.selectedBundle == selectedBundle));
+                other.selectedBundle == selectedBundle) &&
+            (identical(other.bundleCreated, bundleCreated) ||
+                other.bundleCreated == bundleCreated));
   }
 
   @override
   int get hashCode => Object.hash(runtimeType, products, bundles, searchKey,
-      nextPageLoading, selectedProduct, selectedBundle);
+      nextPageLoading, selectedProduct, selectedBundle, bundleCreated);
 
   /// Create a copy of HistoryScreenUiState
   /// with the given fields replaced by the non-null parameter values.
@@ -273,7 +291,8 @@ abstract class _HistoryScreenUiState implements HistoryScreenUiState {
       final String searchKey,
       final Event<bool>? nextPageLoading,
       final WmsProduct? selectedProduct,
-      final WmsBundle? selectedBundle}) = _$HistoryScreenUiStateImpl;
+      final WmsBundle? selectedBundle,
+      final Event<bool>? bundleCreated}) = _$HistoryScreenUiStateImpl;
 
   @override
   AsyncValue<List<WmsProduct>> get products;
@@ -287,6 +306,8 @@ abstract class _HistoryScreenUiState implements HistoryScreenUiState {
   WmsProduct? get selectedProduct;
   @override
   WmsBundle? get selectedBundle;
+  @override
+  Event<bool>? get bundleCreated;
 
   /// Create a copy of HistoryScreenUiState
   /// with the given fields replaced by the non-null parameter values.

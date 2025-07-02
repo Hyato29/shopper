@@ -481,7 +481,7 @@ abstract class AppLocalizations {
   /// No description provided for @getProductPhotoWithCameraOrGallery.
   ///
   /// In id, this message translates to:
-  /// **'Ambil foto produk melalui akses kamera atau galeri.'**
+  /// **'Ambil foto produk atau cari produk anda dari galeri'**
   String get getProductPhotoWithCameraOrGallery;
 }
 

@@ -137,22 +137,19 @@ class __$$WmsUserImplCopyWithImpl<$Res>
 @JsonSerializable(fieldRename: FieldRename.snake)
 class _$WmsUserImpl implements _WmsUser {
   const _$WmsUserImpl(
-      {this.id = 0,
-      this.name = '',
-      this.username = '',
+      {required this.id,
+      required this.name,
+      required this.username,
       this.formatBarcodeName});
 
   factory _$WmsUserImpl.fromJson(Map<String, dynamic> json) =>
       _$$WmsUserImplFromJson(json);
 
   @override
-  @JsonKey()
   final int id;
   @override
-  @JsonKey()
   final String name;
   @override
-  @JsonKey()
   final String username;
   @override
   final String? formatBarcodeName;
@@ -198,9 +195,9 @@ class _$WmsUserImpl implements _WmsUser {
 
 abstract class _WmsUser implements WmsUser {
   const factory _WmsUser(
-      {final int id,
-      final String name,
-      final String username,
+      {required final int id,
+      required final String name,
+      required final String username,
       final String? formatBarcodeName}) = _$WmsUserImpl;
 
   factory _WmsUser.fromJson(Map<String, dynamic> json) = _$WmsUserImpl.fromJson;

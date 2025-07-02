@@ -29,7 +29,11 @@ _$ProductScanDataImpl _$$ProductScanDataImplFromJson(
     _$ProductScanDataImpl(
       productName: json['product_name'] as String? ?? '',
       productPrice: (json['product_price'] as num?)?.toDouble() ?? 0.0,
-      imageUrl: json['imageUrl'] as String?,
+      imageUrl: json['image_url'] as String?,
+      listEcomerce: (json['list_ecomerce'] as List<dynamic>?)
+              ?.map((e) => e as String)
+              .toList() ??
+          const [],
     );
 
 Map<String, dynamic> _$$ProductScanDataImplToJson(
@@ -37,5 +41,6 @@ Map<String, dynamic> _$$ProductScanDataImplToJson(
     <String, dynamic>{
       'product_name': instance.productName,
       'product_price': instance.productPrice,
-      'imageUrl': instance.imageUrl,
+      'image_url': instance.imageUrl,
+      'list_ecomerce': instance.listEcomerce,
     };

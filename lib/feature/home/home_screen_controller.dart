@@ -1,11 +1,11 @@
-// lib/feature/home/home_screen_controller.dart
-
 import 'dart:async';
 import 'dart:io';
-
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:fskeleton/app/common/common_controller.dart';
 import 'package:fskeleton/app/data/auth/auth_repository.dart';
+import 'package:fskeleton/app/data/serp/serp_api_repository.dart';
+import 'package:fskeleton/app/data/wms/model/wms_identify/identify_product_response.dart';
 import 'package:fskeleton/app/data/wms/model/wms_product/wms_product.dart';
 import 'package:fskeleton/app/data/wms/wms_repository.dart';
 import 'package:fskeleton/core.dart';
@@ -27,11 +27,13 @@ class HomeScreenController extends StateNotifier<HomeScreenUiState> {
     this._authRepository,
     this._commonController,
     this._wmsApiRepository,
+    this._serpApiRepository,
   ) : super(const HomeScreenUiState());
 
   final AuthRepository _authRepository;
   final CommonController _commonController;
   final WmsApiRepository _wmsApiRepository;
+  final SerpApiRepository _serpApiRepository;
 
   static final provider = StateNotifierProvider.autoDispose<
       HomeScreenController, HomeScreenUiState>(
@@ -40,12 +42,13 @@ class HomeScreenController extends StateNotifier<HomeScreenUiState> {
         ref.watch(AuthRepository.provider),
         ref.watch(CommonController.provider.notifier),
         ref.watch(WmsApiRepository.provider),
+        ref.watch(SerpApiRepository.provider),
       );
     },
   );
 
   int _currentPage = 1;
-  int? _lastPage; // Ini adalah variabel lokal, bukan bagian dari state
+  int? _lastPage;
 
   @override
   void dispose() {
@@ -79,25 +82,24 @@ class HomeScreenController extends StateNotifier<HomeScreenUiState> {
     );
 
     if (mounted) {
-      final AsyncValue<List<WmsProduct>> newProductState = result.when(
-        data: (apiResponse) {
-          // Menggunakan struktur paginasi yang baru
-          _currentPage = apiResponse.pagination.currentPage;
-          _lastPage = apiResponse.pagination.totalPages;
-          return AsyncValue.data(apiResponse.data);
+      result.when(
+        data: (resource) {
+          _currentPage = resource.currentPage;
+          _lastPage = resource.lastPage;
+          state = state.copyWith(products: AsyncData(resource.data));
         },
-        error: (e, s) => AsyncValue.error(e, s),
-        loading: () => const AsyncValue.loading(),
+        error: (e, s) {
+          state = state.copyWith(products: AsyncError(e, s));
+          _commonController.handleCommonError(e, () => loadProducts());
+        },
+        loading: () {},
       );
-      state = state.copyWith(products: newProductState);
     }
   }
 
-  // Pastikan Anda juga memiliki fungsi ini jika ada fitur "load more"
   Future<void> loadNextProducts() async {
-    if (state.nextPageLoading || _currentPage >= (_lastPage ?? _currentPage)) {
+    if (state.nextPageLoading || _currentPage >= (_lastPage ?? _currentPage))
       return;
-    }
 
     state = state.copyWith(nextPageLoading: true);
     _currentPage++;
@@ -108,13 +110,13 @@ class HomeScreenController extends StateNotifier<HomeScreenUiState> {
     );
 
     if (mounted) {
-      result.whenData((apiResponse) {
-        _currentPage = apiResponse.pagination.currentPage;
-        _lastPage = apiResponse.pagination.totalPages;
+      result.whenData((resource) {
+        _currentPage = resource.currentPage;
+        _lastPage = resource.lastPage;
         state = state.copyWith(
           products: AsyncData([
             ...?state.products.value,
-            ...apiResponse.data,
+            ...resource.data,
           ]),
         );
       });
@@ -122,57 +124,31 @@ class HomeScreenController extends StateNotifier<HomeScreenUiState> {
     }
   }
 
-  // Future<ProductScanData?> identifyProduct({required File file}) async {
-  //   _commonController.showLoading(isLoading: true);
-
-  //   // Panggil langsung repository untuk mengirim file
-  //   final result = await AsyncValue.guard(
-  //     () => _wmsApiRepository.identifyProductFromFile(imageFile: file),
-  //   );
-
-  //   _commonController.showLoading(isLoading: false);
-
-  //   if (!mounted) return null;
-
-  //   if (result.hasError) {
-  //     _commonController.handleCommonError(
-  //         result.error ?? Exception('Unknown error'),
-  //         () => identifyProduct(file: file));
-  //     return null;
-  //   }
-
-  //   final response = result.asData?.value;
-  //   if (response != null && response.success && response.data != null) {
-  //     // imageUrl sekarang akan null karena backend tidak mengirimkannya lagi
-  //     // Ini tidak masalah karena ProductDetailParams mengizinkan null
-  //     return response.data;
-  //   } else {
-  //     _commonController.handleCommonError(
-  //         Exception(response?.message ?? 'Gagal mengidentifikasi produk.'),
-  //         null);
-  //     return null;
-  //   }
-  // }
-
-  Future<String?> identifyProduct({required File file}) async {
+  Future<ProductScanData?> identifyProduct({required File file}) async {
     _commonController.showLoading(isLoading: true);
+
     final result = await AsyncValue.guard(
-      () => _wmsApiRepository.identifyProductFromFile(imageFile: file),
+      () => _serpApiRepository.identifyProductFromFile(imageFile: file),
     );
+
     _commonController.showLoading(isLoading: false);
+
     if (!mounted) return null;
 
     if (result.hasError) {
-      _commonController.handleCommonError(result, null);
+      _commonController.handleCommonError(
+          result.error ?? Exception('Unknown error'),
+          () => identifyProduct(file: file));
       return null;
     }
 
     final response = result.asData?.value;
     if (response != null && response.success && response.data != null) {
-      // HANYA KEMBALIKAN NAMA PRODUK
-      return response.data!.productName;
+      return response.data;
     } else {
-      _commonController.handleCommonError(Exception(response?.message), null);
+      _commonController.handleCommonError(
+          Exception(response?.message ?? 'Gagal mengidentifikasi produk.'),
+          null);
       return null;
     }
   }

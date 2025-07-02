@@ -1,5 +1,6 @@
-import 'dart:io';
+// lib/feature/home/home_screen.dart
 
+import 'dart:io';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:device_info_plus/device_info_plus.dart';
 import 'package:flutter/material.dart';
@@ -12,11 +13,12 @@ import 'package:fskeleton/app/ui/buttons/my_text_button.dart';
 import 'package:fskeleton/app/ui/empty_state.dart';
 import 'package:fskeleton/app/ui/image_picker_service.dart';
 import 'package:fskeleton/app/ui/my_alert.dart';
-import 'package:fskeleton/app/ui/tablet_detector.dart';
 import 'package:fskeleton/app/ui/theme/my_colors.dart';
 import 'package:fskeleton/app/ui/theme/my_text.dart';
 import 'package:fskeleton/core.dart';
 import 'package:fskeleton/feature/home/home_screen_controller.dart';
+import 'package:fskeleton/feature/home/setting_screen.dart';
+import 'package:fskeleton/feature/result/product_detail_params.dart';
 import 'package:go_router/go_router.dart';
 import 'package:permission_handler/permission_handler.dart';
 
@@ -38,6 +40,47 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     });
   }
 
+  Future<void> _cameraOrImagePickerAction({required bool isCamera}) async {
+    final image = await ref
+        .read(ImagePickerService.provider)
+        .pickImage(context: context, isFromCamera: isCamera);
+
+    if (image == null || !mounted) return;
+
+    final productData = await ref
+        .read(_controller.notifier)
+        .identifyProduct(file: File(image.path));
+
+    if (productData != null && mounted) {
+      final params = ProductDetailParams(
+        productName: productData.productName,
+        productPrice: productData.productPrice,
+        imageUrl: productData.imageUrl,
+        localImagePath: image.path,
+        listEcomerce: productData.listEcomerce,
+      );
+
+      final shouldRefresh = await context.pushNamed<bool>(
+        AppRouter.productDetailRoute,
+        extra: params,
+      );
+
+      if (shouldRefresh == true) {
+        ref.read(_controller.notifier).loadProducts();
+      }
+    } else if (mounted) {
+      showMyAlert(
+        context: context,
+        data: const MyAlertData(
+          title: "Gagal Mengidentifikasi Produk",
+          content:
+              "Sistem tidak dapat mengenali produk dari gambar yang diberikan.",
+          primaryButton: "Mengerti",
+        ),
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return CommonScreen(
@@ -45,11 +88,6 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         appBar: AppBar(
           toolbarHeight: 64,
           backgroundColor: Colors.white,
-          elevation: 0,
-          title: Text(
-            "Sistem Pencarian Harga",
-            style: MyText.lgSemiBold.copyWith(color: MyColors.black),
-          ),
           actions: [_appBarSettings(context)],
         ),
         backgroundColor: MyColors.white,
@@ -59,18 +97,26 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             child: SingleChildScrollView(
               physics: const AlwaysScrollableScrollPhysics(),
               child: Padding(
-                padding: const EdgeInsets.symmetric(vertical: 10),
+                padding:
+                    const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
                 child: Column(
                   children: [
+                    const SizedBox(height: 40),
+                    Text(
+                      "Sistem Pencarian Harga",
+                      style: MyText.lgSemiBold.copyWith(color: MyColors.black),
+                    ),
+                    const SizedBox(height: 10),
                     Text(
                       context.localizations.getProductPhotoWithCameraOrGallery,
-                      style: MyText.sm.copyWith(color: MyColors.neutral80),
+                      textAlign: TextAlign.center,
+                      style: MyText.xs.copyWith(color: MyColors.neutral80),
                     ),
-                    const SizedBox(height: 16),
+                    const SizedBox(height: 40),
                     _dashboardContent(),
+                    const SizedBox(height: 40),
                     _scanHistoryBox(),
                     const SizedBox(height: 20),
-                    _appVersionWidget(),
                   ],
                 ),
               ),
@@ -81,11 +127,63 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     );
   }
 
+  Widget _dashboardContent() {
+    return Row(
+      children: [
+        Expanded(
+          child: GestureDetector(
+            onTap: () => context.pushNamed(AppRouter.searchRoute),
+            child: AbsorbPointer(
+              child: TextField(
+                decoration: InputDecoration(
+                  hintText: "Search Product...",
+                  prefixIcon:
+                      const Icon(Icons.search, color: MyColors.neutral70),
+                  hintStyle: const TextStyle(fontSize: 16),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                    borderSide: const BorderSide(color: MyColors.neutral40),
+                  ),
+                  filled: true,
+                  fillColor: MyColors.neutral30,
+                  enabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                    borderSide: const BorderSide(color: MyColors.neutral40),
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ),
+        const SizedBox(width: 10),
+        Container(
+          height: 65,
+          width: 65,
+          decoration: BoxDecoration(
+              color: MyColors.neutral50,
+              borderRadius: BorderRadius.circular(12)),
+          child: IconButton(
+            onPressed: () => _showImagePickerBottomSheet(),
+            icon: const Icon(Icons.camera_alt_rounded),
+            color: MyColors.blueSource,
+          ),
+        )
+      ],
+    );
+  }
+
   Widget _appBarSettings(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.only(right: 12.0),
       child: TextButton.icon(
-        onPressed: () {},
+        onPressed: () => Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) {
+                    return const SettingScreen();
+                  },
+                ),
+              ),
         icon: const Icon(Icons.settings, color: MyColors.primary500),
         label: Text(
           "Pengaturan",
@@ -102,9 +200,9 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
 
   Widget _scanHistoryBox() {
     return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 20.0),
+      width: double.infinity,
       decoration: BoxDecoration(
-        color: MyColors.bodyBackground,
+        color: Colors.white,
         borderRadius: BorderRadius.circular(12),
         border: Border.all(color: MyColors.neutral40),
       ),
@@ -113,20 +211,28 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   }
 
   Widget _historyHeader() {
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(20, 20, 10, 20),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Text("Scan History", style: MyText.smSemiBold),
-          MyTextButton(
-            onPressed: () => context.pushNamed(AppRouter.historyRoute),
-            label: Text(
-              "Lihat Semua",
-              style: MyText.xsSemiBold.copyWith(color: MyColors.primary500),
-            ),
-          )
-        ],
+    return Container(
+      decoration: const BoxDecoration(
+          color: MyColors.bodyBackground,
+          borderRadius: BorderRadius.only(
+            topLeft: Radius.circular(12),
+            topRight: Radius.circular(12),
+          )),
+      child: Padding(
+        padding: const EdgeInsets.fromLTRB(20, 20, 10, 20),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text("Scan History", style: MyText.smSemiBold),
+            MyTextButton(
+              onPressed: () => context.pushNamed(AppRouter.historyRoute),
+              label: Text(
+                "Lihat Semua",
+                style: MyText.xsSemiBold.copyWith(color: MyColors.primary500),
+              ),
+            )
+          ],
+        ),
       ),
     );
   }
@@ -147,12 +253,11 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         final itemsToShow = products.take(3).toList();
         return Container(
           decoration: const BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.only(
-              bottomLeft: Radius.circular(12),
-              bottomRight: Radius.circular(12),
-            )
-          ),
+              color: Colors.white,
+              borderRadius: BorderRadius.only(
+                bottomLeft: Radius.circular(12),
+                bottomRight: Radius.circular(12),
+              )),
           padding: const EdgeInsets.symmetric(horizontal: 20),
           child: Column(
             children: itemsToShow
@@ -176,10 +281,17 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     );
   }
 
+  // --- WIDGET INI TELAH DIPERBAIKI ---
   Widget _historyItem(WmsProduct product, bool isLast) {
-    final wmsConfig = ref.watch(NetworkConfig.wmsApiProvider);
-    final baseUrl =
-        "${wmsConfig.apiScheme}://${wmsConfig.apiHost}:${wmsConfig.apiPort}";
+    const wmsBaseUrl = "https://wms-server.digitalindustryagency.com";
+
+    // Logika untuk menentukan URL gambar yang akan ditampilkan
+    String? displayImageUrl;
+    if (product.image != null && product.image!.startsWith('http')) {
+      displayImageUrl = product.image;
+    } else if (product.imageUrl != null && product.imageUrl!.isNotEmpty) {
+      displayImageUrl = wmsBaseUrl + product.imageUrl!;
+    }
 
     return Column(
       children: [
@@ -188,23 +300,22 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              if (product.imageUrl != null && product.imageUrl!.isNotEmpty)
+              if (displayImageUrl != null)
                 Container(
                   decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(12),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.grey.withOpacity(0.5),
-                        spreadRadius: 1,
-                        blurRadius: 5,
-                        offset: const Offset(0, 3),
-                      )
-                    ]
-                  ),
+                      borderRadius: BorderRadius.circular(12),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.grey.withOpacity(0.5),
+                          spreadRadius: 1,
+                          blurRadius: 5,
+                          offset: const Offset(0, 3),
+                        )
+                      ]),
                   child: ClipRRect(
                     borderRadius: BorderRadius.circular(8),
                     child: CachedNetworkImage(
-                      imageUrl: baseUrl + product.imageUrl!,
+                      imageUrl: displayImageUrl,
                       width: 48,
                       height: 48,
                       fit: BoxFit.cover,
@@ -216,7 +327,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
               else
                 _imagePlaceholder(),
               const SizedBox(width: 12),
-              if (product.status != null) _statusChip(product.status!),
+              // Status tidak ada di respons baru, jadi kita bisa hilangkan atau beri default
+              // _statusChip("Lolos"),
               const SizedBox(width: 8),
               Expanded(
                 child: Text(
@@ -234,35 +346,6 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     );
   }
 
-  Widget _statusChip(String status) {
-    Color chipColor, textColor;
-    String statusText = status;
-
-    switch (status.toLowerCase()) {
-      case 'damaged':
-        chipColor = MyColors.danger50;
-        textColor = MyColors.danger700;
-        break;
-      case 'karantina':
-        chipColor = MyColors.alert50;
-        textColor = MyColors.alert700;
-        break;
-      default:
-        chipColor = MyColors.success50;
-        textColor = MyColors.success700;
-        statusText = "Lolos";
-    }
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
-      decoration: BoxDecoration(
-        color: chipColor,
-        borderRadius: BorderRadius.circular(20),
-      ),
-      child:
-          Text(statusText, style: MyText.xsSemiBold.copyWith(color: textColor)),
-    );
-  }
-
   Widget _imagePlaceholder() {
     return Container(
       width: 48,
@@ -276,36 +359,49 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     );
   }
 
-  Widget _appVersionWidget() {
-    final version = ref.watch(_controller.select((s) => s.appVersion));
-    return version.isNotEmpty
-        ? Text(version, style: MyText.xs.copyWith(color: MyColors.neutral70))
-        : const SizedBox.shrink();
+  void _showImagePickerBottomSheet() {
+    showMyBottomSheet(context: context, child: _bottomSheetContent());
   }
 
-  Widget _dashboardContent() {
-    final isTablet = TabletDetector.isTablet(MediaQuery.of(context));
-    final buttonSize = isTablet ? 160.0 : 120.0;
+  Widget _bottomSheetContent() {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 20.0),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.center,
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
         children: [
-          _bigButton(
-            title: context.localizations.takePicture,
-            image: Image.asset('assets/images/image_icon.png', width: 80),
-            size: buttonSize,
-            onPressed: () => _showImagePickerBottomSheet(),
+          const SizedBox(height: 40),
+          Text(context.localizations.chooseOptionToGetImage,
+              style: MyText.base),
+          const SizedBox(height: 40),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              _bigButton(
+                title: context.localizations.camera,
+                image: Image.asset('assets/images/camera_icon.png', width: 80),
+                onPressed: () async {
+                  Navigator.pop(context);
+                  if (await _requestPermissionAndRedirect(isCamera: true)) {
+                    await _cameraOrImagePickerAction(isCamera: true);
+                  }
+                },
+              ),
+              const SizedBox(width: 40),
+              Text('or', style: MyText.xl.copyWith(color: MyColors.neutral70)),
+              const SizedBox(width: 40),
+              _bigButton(
+                title: context.localizations.gallery,
+                image: Image.asset('assets/images/gallery_icon.png', width: 80),
+                onPressed: () async {
+                  Navigator.pop(context);
+                  if (await _requestPermissionAndRedirect(isCamera: false)) {
+                    await _cameraOrImagePickerAction(isCamera: false);
+                  }
+                },
+              ),
+            ],
           ),
-          const SizedBox(width: 40),
-          Text('or', style: MyText.xl.copyWith(color: MyColors.neutral70)),
-          const SizedBox(width: 40),
-          _bigButton(
-            title: context.localizations.searchProduct,
-            image: Image.asset('assets/images/search_icon.png', width: 80),
-            size: buttonSize,
-            onPressed: () => context.pushNamed(AppRouter.searchRoute),
-          ),
+          const SizedBox(height: 40),
         ],
       ),
     );
@@ -314,27 +410,14 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   Widget _bigButton({
     required String title,
     required Widget image,
-    double size = 160.0,
+    double size = 120.0,
     required VoidCallback onPressed,
   }) {
     return GestureDetector(
       onTap: onPressed,
-      child: Container(
+      child: SizedBox(
         width: size,
-        height: 180,
-        decoration: BoxDecoration(
-          color: MyColors.white,
-          borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: MyColors.neutral30),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.grey.withOpacity(0.1),
-              spreadRadius: 1,
-              blurRadius: 5,
-              offset: const Offset(0, 3),
-            ),
-          ],
-        ),
+        height: 120,
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
@@ -354,88 +437,6 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         ),
       ),
     );
-  }
-
-  void _showImagePickerBottomSheet() {
-    showMyBottomSheet(context: context, child: _bottomSheetContent());
-  }
-
-  Widget _bottomSheetContent() {
-    final buttonSize =
-        TabletDetector.isTablet(MediaQuery.of(context)) ? 160.0 : 120.0;
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 20.0),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          const SizedBox(height: 40),
-          Text(context.localizations.chooseOptionToGetImage,
-              style: MyText.base),
-          const SizedBox(height: 40),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              _bigButton(
-                title: context.localizations.camera,
-                image: Image.asset('assets/images/camera_icon.png', width: 80),
-                size: buttonSize,
-                onPressed: () async {
-                  Navigator.pop(context);
-                  if (await _requestPermissionAndRedirect(isCamera: true)) {
-                    await _cameraOrImagePickerAction(isCamera: true);
-                  }
-                },
-              ),
-              const SizedBox(width: 40),
-              Text('or', style: MyText.xl.copyWith(color: MyColors.neutral70)),
-              const SizedBox(width: 40),
-              _bigButton(
-                title: context.localizations.gallery,
-                image: Image.asset('assets/images/gallery_icon.png', width: 80),
-                size: buttonSize,
-                onPressed: () async {
-                  Navigator.pop(context);
-                  if (await _requestPermissionAndRedirect(isCamera: false)) {
-                    await _cameraOrImagePickerAction(isCamera: false);
-                  }
-                },
-              ),
-            ],
-          ),
-          const SizedBox(height: 40),
-        ],
-      ),
-    );
-  }
-
-  Future<void> _cameraOrImagePickerAction({required bool isCamera}) async {
-    final image = await ref
-        .read(ImagePickerService.provider)
-        .pickImage(context: context, isFromCamera: isCamera);
-
-    if (image == null || !mounted) return;
-
-    final productName = await ref
-        .read(_controller.notifier)
-        .identifyProduct(file: File(image.path));
-
-    if (productName != null && productName.isNotEmpty && mounted) {
-      final searchParams = {
-        'productName': productName,
-        'localImagePath': image.path,
-      };
-      context.pushNamed(AppRouter.ecommerceSearchRoute, extra: searchParams);
-    } else if (mounted) {
-      showMyAlert(
-        context: context,
-        data: const MyAlertData(
-          title: "Gagal Mengidentifikasi Produk",
-          content:
-              "Sistem tidak dapat mengenali produk dari gambar yang diberikan.",
-          primaryButton: "Mengerti",
-        ),
-      );
-    }
   }
 
   Future<bool> _requestPermissionAndRedirect({required bool isCamera}) async {

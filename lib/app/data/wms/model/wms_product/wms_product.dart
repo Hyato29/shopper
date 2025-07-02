@@ -1,39 +1,51 @@
 // lib/app/data/wms/model/wms_product/wms_product.dart
 
 import 'package:freezed_annotation/freezed_annotation.dart';
+import 'package:fskeleton/app/data/wms/model/wms_user/wms_user.dart';
 
 part 'wms_product.freezed.dart';
 part 'wms_product.g.dart';
 
-// Wrapper untuk seluruh respons API
+// Wrapper level 1: { "data": { ... } }
 @freezed
-class ProductScanApiResponse with _$ProductScanApiResponse {
-  const factory ProductScanApiResponse({
-    @Default(false) bool success,
-    @Default('') String message,
-    required PaginationData pagination,
-    @Default([]) List<WmsProduct> data,
-  }) = _ProductScanApiResponse;
+class WmsProductScanResponse with _$WmsProductScanResponse {
+  const factory WmsProductScanResponse({
+    required WmsProductScanData data,
+  }) = _WmsProductScanResponse;
 
-  factory ProductScanApiResponse.fromJson(Map<String, dynamic> json) =>
-      _$ProductScanApiResponseFromJson(json);
+  factory WmsProductScanResponse.fromJson(Map<String, dynamic> json) =>
+      _$WmsProductScanResponseFromJson(json);
 }
 
-// Model untuk data paginasi
+// Wrapper level 2: { "status": ..., "message": ..., "resource": { ... } }
 @freezed
-class PaginationData with _$PaginationData {
-  const factory PaginationData({
+class WmsProductScanData with _$WmsProductScanData {
+  const factory WmsProductScanData({
+    required bool status,
+    required String message,
+    required WmsProductScanResource resource,
+  }) = _WmsProductScanData;
+
+  factory WmsProductScanData.fromJson(Map<String, dynamic> json) =>
+      _$WmsProductScanDataFromJson(json);
+}
+
+// Wrapper level 3: { "current_page": ..., "data": [ ... ], "last_page": ... }
+@freezed
+class WmsProductScanResource with _$WmsProductScanResource {
+  @JsonSerializable(fieldRename: FieldRename.snake)
+  const factory WmsProductScanResource({
     required int currentPage,
-    required int totalPages,
-    required int totalItems,
-  }) = _PaginationData;
+    required int lastPage,
+    required int total,
+    @Default([]) List<WmsProduct> data,
+  }) = _WmsProductScanResource;
 
-  factory PaginationData.fromJson(Map<String, dynamic> json) =>
-      _$PaginationDataFromJson(json);
+  factory WmsProductScanResource.fromJson(Map<String, dynamic> json) =>
+      _$WmsProductScanResourceFromJson(json);
 }
 
-
-// Model untuk satu item produk
+// Model utama untuk produk
 @freezed
 class WmsProduct with _$WmsProduct {
   @JsonSerializable(fieldRename: FieldRename.snake)
@@ -41,11 +53,12 @@ class WmsProduct with _$WmsProduct {
     required int id,
     required String productName,
     required String productPrice,
-    int? quantity,
-    String? status,
-    String? fixedPrice,
-    String? imageUrl,
-    required String scannedAt,
+    String? image, // Ini bisa berupa URL lengkap atau null
+    String? imageUrl, // Ini path storage
+    required String createdAt,
+    WmsUser? user,
+    // Field `status`, `quantity`, `fixedPrice` tidak ada di respons ini
+    // jadi kita hapus dari sini agar sesuai dengan data API
   }) = _WmsProduct;
 
   factory WmsProduct.fromJson(Map<String, dynamic> json) =>

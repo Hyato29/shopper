@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/svg.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:fskeleton/app/common/common_screen.dart';
 import 'package:fskeleton/app/data/wms/model/wms_product/wms_product.dart';
-import 'package:fskeleton/app/localizations/ui_text.dart';
+import 'package:fskeleton/app/navigation/router.dart';
 import 'package:fskeleton/app/ui/buttons/button_size.dart';
 import 'package:fskeleton/app/ui/buttons/my_primary_button.dart';
 import 'package:fskeleton/app/ui/common_loading.dart';
@@ -16,37 +16,33 @@ import 'package:fskeleton/feature/search/search_screen_controller.dart';
 import 'package:go_router/go_router.dart';
 
 class SearchScreen extends ConsumerStatefulWidget {
-  const SearchScreen({
-    super.key,
-    required this.navigateToSuccessScreen,
-  });
-
-  final VoidCallback navigateToSuccessScreen;
+  const SearchScreen({super.key});
 
   @override
-  ConsumerState<SearchScreen> createState() => _HomeScreenState();
+  ConsumerState<SearchScreen> createState() => _SearchScreenState();
 }
 
-class _HomeScreenState extends ConsumerState<SearchScreen> {
+class _SearchScreenState extends ConsumerState<SearchScreen> {
   final _controller = SearchScreenController.provider;
   final _scrollController = ScrollController();
 
   @override
   void initState() {
     super.initState();
-    _scrollController.addListener(() async {
+    _scrollController.addListener(() {
       if (_scrollController.position.pixels ==
           _scrollController.position.maxScrollExtent) {
         ref.read(_controller.notifier).loadNextProducts();
       }
     });
-    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
       ref.read(_controller.notifier).onScreenLoaded();
     });
   }
 
   @override
   void dispose() {
+    _scrollController.dispose();
     super.dispose();
   }
 
@@ -55,164 +51,128 @@ class _HomeScreenState extends ConsumerState<SearchScreen> {
     return CommonScreen(
       child: Scaffold(
         backgroundColor: MyColors.white,
-        appBar: PreferredSize(
-          preferredSize: const Size.fromHeight(60),
-          child: AppBar(
-            toolbarHeight: 90,
-            title: Text(
-              context.localizations.searchProduct,
-              style: MyText.base,
+        appBar: AppBar(
+          elevation: 1,
+          backgroundColor: MyColors.white,
+          leading: IconButton(
+            icon: const Icon(Icons.arrow_back, color: MyColors.black),
+            onPressed: () => context.pop(),
+          ),
+          title: Text(
+            'Pencarian Produk',
+            style: MyText.baseSemiBold.copyWith(color: MyColors.black),
+          ),
+          bottom: PreferredSize(
+            preferredSize: const Size.fromHeight(70.0),
+            child: Padding(
+              padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
+              child: MyTextField(
+                autofocus: true,
+                placeholder: 'Search Product',
+                onChanged: ref.read(_controller.notifier).onChangeSearchKey,
+                trailingIconMode: TrailingIconMode.clear,
+              ),
             ),
-            leading: InkWell(
-              onTap: () => context.pop(),
-              child: const Icon(Icons.arrow_back, color: MyColors.black),
-            ),
-            backgroundColor: MyColors.white,
-            bottomOpacity: 0,
           ),
         ),
-        body: Column(
-          children: [
-            _searchField(),
-            Expanded(child: _productList()),
-          ],
-        ),
+        body: _buildBody(),
       ),
     );
   }
 
-  Widget _productList() {
-    return Consumer(
-      builder: (context, ref, child) {
-        final products =
-            ref.watch(_controller.select((state) => state.products));
+  Widget _buildBody() {
+    final state = ref.watch(_controller);
+    final products = state.products;
 
-        return products.when(
-          data: (data) {
-            if (data.isEmpty) {
-              return MyEmptyState.empty(
-                title: context.localizations.noData,
-                buttonWidget: MyPrimaryButton(
-                  label: Text(context.localizations.chooseOptionToGetImage),
-                  buttonSize: ButtonSize.small,
-                  onPressed: () {
-                    context.pop(true);
-                  },
-                ),
-              );
+    return products.when(
+      data: (data) {
+        if (data.isEmpty && state.searchKey.isEmpty) {
+          return MyEmptyState.empty(
+            title: "Tidak ada data.",
+            buttonWidget: MyPrimaryButton(
+              label: const Text("Pilih opsi ambil gambar"),
+              buttonSize: ButtonSize.small,
+              onPressed: () => context.pop(),
+            ),
+          );
+        }
+        if (data.isEmpty && state.searchKey.isNotEmpty) {
+          return MyEmptyState.searchNotFound(context: context);
+        }
+
+        return ListView.separated(
+          controller: _scrollController,
+          itemCount:
+              data.length + (state.nextPageLoading?.data == true ? 1 : 0),
+          separatorBuilder: (context, index) =>
+              const Divider(height: 1, indent: 16, endIndent: 16),
+          itemBuilder: (context, index) {
+            if (index == data.length) {
+              return _loadingBottomWidget();
             }
-
-            return SingleChildScrollView(
-              controller: _scrollController,
-              child: Column(
-                children: [
-                  ...data.map((e) => _singleProduct(e)),
-                  _loadingBottomWidget(),
-                ],
-              ),
-            );
-          },
-          error: (_, __) {
-            return Text("Error");
-          },
-          loading: () {
-            return const Center(child: CircularProgressIndicator());
+            final product = data[index];
+            return _buildProductItem(product);
           },
         );
+      },
+      loading: () => const Center(child: CircularProgressIndicator()),
+      error: (e, s) => MyEmptyState.error(
+        context: context,
+        onRetried: () => ref.read(_controller.notifier).loadProducts(),
+      ),
+    );
+  }
+
+  Widget _buildProductItem(WmsProduct product) {
+    return ListTile(
+      contentPadding:
+          const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+      title: Text(
+        product.productName,
+        maxLines: 2,
+        overflow: TextOverflow.ellipsis,
+        style: MyText.sm,
+      ),
+      trailing: _priceChip(product.productPrice),
+      onTap: () {
+        final params =
+            ref.read(_controller.notifier).prepareProductForDetail(product);
+        context.pushNamed(AppRouter.productDetailRoute, extra: params);
       },
     );
   }
 
-  Widget _singleProduct(WmsProduct data) {
-    const verticalPadding = 20.0;
+  Widget _priceChip(String price) {
+    final formattedPrice =
+        (double.tryParse(price) ?? 0).truncate().toCurrencyFormat();
 
-    return InkWell(
-      onTap: () async {
-        
-      },
-      child: Column(
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+      decoration: BoxDecoration(
+        color: MyColors.neutral30,
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
         children: [
-          const SizedBox(height: verticalPadding),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 20.0),
-            child: Row(
-              children: [
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        data.productName,
-                        style: MyText.sm,
-                        maxLines: 2,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                    ],
-                  ),
-                ),
-                const SizedBox(width: 8),
-                _priceChip(data.productPrice),
-              ],
-            ),
+          SvgPicture.asset('assets/images/pricetag.svg',
+              width: 14,
+              colorFilter:
+                  const ColorFilter.mode(MyColors.neutral80, BlendMode.srcIn)),
+          const SizedBox(width: 4),
+          Text(
+            formattedPrice,
+            style: MyText.xsSemiBold.copyWith(color: MyColors.primary700),
           ),
-          const SizedBox(height: verticalPadding),
-          const Divider(height: 1),
         ],
       ),
     );
   }
 
-  Widget _priceChip(String price) {
-    final formattedPrice = double.parse(price).truncate().toCurrencyFormat();
-
-    return Container(
-      decoration: BoxDecoration(
-        color: MyColors.neutral30,
-        borderRadius: BorderRadius.circular(12),
-      ),
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 6.0, vertical: 4.0),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            SvgPicture.asset('assets/images/pricetag.svg', width: 14),
-            const SizedBox(width: 4),
-            Text(formattedPrice, style: MyText.xsSemiBold),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _searchField() {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 20.0, horizontal: 20.0),
-      child: MyTextField(
-        placeholder: context.localizations.searchBarPlaceholder,
-        trailingIconMode: TrailingIconMode.clear,
-        onChanged: ref.read(_controller.notifier).onChangeSearchKey,
-      ),
-    );
-  }
-
   Widget _loadingBottomWidget() {
-    return Consumer(
-      builder: (context, ref, child) {
-        final isLoading =
-            ref.watch(_controller.select((value) => value.nextPageLoading));
-        if (isLoading != null) {
-          return isLoading.data
-              ? const Center(
-                  child: Padding(
-                    padding: EdgeInsets.all(20.0),
-                    child: CommonLoading(ballColor: Colors.lightBlue),
-                  ),
-                )
-              : const SizedBox.shrink();
-        }
-
-        return const SizedBox.shrink();
-      },
+    return const Padding(
+      padding: EdgeInsets.all(20.0),
+      child: CommonLoading(ballColor: Colors.lightBlue),
     );
   }
 }

@@ -6,41 +6,54 @@ part of 'wms_product.dart';
 // JsonSerializableGenerator
 // **************************************************************************
 
-_$ProductScanApiResponseImpl _$$ProductScanApiResponseImplFromJson(
+_$WmsProductScanResponseImpl _$$WmsProductScanResponseImplFromJson(
         Map<String, dynamic> json) =>
-    _$ProductScanApiResponseImpl(
-      success: json['success'] as bool? ?? false,
-      message: json['message'] as String? ?? '',
-      pagination:
-          PaginationData.fromJson(json['pagination'] as Map<String, dynamic>),
+    _$WmsProductScanResponseImpl(
+      data: WmsProductScanData.fromJson(json['data'] as Map<String, dynamic>),
+    );
+
+Map<String, dynamic> _$$WmsProductScanResponseImplToJson(
+        _$WmsProductScanResponseImpl instance) =>
+    <String, dynamic>{
+      'data': instance.data,
+    };
+
+_$WmsProductScanDataImpl _$$WmsProductScanDataImplFromJson(
+        Map<String, dynamic> json) =>
+    _$WmsProductScanDataImpl(
+      status: json['status'] as bool,
+      message: json['message'] as String,
+      resource: WmsProductScanResource.fromJson(
+          json['resource'] as Map<String, dynamic>),
+    );
+
+Map<String, dynamic> _$$WmsProductScanDataImplToJson(
+        _$WmsProductScanDataImpl instance) =>
+    <String, dynamic>{
+      'status': instance.status,
+      'message': instance.message,
+      'resource': instance.resource,
+    };
+
+_$WmsProductScanResourceImpl _$$WmsProductScanResourceImplFromJson(
+        Map<String, dynamic> json) =>
+    _$WmsProductScanResourceImpl(
+      currentPage: (json['current_page'] as num).toInt(),
+      lastPage: (json['last_page'] as num).toInt(),
+      total: (json['total'] as num).toInt(),
       data: (json['data'] as List<dynamic>?)
               ?.map((e) => WmsProduct.fromJson(e as Map<String, dynamic>))
               .toList() ??
           const [],
     );
 
-Map<String, dynamic> _$$ProductScanApiResponseImplToJson(
-        _$ProductScanApiResponseImpl instance) =>
+Map<String, dynamic> _$$WmsProductScanResourceImplToJson(
+        _$WmsProductScanResourceImpl instance) =>
     <String, dynamic>{
-      'success': instance.success,
-      'message': instance.message,
-      'pagination': instance.pagination,
+      'current_page': instance.currentPage,
+      'last_page': instance.lastPage,
+      'total': instance.total,
       'data': instance.data,
-    };
-
-_$PaginationDataImpl _$$PaginationDataImplFromJson(Map<String, dynamic> json) =>
-    _$PaginationDataImpl(
-      currentPage: (json['currentPage'] as num).toInt(),
-      totalPages: (json['totalPages'] as num).toInt(),
-      totalItems: (json['totalItems'] as num).toInt(),
-    );
-
-Map<String, dynamic> _$$PaginationDataImplToJson(
-        _$PaginationDataImpl instance) =>
-    <String, dynamic>{
-      'currentPage': instance.currentPage,
-      'totalPages': instance.totalPages,
-      'totalItems': instance.totalItems,
     };
 
 _$WmsProductImpl _$$WmsProductImplFromJson(Map<String, dynamic> json) =>
@@ -48,11 +61,12 @@ _$WmsProductImpl _$$WmsProductImplFromJson(Map<String, dynamic> json) =>
       id: (json['id'] as num).toInt(),
       productName: json['product_name'] as String,
       productPrice: json['product_price'] as String,
-      quantity: (json['quantity'] as num?)?.toInt(),
-      status: json['status'] as String?,
-      fixedPrice: json['fixed_price'] as String?,
+      image: json['image'] as String?,
       imageUrl: json['image_url'] as String?,
-      scannedAt: json['scanned_at'] as String,
+      createdAt: json['created_at'] as String,
+      user: json['user'] == null
+          ? null
+          : WmsUser.fromJson(json['user'] as Map<String, dynamic>),
     );
 
 Map<String, dynamic> _$$WmsProductImplToJson(_$WmsProductImpl instance) =>
@@ -60,9 +74,8 @@ Map<String, dynamic> _$$WmsProductImplToJson(_$WmsProductImpl instance) =>
       'id': instance.id,
       'product_name': instance.productName,
       'product_price': instance.productPrice,
-      'quantity': instance.quantity,
-      'status': instance.status,
-      'fixed_price': instance.fixedPrice,
+      'image': instance.image,
       'image_url': instance.imageUrl,
-      'scanned_at': instance.scannedAt,
+      'created_at': instance.createdAt,
+      'user': instance.user,
     };
