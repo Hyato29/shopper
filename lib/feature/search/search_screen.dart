@@ -88,7 +88,7 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
       data: (data) {
         if (data.isEmpty && state.searchKey.isEmpty) {
           return MyEmptyState.empty(
-            title: "Tidak ada data.",
+            title: "Tidak ada pencarian.",
             buttonWidget: MyPrimaryButton(
               label: const Text("Pilih opsi ambil gambar"),
               buttonSize: ButtonSize.small,
@@ -97,7 +97,14 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
           );
         }
         if (data.isEmpty && state.searchKey.isNotEmpty) {
-          return MyEmptyState.searchNotFound(context: context);
+          return MyEmptyState.searchNotFound(
+            context: context,
+            buttonWidget: MyPrimaryButton(
+              label: const Text("Pilih opsi ambil gambar"),
+              buttonSize: ButtonSize.small,
+              onPressed: () => context.pop(),
+            ),
+          );
         }
 
         return ListView.separated(
@@ -134,10 +141,13 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
         style: MyText.sm,
       ),
       trailing: _priceChip(product.productPrice),
-      onTap: () {
+      onTap: () async {
         final params =
             ref.read(_controller.notifier).prepareProductForDetail(product);
-        context.pushNamed(AppRouter.productDetailRoute, extra: params);
+
+        if (mounted) {
+          context.pushNamed(AppRouter.productDetailRoute, extra: params);
+        }
       },
     );
   }
@@ -155,10 +165,12 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          SvgPicture.asset('assets/images/pricetag.svg',
-              width: 14,
-              colorFilter:
-                  const ColorFilter.mode(MyColors.neutral80, BlendMode.srcIn)),
+          SvgPicture.asset(
+            'assets/images/pricetag.svg',
+            width: 14,
+            colorFilter:
+                const ColorFilter.mode(MyColors.neutral80, BlendMode.srcIn),
+          ),
           const SizedBox(width: 4),
           Text(
             formattedPrice,

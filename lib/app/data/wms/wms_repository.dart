@@ -39,28 +39,33 @@ class WmsApiRepository {
     required double productPrice,
     required int quantity,
     required String status,
-    required File imageFile,
+    File? imageFile,
     String? imageUrl,
     double? fixedPrice,
     List<int>? categoryIds,
   }) async {
     try {
-      String fileName = imageFile.path.split('/').last;
-
-      FormData formData = FormData.fromMap({
+      final Map<String, dynamic> data = {
         'product_name': productName,
         'product_price': productPrice,
         'quantity': quantity,
         'status': status,
-        if (imageUrl != null) 'image': imageUrl,
         if (fixedPrice != null) 'fixed_price': fixedPrice,
         if (categoryIds != null && categoryIds.isNotEmpty)
           'category_ids': categoryIds,
-        'image': await MultipartFile.fromFile(
+      };
+
+      if (imageFile != null && imageFile.path.isNotEmpty) {
+        final String fileName = imageFile.path.split('/').last;
+        data['image'] = await MultipartFile.fromFile(
           imageFile.path,
           filename: fileName,
-        ),
-      });
+        );
+      } else if (imageUrl != null && imageUrl.isNotEmpty) {
+        data['image'] = imageUrl;
+      }
+
+      final FormData formData = FormData.fromMap(data);
 
       await _httpClient.post(
         path: '/api/product_scans',
@@ -115,6 +120,40 @@ class WmsApiRepository {
     try {
       await _httpClient.delete(
         path: '/api/bundle/$bundleId',
+      );
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  Future<void> addProductsToBundle({
+    required int bundleId,
+    required List<int> productIds,
+  }) async {
+    try {
+      await _httpClient.post(
+        path: '/api/bundle/add-product-to-bundle',
+        body: {
+          'bundle_id': bundleId,
+          'product_scan_ids': productIds,
+        },
+      );
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  Future<void> removeProductsFromBundle({
+    required int bundleId,
+    required List<int> productInBundleIds,
+  }) async {
+    try {
+      await _httpClient.delete(
+        path: '/api/bundle/remove-products',
+        body: {
+          'bundle_id': bundleId,
+          'product_in_bundle_ids': productInBundleIds,
+        },
       );
     } catch (e) {
       rethrow;

@@ -1,4 +1,3 @@
-// lib/app/data/wms/model/wms_identify/identify_product_response.dart
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'identify_product_response.freezed.dart';
@@ -24,7 +23,6 @@ class ProductScanData with _$ProductScanData {
     @Default('') String productName,
     @Default(0.0) double productPrice,
     String? imageUrl,
-    // TAMBAHKAN FIELD INI
     @Default([]) List<String> listEcomerce,
   }) = _ProductScanData;
 

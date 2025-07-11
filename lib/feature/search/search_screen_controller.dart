@@ -1,5 +1,3 @@
-// lib/feature/search/search_screen_controller.dart
-
 import 'dart:async';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:fskeleton/app/common/common_controller.dart';
@@ -29,8 +27,8 @@ class SearchScreenController extends StateNotifier<SearchScreenUiState> {
   final CommonController _commonController;
   final WmsApiRepository _wmsApiRepository;
 
-  static final provider =
-      StateNotifierProvider.autoDispose<SearchScreenController, SearchScreenUiState>(
+  static final provider = StateNotifierProvider.autoDispose<
+      SearchScreenController, SearchScreenUiState>(
     (ref) {
       return SearchScreenController(
         ref.watch(CommonController.provider.notifier),
@@ -97,7 +95,8 @@ class SearchScreenController extends StateNotifier<SearchScreenUiState> {
   }
 
   Future<void> loadNextProducts() async {
-    if (state.nextPageLoading?.data == true || _currentPage >= (_lastPage ?? _currentPage)) {
+    if (state.nextPageLoading?.data == true ||
+        _currentPage >= (_lastPage ?? _currentPage)) {
       return;
     }
 
@@ -130,9 +129,9 @@ class SearchScreenController extends StateNotifier<SearchScreenUiState> {
     return ProductDetailParams(
       productName: product.productName,
       productPrice: double.tryParse(product.productPrice) ?? 0.0,
-      imageUrl: product.image, // Gunakan field 'image' dari WMS
+      imageUrl: product.image,
       localImagePath: '',
-      listEcomerce: [], 
+      listEcomerce: [],
     );
   }
 }

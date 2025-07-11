@@ -1,11 +1,8 @@
-// lib/feature/ecommerce_search/model/ecommerce_product.dart
-
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'ecommerce_product.freezed.dart';
 part 'ecommerce_product.g.dart';
 
-// Model untuk menampung hasil dari semua e-commerce
 @freezed
 class EcommerceSearchResult with _$EcommerceSearchResult {
   const factory EcommerceSearchResult({
@@ -18,7 +15,6 @@ class EcommerceSearchResult with _$EcommerceSearchResult {
       _$EcommerceSearchResultFromJson(json);
 }
 
-// Model untuk satu item produk dari e-commerce
 @freezed
 class EcommerceProduct with _$EcommerceProduct {
   const factory EcommerceProduct({

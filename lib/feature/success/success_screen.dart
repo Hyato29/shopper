@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:fskeleton/app/common/common_screen.dart';
 import 'package:fskeleton/app/localizations/ui_text.dart';
 import 'package:fskeleton/app/navigation/router.dart';
+import 'package:fskeleton/app/ui/buttons/my_outline_button.dart';
 import 'package:fskeleton/app/ui/buttons/my_primary_button.dart';
 import 'package:fskeleton/app/ui/theme/my_colors.dart';
 import 'package:fskeleton/app/ui/theme/my_text.dart';
@@ -59,6 +60,15 @@ class _SuccessScreenState extends ConsumerState<SuccessScreen> {
                     context.localizations.successfullySubmittedDescription,
                     textAlign: TextAlign.center,
                     style: MyText.sm.copyWith(color: MyColors.neutral80),
+                  ),
+                  const SizedBox(height: 20),
+                  MyOutlineButton(
+                    leading: const Icon(Icons.print, color: Colors.blue),
+                    label: Text(
+                      "Print Barcode",
+                      style: MyText.smSemiBold.copyWith(color: Colors.blue),
+                    ),
+                    onPressed: () {},
                   ),
                   const SizedBox(height: 20),
                   MyPrimaryButton(

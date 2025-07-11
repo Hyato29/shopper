@@ -1,5 +1,3 @@
-// lib/feature/home/home_screen.dart
-
 import 'dart:io';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:device_info_plus/device_info_plus.dart';
@@ -160,14 +158,15 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
           height: 65,
           width: 65,
           decoration: BoxDecoration(
-              color: MyColors.neutral50,
-              borderRadius: BorderRadius.circular(12)),
+            color: MyColors.neutral40,
+            borderRadius: BorderRadius.circular(12),
+          ),
           child: IconButton(
             onPressed: () => _showImagePickerBottomSheet(),
             icon: const Icon(Icons.camera_alt_rounded),
-            color: MyColors.blueSource,
+            color: Colors.blue,
           ),
-        )
+        ),
       ],
     );
   }
@@ -177,13 +176,13 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
       padding: const EdgeInsets.only(right: 12.0),
       child: TextButton.icon(
         onPressed: () => Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) {
-                    return const SettingScreen();
-                  },
-                ),
-              ),
+          context,
+          MaterialPageRoute(
+            builder: (context) {
+              return const SettingScreen();
+            },
+          ),
+        ),
         icon: const Icon(Icons.settings, color: MyColors.primary500),
         label: Text(
           "Pengaturan",
@@ -213,11 +212,12 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   Widget _historyHeader() {
     return Container(
       decoration: const BoxDecoration(
-          color: MyColors.bodyBackground,
-          borderRadius: BorderRadius.only(
-            topLeft: Radius.circular(12),
-            topRight: Radius.circular(12),
-          )),
+        color: MyColors.bodyBackground,
+        borderRadius: BorderRadius.only(
+          topLeft: Radius.circular(12),
+          topRight: Radius.circular(12),
+        ),
+      ),
       child: Padding(
         padding: const EdgeInsets.fromLTRB(20, 20, 10, 20),
         child: Row(
@@ -230,7 +230,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                 "Lihat Semua",
                 style: MyText.xsSemiBold.copyWith(color: MyColors.primary500),
               ),
-            )
+            ),
           ],
         ),
       ),
@@ -253,16 +253,19 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         final itemsToShow = products.take(3).toList();
         return Container(
           decoration: const BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.only(
-                bottomLeft: Radius.circular(12),
-                bottomRight: Radius.circular(12),
-              )),
+            color: Colors.white,
+            borderRadius: BorderRadius.only(
+              bottomLeft: Radius.circular(12),
+              bottomRight: Radius.circular(12),
+            ),
+          ),
           padding: const EdgeInsets.symmetric(horizontal: 20),
           child: Column(
             children: itemsToShow
-                .map((product) =>
-                    _historyItem(product, product == itemsToShow.last))
+                .map(
+                  (product) =>
+                      _historyItem(product, product == itemsToShow.last),
+                )
                 .toList(),
           ),
         );
@@ -281,11 +284,9 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     );
   }
 
-  // --- WIDGET INI TELAH DIPERBAIKI ---
   Widget _historyItem(WmsProduct product, bool isLast) {
     const wmsBaseUrl = "https://wms-server.digitalindustryagency.com";
 
-    // Logika untuk menentukan URL gambar yang akan ditampilkan
     String? displayImageUrl;
     if (product.image != null && product.image!.startsWith('http')) {
       displayImageUrl = product.image;
@@ -303,15 +304,16 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
               if (displayImageUrl != null)
                 Container(
                   decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(12),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.grey.withOpacity(0.5),
-                          spreadRadius: 1,
-                          blurRadius: 5,
-                          offset: const Offset(0, 3),
-                        )
-                      ]),
+                    borderRadius: BorderRadius.circular(12),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.grey.withOpacity(0.5),
+                        spreadRadius: 1,
+                        blurRadius: 5,
+                        offset: const Offset(0, 3),
+                      ),
+                    ],
+                  ),
                   child: ClipRRect(
                     borderRadius: BorderRadius.circular(8),
                     child: CachedNetworkImage(
@@ -327,8 +329,6 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
               else
                 _imagePlaceholder(),
               const SizedBox(width: 12),
-              // Status tidak ada di respons baru, jadi kita bisa hilangkan atau beri default
-              // _statusChip("Lolos"),
               const SizedBox(width: 8),
               Expanded(
                 child: Text(
@@ -354,8 +354,11 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         color: MyColors.neutral30,
         borderRadius: BorderRadius.circular(8),
       ),
-      child: const Icon(Icons.image_not_supported_outlined,
-          color: MyColors.neutral70, size: 24),
+      child: const Icon(
+        Icons.image_not_supported_outlined,
+        color: MyColors.neutral70,
+        size: 24,
+      ),
     );
   }
 
@@ -370,8 +373,10 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         mainAxisSize: MainAxisSize.min,
         children: [
           const SizedBox(height: 40),
-          Text(context.localizations.chooseOptionToGetImage,
-              style: MyText.base),
+          Text(
+            context.localizations.chooseOptionToGetImage,
+            style: MyText.base,
+          ),
           const SizedBox(height: 40),
           Row(
             mainAxisAlignment: MainAxisAlignment.center,

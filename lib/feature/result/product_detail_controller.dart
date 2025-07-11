@@ -1,4 +1,3 @@
-
 import 'dart:io';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
@@ -18,7 +17,7 @@ class ProductDetailState with _$ProductDetailState {
     @Default(1) int quantity,
     int? selectedCategoryId,
     @Default(false) bool isSaving,
-    Event<bool>? navigateBack, 
+    Event<bool>? navigateBack,
   }) = _ProductDetailState;
 }
 
@@ -49,36 +48,43 @@ class ProductDetailController extends StateNotifier<ProductDetailState> {
     state = state.copyWith(selectedCategoryId: categoryId);
   }
 
-
   Future<void> saveData(ProductDetailParams params) async {
     if (state.selectedStatus == null || state.quantity <= 0) {
       _commonController.handleCommonError(
-          Exception("Status dan kuantitas wajib diisi."), null);
+        Exception("Status dan kuantitas wajib diisi."),
+        null,
+      );
       return;
     }
 
-    final categoryIdsToSend =
-        state.selectedCategoryId == null ? <int>[] : [state.selectedCategoryId!];
+    final categoryIdsToSend = state.selectedCategoryId == null
+        ? <int>[]
+        : [state.selectedCategoryId!];
 
     state = state.copyWith(isSaving: true);
 
-    final imageFile = File(params.localImagePath);
+    final imageFile =
+        params.localImagePath.isNotEmpty ? File(params.localImagePath) : null;
 
-    final result = await AsyncValue.guard(() => _wmsRepository.saveProductScan(
-          productName: params.productName,
-          productPrice: params.productPrice,
-          quantity: state.quantity,
-          status: state.selectedStatus!,
-          categoryIds: categoryIdsToSend,
-          imageFile: imageFile,
-          imageUrl: params.imageUrl 
-        ));
+    final result = await AsyncValue.guard(
+      () => _wmsRepository.saveProductScan(
+        productName: params.productName,
+        productPrice: params.productPrice,
+        quantity: state.quantity,
+        status: state.selectedStatus!,
+        categoryIds: categoryIdsToSend,
+        imageFile: imageFile,
+        imageUrl: imageFile == null ? params.imageUrl : null,
+      ),
+    );
 
     state = state.copyWith(isSaving: false);
 
     if (result.hasError) {
       _commonController.handleCommonError(
-          result.error ?? Exception("Gagal menyimpan data"), null);
+        result.error ?? Exception("Gagal menyimpan data"),
+        null,
+      );
     } else {
       state = state.copyWith(navigateBack: Event(true));
     }
@@ -86,9 +92,11 @@ class ProductDetailController extends StateNotifier<ProductDetailState> {
 }
 
 final productDetailControllerProvider = StateNotifierProvider.autoDispose<
-    ProductDetailController, ProductDetailState>((ref) {
-  return ProductDetailController(
-    ref.watch(WmsApiRepository.provider),
-    ref.watch(CommonController.provider.notifier),
-  );
-});
+    ProductDetailController, ProductDetailState>(
+  (ref) {
+    return ProductDetailController(
+      ref.watch(WmsApiRepository.provider),
+      ref.watch(CommonController.provider.notifier),
+    );
+  },
+);

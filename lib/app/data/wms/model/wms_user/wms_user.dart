@@ -15,5 +15,6 @@ class WmsUser with _$WmsUser {
     String? formatBarcodeName,
   }) = _WmsUser;
 
-  factory WmsUser.fromJson(Map<String, dynamic> json) => _$WmsUserFromJson(json);
+  factory WmsUser.fromJson(Map<String, dynamic> json) =>
+      _$WmsUserFromJson(json);
 }

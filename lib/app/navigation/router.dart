@@ -2,9 +2,11 @@ import 'dart:async';
 
 import 'package:flutter/cupertino.dart';
 import 'package:fskeleton/app/data/auth/auth_repository.dart';
+import 'package:fskeleton/app/data/wms/model/wms_bundle/wms_bundle.dart';
 import 'package:fskeleton/core.dart';
 import 'package:fskeleton/feature/ecommerce/ecommerce_search_screen.dart';
 import 'package:fskeleton/feature/history/history_screen.dart';
+import 'package:fskeleton/feature/history/product_bundle_screen.dart';
 import 'package:fskeleton/feature/home/home_screen.dart';
 import 'package:fskeleton/feature/login/login_screen.dart';
 import 'package:fskeleton/feature/result/product_detail_params.dart';
@@ -26,6 +28,7 @@ class AppRouter {
   static const searchRoute = 'search_screen_route';
   static const historyRoute = 'history';
   static const ecommerceSearchRoute = 'ecommerce-search';
+  static const addProductToBundleRoute = 'add-product-to-bundle';
 
   final AuthRepository _authRepository;
 
@@ -91,10 +94,17 @@ class AppRouter {
             },
           ),
           GoRoute(
+            name: addProductToBundleRoute,
+            path: '/$addProductToBundleRoute',
+            builder: (context, state) {
+              final bundle = state.extra! as WmsBundle;
+              return ProductBundleScreen(bundle: bundle);
+            },
+          ),
+          GoRoute(
             name: ecommerceSearchRoute,
             path: '/$ecommerceSearchRoute',
             builder: (context, state) {
-              // Terima map sebagai parameter
               final params = state.extra! as Map<String, String>;
               return EcommerceSearchScreen(searchParams: params);
             },

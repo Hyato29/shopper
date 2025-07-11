@@ -1,7 +1,4 @@
-// lib/feature/history/history_screen_controller.dart
-
 import 'dart:async';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:fskeleton/app/common/common_controller.dart';
 import 'package:fskeleton/app/data/wms/model/wms_bundle/wms_bundle.dart';
@@ -18,10 +15,12 @@ class HistoryScreenUiState with _$HistoryScreenUiState {
     @Default(AsyncData([])) AsyncValue<List<WmsProduct>> products,
     @Default(AsyncData([])) AsyncValue<List<WmsBundle>> bundles,
     @Default('') String searchKey,
-    @Default(null) Event<bool>? nextPageLoading,
+    Event<bool>? nextPageLoading,
     WmsProduct? selectedProduct,
     WmsBundle? selectedBundle,
     Event<bool>? bundleCreated,
+    @Default(false) bool isSelectionMode,
+    @Default({}) Set<int> selectedProductIdsForDeletion,
   }) = _HistoryScreenUiState;
 }
 
@@ -68,16 +67,18 @@ class HistoryScreenController extends StateNotifier<HistoryScreenUiState> {
       loadProducts();
     });
   }
-  
+
   void onRetrySeach() {
     loadProducts();
   }
 
-  // --- FUNGSI INI TELAH DIPERBAIKI ---
   Future<void> loadProducts() async {
     _currentPage = 1;
     _lastPage = null;
-    state = state.copyWith(products: const AsyncValue.loading(), selectedProduct: null);
+    state = state.copyWith(
+      products: const AsyncValue.loading(),
+      selectedProduct: null,
+    );
 
     final result = await AsyncValue.guard(
       () => _wmsApiRepository.searchProduct(
@@ -87,7 +88,6 @@ class HistoryScreenController extends StateNotifier<HistoryScreenUiState> {
     );
 
     if (mounted) {
-      // Gunakan .when untuk menangani semua kasus (data, error, loading)
       result.when(
         data: (resource) {
           _currentPage = resource.currentPage;
@@ -95,20 +95,17 @@ class HistoryScreenController extends StateNotifier<HistoryScreenUiState> {
           state = state.copyWith(products: AsyncData(resource.data));
         },
         error: (e, s) {
-          // Tetap set state ke error agar UI bisa menampilkannya
           state = state.copyWith(products: AsyncError(e, s));
           _commonController.handleCommonError(e, () => loadProducts());
         },
-        loading: () {
-          // State sudah di-set ke loading di atas
-        },
+        loading: () {},
       );
     }
   }
 
-  // --- FUNGSI INI TELAH DIPERBAIKI ---
   Future<void> loadNextProducts() async {
-    if (state.nextPageLoading?.data == true || _currentPage >= (_lastPage ?? _currentPage)) {
+    if (state.nextPageLoading?.data == true ||
+        _currentPage >= (_lastPage ?? _currentPage)) {
       return;
     }
 
@@ -133,19 +130,27 @@ class HistoryScreenController extends StateNotifier<HistoryScreenUiState> {
           ]),
         );
       });
-      // Set loading ke false setelah selesai
       state = state.copyWith(nextPageLoading: Event(false));
     }
   }
-  
-  // --- Sisa kode tidak ada perubahan ---
+
   Future<void> loadBundles() async {
-    state = state.copyWith(bundles: const AsyncValue.loading());
+    state = state.copyWith(
+      bundles: const AsyncValue.loading(),
+      isSelectionMode: false,
+      selectedProductIdsForDeletion: {},
+    );
     final result = await AsyncValue.guard(() => _wmsApiRepository.getBundles());
     if (mounted) {
       result.when(
         data: (bundleResource) {
-          state = state.copyWith(bundles: AsyncData(bundleResource.data));
+          final currentSelectedId = state.selectedBundle?.id;
+          final newSelectedBundle = bundleResource.data
+              .firstWhereOrNull((b) => b.id == currentSelectedId);
+          state = state.copyWith(
+            bundles: AsyncData(bundleResource.data),
+            selectedBundle: newSelectedBundle,
+          );
         },
         error: (e, s) {
           state = state.copyWith(bundles: AsyncError(e, s));
@@ -164,6 +169,8 @@ class HistoryScreenController extends StateNotifier<HistoryScreenUiState> {
   }
 
   void selectBundle(WmsBundle bundle) {
+    if (state.isSelectionMode) return;
+
     if (state.selectedBundle == bundle) {
       state = state.copyWith(selectedBundle: null);
     } else {
@@ -201,6 +208,75 @@ class HistoryScreenController extends StateNotifier<HistoryScreenUiState> {
       _commonController.handleCommonError(
         result.error ?? Exception("Gagal menghapus bundle"),
         () => deleteBundle(bundleId),
+      );
+    } else {
+      await loadBundles();
+    }
+  }
+
+  void toggleSelectionMode() {
+    state = state.copyWith(
+      isSelectionMode: !state.isSelectionMode,
+      selectedProductIdsForDeletion: {},
+    );
+  }
+
+  void toggleProductForDeletion(int productInBundleId) {
+    final newSet = Set<int>.from(state.selectedProductIdsForDeletion);
+    if (newSet.contains(productInBundleId)) {
+      newSet.remove(productInBundleId);
+    } else {
+      newSet.add(productInBundleId);
+    }
+    state = state.copyWith(selectedProductIdsForDeletion: newSet);
+  }
+
+  Future<void> deleteSelectedProductsFromBundle() async {
+    if (state.selectedProductIdsForDeletion.isEmpty) return;
+
+    final bundleId = state.selectedBundle?.id;
+    if (bundleId == null) return;
+
+    _commonController.showLoading(isLoading: true);
+
+    final result = await AsyncValue.guard(
+      () => _wmsApiRepository.removeProductsFromBundle(
+        bundleId: bundleId,
+        productInBundleIds: state.selectedProductIdsForDeletion.toList(),
+      ),
+    );
+
+    _commonController.showLoading(isLoading: false);
+
+    if (result.hasError) {
+      _commonController.handleCommonError(
+        result.error ?? Exception("Gagal menghapus produk"),
+        null,
+      );
+    } else {
+      await loadBundles();
+    }
+  }
+
+  Future<void> deleteSingleProductFromBundle(int productInBundleId) async {
+    final bundleId = state.selectedBundle?.id;
+    if (bundleId == null) return;
+
+    _commonController.showLoading(isLoading: true);
+
+    final result = await AsyncValue.guard(
+      () => _wmsApiRepository.removeProductsFromBundle(
+        bundleId: bundleId,
+        productInBundleIds: [productInBundleId],
+      ),
+    );
+
+    _commonController.showLoading(isLoading: false);
+
+    if (result.hasError) {
+      _commonController.handleCommonError(
+        result.error ?? Exception("Gagal menghapus produk"),
+        null,
       );
     } else {
       await loadBundles();

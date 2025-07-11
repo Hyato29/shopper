@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:fskeleton/app/data/wms/model/wms_category/wms_category.dart';
@@ -70,39 +71,62 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    if (widget.params.localImagePath.isNotEmpty)
-                      Stack(
-                        children: [
-                          Center(
-                            child: SizedBox(
-                              height: 350,
-                              width: double.infinity,
-                              child: ClipRRect(
-                                borderRadius: const BorderRadius.only(
-                                  bottomLeft: Radius.circular(20),
-                                  bottomRight: Radius.circular(20),
-                                ),
-                                child: Image.file(
-                                  File(widget.params.localImagePath),
-                                  fit: BoxFit.cover,
-                                ),
+                    Stack(
+                      children: [
+                        SizedBox(
+                          height: 350,
+                          width: double.infinity,
+                          child: ClipRRect(
+                            borderRadius: const BorderRadius.only(
+                              bottomLeft: Radius.circular(20),
+                              bottomRight: Radius.circular(20),
+                            ),
+                            child: widget.params.localImagePath.isNotEmpty
+                                ? Image.file(
+                                    File(widget.params.localImagePath),
+                                    fit: BoxFit.cover,
+                                  )
+                                : (widget.params.imageUrl != null &&
+                                        widget.params.imageUrl!.isNotEmpty)
+                                    ? CachedNetworkImage(
+                                        imageUrl: widget.params.imageUrl!,
+                                        fit: BoxFit.cover,
+                                        placeholder: (context, url) =>
+                                            const Center(
+                                          child: CircularProgressIndicator(),
+                                        ),
+                                        errorWidget: (context, url, error) =>
+                                            const Icon(
+                                          Icons.image_not_supported_outlined,
+                                          size: 50,
+                                        ),
+                                      )
+                                    : const ColoredBox(
+                                        color: MyColors.neutral40,
+                                        child: Icon(
+                                          Icons.image_not_supported,
+                                          size: 50,
+                                          color: MyColors.neutral70,
+                                        ),
+                                      ),
+                          ),
+                        ),
+                        Positioned(
+                          top: 10,
+                          left: 10,
+                          child: CircleAvatar(
+                            backgroundColor: MyColors.black.withOpacity(0.5),
+                            child: IconButton(
+                              onPressed: () => Navigator.pop(context),
+                              icon: const Icon(
+                                Icons.arrow_back_rounded,
+                                color: MyColors.white,
                               ),
                             ),
                           ),
-                          Positioned(
-                            top: 10,
-                            left: 10,
-                            child: CircleAvatar(
-                              backgroundColor: MyColors.black.withOpacity(0.5),
-                              child: IconButton(
-                                onPressed: () => Navigator.pop(context),
-                                icon: const Icon(Icons.arrow_back_rounded,
-                                    color: MyColors.white),
-                              ),
-                            ),
-                          )
-                        ],
-                      ),
+                        ),
+                      ],
+                    ),
                     const SizedBox(height: 30),
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 20),
@@ -111,19 +135,23 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Expanded(
-                              child: Text(widget.params.productName,
-                                  overflow: TextOverflow.visible,
-                                  softWrap: true,
-                                  style: MyText.lgSemiBold)),
-                          const SizedBox(width: 20),
-                          Text(
-                              widget.params.productPrice
-                                  .truncate()
-                                  .toCurrencyFormat(),
+                            child: Text(
+                              widget.params.productName,
                               overflow: TextOverflow.visible,
                               softWrap: true,
-                              style: MyText.lgBold
-                                  .copyWith(color: MyColors.blueSource)),
+                              style: MyText.lgSemiBold,
+                            ),
+                          ),
+                          const SizedBox(width: 20),
+                          Text(
+                            widget.params.productPrice
+                                .truncate()
+                                .toCurrencyFormat(),
+                            overflow: TextOverflow.visible,
+                            softWrap: true,
+                            style: MyText.lgBold
+                                .copyWith(color: MyColors.blueSource),
+                          ),
                         ],
                       ),
                     ),
@@ -155,8 +183,10 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
                     ],
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 20),
-                      child: Text("Kategori",
-                          style: MyText.sm.copyWith(color: MyColors.neutral80)),
+                      child: Text(
+                        "Kategori",
+                        style: MyText.sm.copyWith(color: MyColors.neutral80),
+                      ),
                     ),
                     const SizedBox(height: 8),
                     Padding(
@@ -175,7 +205,7 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
                           state.categories.whenData((categories) {
                             _showPickerBottomSheet<Category>(
                               context: context,
-                              title: 'Pilih Kategori',
+                              title: 'Pilih Kategori', 
                               items: categories,
                               itemBuilder: (category) => Text(category.name),
                               onItemSelected: (category) =>
@@ -190,8 +220,10 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
                     const SizedBox(height: 24),
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 20),
-                      child: Text("Status",
-                          style: MyText.sm.copyWith(color: MyColors.neutral80)),
+                      child: Text(
+                        "Status",
+                        style: MyText.sm.copyWith(color: MyColors.neutral80),
+                      ),
                     ),
                     const SizedBox(height: 8),
                     Padding(
@@ -245,9 +277,8 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
         boxShadow: [
           BoxShadow(
             color: Colors.black.withOpacity(0.1),
-            spreadRadius: 0,
             blurRadius: 10,
-          )
+          ),
         ],
       ),
       child: Row(
@@ -259,9 +290,10 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
                 borderRadius: BorderRadius.circular(8),
               ),
               child: MyTextButton(
-                label: Text("Scan Ulang",
-                    style:
-                        MyText.smSemiBold.copyWith(color: MyColors.neutral80)),
+                label: Text(
+                  "Scan Ulang",
+                  style: MyText.smSemiBold.copyWith(color: MyColors.neutral80),
+                ),
                 onPressed: () => context.pop(),
               ),
             ),
@@ -334,9 +366,10 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
             Text(
               value != null && value.isNotEmpty ? value : hintText,
               style: MyText.base.copyWith(
-                  color: value != null && value.isNotEmpty
-                      ? MyColors.black
-                      : MyColors.neutral70),
+                color: value != null && value.isNotEmpty
+                    ? MyColors.black
+                    : MyColors.neutral70,
+              ),
             ),
             const Icon(Icons.arrow_drop_down, color: MyColors.neutral80),
           ],
@@ -374,7 +407,8 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
             }
             return Padding(
               padding: EdgeInsets.only(
-                  bottom: MediaQuery.of(context).viewInsets.bottom),
+                bottom: MediaQuery.of(context).viewInsets.bottom,
+              ),
               child: SafeArea(
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
@@ -384,7 +418,7 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          Text(title, style: MyText.lgSemiBold),
+                          Text(title, style: MyText.baseSemiBold),
                           IconButton(
                             icon: const Icon(Icons.close),
                             onPressed: () => Navigator.pop(context),
@@ -395,7 +429,9 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
                     if (T == Category)
                       Padding(
                         padding: const EdgeInsets.symmetric(
-                            horizontal: 16, vertical: 8),
+                          horizontal: 16,
+                          vertical: 8,
+                        ),
                         child: TextField(
                           autofocus: true,
                           onChanged: (value) {
@@ -405,6 +441,9 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
                           },
                           decoration: InputDecoration(
                             hintText: 'Cari kategori...',
+                            hintStyle: MyText.base.copyWith(
+                              color: MyColors.neutral70,
+                            ),
                             prefixIcon: const Icon(Icons.search),
                             border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(8),
@@ -426,8 +465,10 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
                           return ListTile(
                             title: itemBuilder(item),
                             trailing: isSelected
-                                ? const Icon(Icons.check_circle,
-                                    color: MyColors.success700)
+                                ? const Icon(
+                                    Icons.check_circle,
+                                    color: MyColors.success700,
+                                  )
                                 : null,
                             onTap: () {
                               onItemSelected(item);

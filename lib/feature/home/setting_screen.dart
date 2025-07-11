@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:fskeleton/app/common/common_screen.dart';
+import 'package:fskeleton/app/navigation/router.dart';
 import 'package:fskeleton/app/ui/theme/my_colors.dart';
 import 'package:fskeleton/app/ui/theme/my_text.dart';
 import 'package:fskeleton/feature/home/home_screen_controller.dart';
-import 'package:fskeleton/app/navigation/router.dart';
 import 'package:go_router/go_router.dart';
 
 class SettingScreen extends ConsumerStatefulWidget {

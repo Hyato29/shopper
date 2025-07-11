@@ -80,11 +80,11 @@ class _EcommerceSearchScreenState extends ConsumerState<EcommerceSearchScreen>
         loading: () => const Center(child: CircularProgressIndicator()),
         error: (e, s) => Center(
           child: MyEmptyState.error(
-            context: context,
-            onRetried: () => ref
-                .read(ecommerceSearchControllerProvider.notifier)
-                // .search(_productName),
-          ),
+              context: context,
+              onRetried: () =>
+                  ref.read(ecommerceSearchControllerProvider.notifier)
+              // .search(_productName),
+              ),
         ),
       ),
     );
@@ -93,7 +93,8 @@ class _EcommerceSearchScreenState extends ConsumerState<EcommerceSearchScreen>
   Widget _buildProductList(List<EcommerceProduct> products) {
     if (products.isEmpty) {
       return const Center(
-          child: Text("Produk tidak ditemukan di platform ini."));
+        child: Text("Produk tidak ditemukan di platform ini."),
+      );
     }
     return ListView.separated(
       padding: const EdgeInsets.all(8.0),
@@ -115,15 +116,19 @@ class _EcommerceSearchScreenState extends ConsumerState<EcommerceSearchScreen>
           contentPadding: const EdgeInsets.symmetric(vertical: 10),
           title: Padding(
             padding: const EdgeInsets.only(right: 20),
-            child: Text(product.title,
-                maxLines: 2,
-                overflow: TextOverflow.ellipsis,
-                style: const TextStyle(fontSize: 16)),
+            child: Text(
+              product.title,
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
+              style: const TextStyle(fontSize: 16),
+            ),
           ),
           subtitle: Padding(
             padding: const EdgeInsets.only(top: 5),
-            child: Text(product.price,
-                style: MyText.smSemiBold.copyWith(color: MyColors.primary500)),
+            child: Text(
+              product.price,
+              style: MyText.smSemiBold.copyWith(color: MyColors.primary500),
+            ),
           ),
           onTap: () {
             final params = ProductDetailParams(
@@ -135,8 +140,10 @@ class _EcommerceSearchScreenState extends ConsumerState<EcommerceSearchScreen>
               imageUrl: product.imageUrl,
               localImagePath: _localImagePath,
             );
-            context.pushReplacementNamed(AppRouter.productDetailRoute,
-                extra: params);
+            context.pushReplacementNamed(
+              AppRouter.productDetailRoute,
+              extra: params,
+            );
           },
         );
       },

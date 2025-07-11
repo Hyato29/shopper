@@ -5,7 +5,7 @@ import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:fskeleton/app/common/common_controller.dart';
 import 'package:fskeleton/app/data/auth/auth_repository.dart';
 import 'package:fskeleton/app/data/serp/serp_api_repository.dart';
-import 'package:fskeleton/app/data/wms/model/wms_identify/identify_product_response.dart';
+import 'package:fskeleton/app/data/serp/model/identify_product_response.dart';
 import 'package:fskeleton/app/data/wms/model/wms_product/wms_product.dart';
 import 'package:fskeleton/app/data/wms/wms_repository.dart';
 import 'package:fskeleton/core.dart';
@@ -50,11 +50,6 @@ class HomeScreenController extends StateNotifier<HomeScreenUiState> {
   int _currentPage = 1;
   int? _lastPage;
 
-  @override
-  void dispose() {
-    super.dispose();
-  }
-
   Future<void> onScreenLoaded() async {
     await _getAppVersion();
     await loadProducts();
@@ -98,8 +93,9 @@ class HomeScreenController extends StateNotifier<HomeScreenUiState> {
   }
 
   Future<void> loadNextProducts() async {
-    if (state.nextPageLoading || _currentPage >= (_lastPage ?? _currentPage))
+    if (state.nextPageLoading || _currentPage >= (_lastPage ?? _currentPage)) {
       return;
+    }
 
     state = state.copyWith(nextPageLoading: true);
     _currentPage++;
@@ -137,8 +133,9 @@ class HomeScreenController extends StateNotifier<HomeScreenUiState> {
 
     if (result.hasError) {
       _commonController.handleCommonError(
-          result.error ?? Exception('Unknown error'),
-          () => identifyProduct(file: file));
+        result.error ?? Exception('Unknown error'),
+        () => identifyProduct(file: file),
+      );
       return null;
     }
 
@@ -147,8 +144,9 @@ class HomeScreenController extends StateNotifier<HomeScreenUiState> {
       return response.data;
     } else {
       _commonController.handleCommonError(
-          Exception(response?.message ?? 'Gagal mengidentifikasi produk.'),
-          null);
+        Exception(response?.message ?? 'Gagal mengidentifikasi produk.'),
+        null,
+      );
       return null;
     }
   }

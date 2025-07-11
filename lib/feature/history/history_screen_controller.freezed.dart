@@ -24,6 +24,9 @@ mixin _$HistoryScreenUiState {
   WmsProduct? get selectedProduct => throw _privateConstructorUsedError;
   WmsBundle? get selectedBundle => throw _privateConstructorUsedError;
   Event<bool>? get bundleCreated => throw _privateConstructorUsedError;
+  bool get isSelectionMode => throw _privateConstructorUsedError;
+  Set<int> get selectedProductIdsForDeletion =>
+      throw _privateConstructorUsedError;
 
   /// Create a copy of HistoryScreenUiState
   /// with the given fields replaced by the non-null parameter values.
@@ -45,7 +48,9 @@ abstract class $HistoryScreenUiStateCopyWith<$Res> {
       Event<bool>? nextPageLoading,
       WmsProduct? selectedProduct,
       WmsBundle? selectedBundle,
-      Event<bool>? bundleCreated});
+      Event<bool>? bundleCreated,
+      bool isSelectionMode,
+      Set<int> selectedProductIdsForDeletion});
 
   $WmsProductCopyWith<$Res>? get selectedProduct;
   $WmsBundleCopyWith<$Res>? get selectedBundle;
@@ -74,6 +79,8 @@ class _$HistoryScreenUiStateCopyWithImpl<$Res,
     Object? selectedProduct = freezed,
     Object? selectedBundle = freezed,
     Object? bundleCreated = freezed,
+    Object? isSelectionMode = null,
+    Object? selectedProductIdsForDeletion = null,
   }) {
     return _then(_value.copyWith(
       products: null == products
@@ -104,6 +111,14 @@ class _$HistoryScreenUiStateCopyWithImpl<$Res,
           ? _value.bundleCreated
           : bundleCreated // ignore: cast_nullable_to_non_nullable
               as Event<bool>?,
+      isSelectionMode: null == isSelectionMode
+          ? _value.isSelectionMode
+          : isSelectionMode // ignore: cast_nullable_to_non_nullable
+              as bool,
+      selectedProductIdsForDeletion: null == selectedProductIdsForDeletion
+          ? _value.selectedProductIdsForDeletion
+          : selectedProductIdsForDeletion // ignore: cast_nullable_to_non_nullable
+              as Set<int>,
     ) as $Val);
   }
 
@@ -151,7 +166,9 @@ abstract class _$$HistoryScreenUiStateImplCopyWith<$Res>
       Event<bool>? nextPageLoading,
       WmsProduct? selectedProduct,
       WmsBundle? selectedBundle,
-      Event<bool>? bundleCreated});
+      Event<bool>? bundleCreated,
+      bool isSelectionMode,
+      Set<int> selectedProductIdsForDeletion});
 
   @override
   $WmsProductCopyWith<$Res>? get selectedProduct;
@@ -179,6 +196,8 @@ class __$$HistoryScreenUiStateImplCopyWithImpl<$Res>
     Object? selectedProduct = freezed,
     Object? selectedBundle = freezed,
     Object? bundleCreated = freezed,
+    Object? isSelectionMode = null,
+    Object? selectedProductIdsForDeletion = null,
   }) {
     return _then(_$HistoryScreenUiStateImpl(
       products: null == products
@@ -209,6 +228,14 @@ class __$$HistoryScreenUiStateImplCopyWithImpl<$Res>
           ? _value.bundleCreated
           : bundleCreated // ignore: cast_nullable_to_non_nullable
               as Event<bool>?,
+      isSelectionMode: null == isSelectionMode
+          ? _value.isSelectionMode
+          : isSelectionMode // ignore: cast_nullable_to_non_nullable
+              as bool,
+      selectedProductIdsForDeletion: null == selectedProductIdsForDeletion
+          ? _value._selectedProductIdsForDeletion
+          : selectedProductIdsForDeletion // ignore: cast_nullable_to_non_nullable
+              as Set<int>,
     ));
   }
 }
@@ -220,10 +247,13 @@ class _$HistoryScreenUiStateImpl implements _HistoryScreenUiState {
       {this.products = const AsyncData([]),
       this.bundles = const AsyncData([]),
       this.searchKey = '',
-      this.nextPageLoading = null,
+      this.nextPageLoading,
       this.selectedProduct,
       this.selectedBundle,
-      this.bundleCreated});
+      this.bundleCreated,
+      this.isSelectionMode = false,
+      final Set<int> selectedProductIdsForDeletion = const {}})
+      : _selectedProductIdsForDeletion = selectedProductIdsForDeletion;
 
   @override
   @JsonKey()
@@ -235,7 +265,6 @@ class _$HistoryScreenUiStateImpl implements _HistoryScreenUiState {
   @JsonKey()
   final String searchKey;
   @override
-  @JsonKey()
   final Event<bool>? nextPageLoading;
   @override
   final WmsProduct? selectedProduct;
@@ -243,10 +272,22 @@ class _$HistoryScreenUiStateImpl implements _HistoryScreenUiState {
   final WmsBundle? selectedBundle;
   @override
   final Event<bool>? bundleCreated;
+  @override
+  @JsonKey()
+  final bool isSelectionMode;
+  final Set<int> _selectedProductIdsForDeletion;
+  @override
+  @JsonKey()
+  Set<int> get selectedProductIdsForDeletion {
+    if (_selectedProductIdsForDeletion is EqualUnmodifiableSetView)
+      return _selectedProductIdsForDeletion;
+    // ignore: implicit_dynamic_type
+    return EqualUnmodifiableSetView(_selectedProductIdsForDeletion);
+  }
 
   @override
   String toString() {
-    return 'HistoryScreenUiState(products: $products, bundles: $bundles, searchKey: $searchKey, nextPageLoading: $nextPageLoading, selectedProduct: $selectedProduct, selectedBundle: $selectedBundle, bundleCreated: $bundleCreated)';
+    return 'HistoryScreenUiState(products: $products, bundles: $bundles, searchKey: $searchKey, nextPageLoading: $nextPageLoading, selectedProduct: $selectedProduct, selectedBundle: $selectedBundle, bundleCreated: $bundleCreated, isSelectionMode: $isSelectionMode, selectedProductIdsForDeletion: $selectedProductIdsForDeletion)';
   }
 
   @override
@@ -266,12 +307,26 @@ class _$HistoryScreenUiStateImpl implements _HistoryScreenUiState {
             (identical(other.selectedBundle, selectedBundle) ||
                 other.selectedBundle == selectedBundle) &&
             (identical(other.bundleCreated, bundleCreated) ||
-                other.bundleCreated == bundleCreated));
+                other.bundleCreated == bundleCreated) &&
+            (identical(other.isSelectionMode, isSelectionMode) ||
+                other.isSelectionMode == isSelectionMode) &&
+            const DeepCollectionEquality().equals(
+                other._selectedProductIdsForDeletion,
+                _selectedProductIdsForDeletion));
   }
 
   @override
-  int get hashCode => Object.hash(runtimeType, products, bundles, searchKey,
-      nextPageLoading, selectedProduct, selectedBundle, bundleCreated);
+  int get hashCode => Object.hash(
+      runtimeType,
+      products,
+      bundles,
+      searchKey,
+      nextPageLoading,
+      selectedProduct,
+      selectedBundle,
+      bundleCreated,
+      isSelectionMode,
+      const DeepCollectionEquality().hash(_selectedProductIdsForDeletion));
 
   /// Create a copy of HistoryScreenUiState
   /// with the given fields replaced by the non-null parameter values.
@@ -286,13 +341,16 @@ class _$HistoryScreenUiStateImpl implements _HistoryScreenUiState {
 
 abstract class _HistoryScreenUiState implements HistoryScreenUiState {
   const factory _HistoryScreenUiState(
-      {final AsyncValue<List<WmsProduct>> products,
-      final AsyncValue<List<WmsBundle>> bundles,
-      final String searchKey,
-      final Event<bool>? nextPageLoading,
-      final WmsProduct? selectedProduct,
-      final WmsBundle? selectedBundle,
-      final Event<bool>? bundleCreated}) = _$HistoryScreenUiStateImpl;
+          {final AsyncValue<List<WmsProduct>> products,
+          final AsyncValue<List<WmsBundle>> bundles,
+          final String searchKey,
+          final Event<bool>? nextPageLoading,
+          final WmsProduct? selectedProduct,
+          final WmsBundle? selectedBundle,
+          final Event<bool>? bundleCreated,
+          final bool isSelectionMode,
+          final Set<int> selectedProductIdsForDeletion}) =
+      _$HistoryScreenUiStateImpl;
 
   @override
   AsyncValue<List<WmsProduct>> get products;
@@ -308,6 +366,10 @@ abstract class _HistoryScreenUiState implements HistoryScreenUiState {
   WmsBundle? get selectedBundle;
   @override
   Event<bool>? get bundleCreated;
+  @override
+  bool get isSelectionMode;
+  @override
+  Set<int> get selectedProductIdsForDeletion;
 
   /// Create a copy of HistoryScreenUiState
   /// with the given fields replaced by the non-null parameter values.

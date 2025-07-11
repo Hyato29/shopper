@@ -21,8 +21,7 @@ mixin _$ProductDetailState {
   String? get selectedStatus => throw _privateConstructorUsedError;
   int get quantity => throw _privateConstructorUsedError;
   int? get selectedCategoryId => throw _privateConstructorUsedError;
-  bool get isSaving =>
-      throw _privateConstructorUsedError; // TAMBAHKAN STATE INI untuk menandai navigasi
+  bool get isSaving => throw _privateConstructorUsedError;
   Event<bool>? get navigateBack => throw _privateConstructorUsedError;
 
   /// Create a copy of ProductDetailState
@@ -188,7 +187,6 @@ class _$ProductDetailStateImpl implements _ProductDetailState {
   @override
   @JsonKey()
   final bool isSaving;
-// TAMBAHKAN STATE INI untuk menandai navigasi
   @override
   final Event<bool>? navigateBack;
 
@@ -248,7 +246,7 @@ abstract class _ProductDetailState implements ProductDetailState {
   @override
   int? get selectedCategoryId;
   @override
-  bool get isSaving; // TAMBAHKAN STATE INI untuk menandai navigasi
+  bool get isSaving;
   @override
   Event<bool>? get navigateBack;
 
